@@ -16,6 +16,7 @@ public class WizardPlayer extends MovingObject implements Observer{
     private int currentSpellPage;
     //placeholder
     private boolean runeOne;
+    private Spell spellOne, spellTwo, spellThree, spellFour;
     
     public WizardPlayer(int x, int y, int health, Image[] imgs)
     {
