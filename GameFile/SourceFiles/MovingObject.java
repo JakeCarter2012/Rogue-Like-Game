@@ -2,33 +2,33 @@ package SourceFiles;
 
 abstract public class MovingObject extends GameObject{
     
-    private int verticalSpeed, horizontalSpeed;
+    private int VerticalSpeed, HorizontalSpeed;
     
     public MovingObject(int x, int y, int width, int height, int horiSpeed,
             int vertSpeed)
     {
         super(x, y, width, height);
-        this.horizontalSpeed = horiSpeed;
-        this.verticalSpeed = vertSpeed;
+        this.HorizontalSpeed = horiSpeed;
+        this.VerticalSpeed = vertSpeed;
     }
     
     public int getVerticalSpeed()
     {
-        return this.verticalSpeed;
+        return this.VerticalSpeed;
     }
     
     public int getHorizontalSpeed()
     {
-        return this.horizontalSpeed;
+        return this.HorizontalSpeed;
     }
     
     public void setVerticalSpeed(int y)
     {
-        this.verticalSpeed = y;
+        this.VerticalSpeed = y;
     }
     
     public void setHorizontalSpeed(int x)
     {
-        this.horizontalSpeed = x;
+        this.HorizontalSpeed = x;
     }
 }

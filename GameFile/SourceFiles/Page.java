@@ -4,16 +4,16 @@ import java.awt.Image;
 
 
 public class Page extends StationaryObject {
-    private int spellNumber;
+    private int SpellNumber;
     
     public Page(int x, int y, int spell, Image img)
     {
         super(x, y, img);
-        this.spellNumber = spell;
+        this.SpellNumber = spell;
     }
     
     public int getSpell()
     {
-        return this.spellNumber;
+        return this.SpellNumber;
     }
 }

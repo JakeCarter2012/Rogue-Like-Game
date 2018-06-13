@@ -3,26 +3,26 @@ package SourceFiles;
 import java.awt.Image;
 
 public class AreaOfEffect extends GameObject{
-    private Image[] sprites;
-    private int damage;
-    private int timer;
+    private Image[] Sprites;
+    private int Damage;
+    private int Timer;
     
     public AreaOfEffect(int x, int y, int time, int damage, Image[] imgs)
     {
         super(x, y, imgs[0].getWidth(null), imgs[0].getHeight(null));
-        this.sprites = imgs;
-        this.damage = damage;
-        this.timer = time;
+        this.Sprites = imgs;
+        this.Damage = damage;
+        this.Timer = time;
     }
     
     public int getDamage()
     {
-        return this.damage;
+        return this.Damage;
     }
     
     public boolean isDone()
     {
-        if (this.timer < 0)
+        if (this.Timer < 0)
             return true;
         else
             return false;

@@ -3,17 +3,17 @@ package SourceFiles;
 import java.awt.Image;
 
 public class Rune extends StationaryObject{
-    private int runeNumber;
+    private int RuneNumber;
     
     public Rune(int x, int y, int buff, Image img)
     {
         super(x, y, img);
-        this.runeNumber = buff;
+        this.RuneNumber = buff;
     }
     
     public int getRune()
     {
-        return this.runeNumber;
+        return this.RuneNumber;
     }
     
 }

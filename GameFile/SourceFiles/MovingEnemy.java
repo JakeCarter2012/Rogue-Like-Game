@@ -3,34 +3,34 @@ package SourceFiles;
 import java.awt.Image;
 
 abstract public class MovingEnemy extends MovingObject{
-    private Image[] sprites;
-    private int currentSprite;
-    private int health;
-    private boolean frozen, burning;
+    private Image[] Sprites;
+    private int CurrentSprite;
+    private int Health;
+    private boolean Frozen, Burning;
     
     public MovingEnemy(int x, int y, int health, Image[] imgs)
     {
         super(x, y, imgs[0].getWidth(null), imgs[0].getHeight(null), 0, 0);
-        this.sprites = imgs;
-        this.currentSprite = 0;
-        this.health = health;
-        this.frozen = false;
-        this.burning = false;
+        this.Sprites = imgs;
+        this.CurrentSprite = 0;
+        this.Health = health;
+        this.Frozen = false;
+        this.Burning = false;
     }
     
     public Image getSprtie()
     {
-        return this.sprites[currentSprite];
+        return this.Sprites[CurrentSprite];
     }
     
     public void dealDamage(int dmg)
     {
-        this.health -= dmg;
+        this.Health -= dmg;
     }
     
     public boolean isDead()
     {
-        if(this.health <= 0)
+        if(this.Health <= 0)
             return true;
         else
             return false;

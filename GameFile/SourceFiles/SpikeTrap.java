@@ -4,67 +4,67 @@ package SourceFiles;
 import java.awt.Image;
 
 public class SpikeTrap extends GameObject{
-    private Image[] sprites;
-    private int currentSprite;
-    private int damage;
-    private boolean armed;
-    private int trapTimer;
+    private Image[] Sprites;
+    private int CurrentSprite;
+    private int Damage;
+    private boolean Armed;
+    private int TrapTimer;
     
     public SpikeTrap(int x, int y, Image[] imgs)
     {
         super(x, y, imgs[0].getWidth(null), imgs[0].getHeight(null));
-        this.sprites = imgs;
-        this.currentSprite = 0;
-        this.damage = 20;
-        this.armed = false;
-        this.trapTimer = 180;
+        this.Sprites = imgs;
+        this.CurrentSprite = 0;
+        this.Damage = 20;
+        this.Armed = false;
+        this.TrapTimer = 180;
     }
     
     public boolean isArmed()
     {
-        return this.armed;
+        return this.Armed;
     }
     
     public int getDamage()
     {
-        return this.damage;
+        return this.Damage;
     }
     
     public Image getSprite()
     {
-        return this.sprites[currentSprite];
+        return this.Sprites[CurrentSprite];
     }
     
     public void updateObject()
     {
-        this.trapTimer--;
+        this.TrapTimer--;
         
         //if trap is not armed, arm it when timer reaches 0
-        if(!this.armed && this.trapTimer < 0)
+        if(!this.Armed && this.TrapTimer < 0)
         {
-            this.armed = true;
-            this.trapTimer = 60;
+            this.Armed = true;
+            this.TrapTimer = 60;
         }
         
-        if(this.armed)
+        if(this.Armed)
         {
             //move through sprites[] depending on timing for display image
-            if(this.trapTimer < 5 || this.trapTimer > 55)
+            if(this.TrapTimer < 5 || this.TrapTimer > 55)
             {
-                this.currentSprite = 1;
+                this.CurrentSprite = 1;
             }
-            else if(this.trapTimer < 10 || this.trapTimer > 50)
+            else if(this.TrapTimer < 10 || this.TrapTimer > 50)
             {
-                this.currentSprite = 2;
+                this.CurrentSprite = 2;
             }
             else
-                this.currentSprite = 3;
+                this.CurrentSprite = 3;
             
-            if(this.trapTimer < 0)
+            if(this.TrapTimer < 0)
             {
-                this.armed = false;
-                this.trapTimer = 180;
-                this.currentSprite = 0;
+                this.Armed = false;
+                this.TrapTimer = 180;
+                this.CurrentSprite = 0;
             }
         }
     }

@@ -3,16 +3,16 @@ package SourceFiles;
 import java.awt.Image;
 
 public class StationaryObject extends GameObject{
-    private Image sprite;
+    private Image Sprite;
     
     public StationaryObject(int x, int y, Image img)
     {
         super(x, y, img.getWidth(null), img.getHeight(null));
-        sprite = img;
+        Sprite = img;
     }
     
     public Image getSprite()
     {
-        return this.sprite;
+        return this.Sprite;
     }
 }
