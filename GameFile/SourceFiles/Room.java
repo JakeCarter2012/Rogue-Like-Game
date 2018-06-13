@@ -15,6 +15,8 @@ public class Room {
     private ArrayList<SpikeTrap> SpikeTraps;
     private ArrayList<StationaryObject> Walls;
     private ArrayList<StationaryObject> Barrels;
+    private int NorthDoor, SouthDoor, LeftDoor, RightDoor;
+    private boolean Shop, RuneRoom, BossRoom;
     
     
     //need up down left right doors
@@ -22,7 +24,8 @@ public class Room {
     //need to remove projectiles/aoes on room exit
     //alg for connection rooms
     //room types for shops/multiple rune offerings?
-    public Room()
+    //need to make sure thaat the added room isnt boxed in, if it is next room wont be created
+    public Room(boolean shopRoom, boolean runeRoom, boolean bossRoom)
     {
         this.PlayerAoes = new ArrayList<AreaOfEffect>();
         this.EnemyAoes = new ArrayList<AreaOfEffect>();
@@ -36,10 +39,68 @@ public class Room {
         this.SpikeTraps = new ArrayList<SpikeTrap>();
         this.Walls = new ArrayList<StationaryObject>();
         this.Barrels = new ArrayList<StationaryObject>();
+        
+        this.NorthDoor = this.SouthDoor = this.LeftDoor = this.RightDoor = -1;
+        
+        this.Shop = shopRoom;
+        this.RuneRoom = runeRoom;
+        this.BossRoom = bossRoom;
     }
-
-    //adders, getters, removers
-    //make sure getters/removers check for errors when called, not out of bounds
+    
+    public void addNorthDoor(int i)
+    {
+        this.NorthDoor = i;
+    }
+    
+    public void addSouthDoor(int i)
+    {
+        this.SouthDoor = i;
+    }
+    
+    public void addLeftDoor(int i)
+    {
+        this.LeftDoor = i;
+    }
+    
+    public void addRightDoor(int i)
+    {
+        this.RightDoor = i;
+    }
+    
+    public int getNorthDoor()
+    {
+        return this.NorthDoor;
+    }
+    
+    public int getSouthDoor()
+    {
+        return this.SouthDoor;
+    }
+    
+    public int getLeftDoor()
+    {
+        return this.LeftDoor;
+    }
+    
+    public int getRightDoor()
+    {
+        return this.RightDoor;
+    }
+    
+    public boolean isShop()
+    {
+        return this.Shop;
+    }
+    
+    public boolean isRuneRoom()
+    {
+        return this.RuneRoom;
+    }
+    
+    public boolean isBossRoom()
+    {
+        return this.isBossRoom();
+    }
     
     public void addPlayerAoe(AreaOfEffect aoe)
     {
