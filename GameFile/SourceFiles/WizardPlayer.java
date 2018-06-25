@@ -13,7 +13,7 @@ public class WizardPlayer extends MovingObject implements Observer{
     private boolean Up, Down, Left, Right, Fire;
     private int UpKey, DownKey, LeftKey, RightKey, FireKey, SpellOneKey, 
             SpellTwoKey, SpellThreeKey, SpellFourKey;
-    private int SCrrentSpellPage;
+    private int CurrentSpellPage;
     //placeholder
     private boolean RuneOne;
     private Spell SpellOne, SpellTwo, SpellThree, SpellFour;
@@ -41,9 +41,17 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.RuneOne= false;
     }
     
+    public boolean isAlive()
+    {
+        if(this.Currenthealth > 0)
+            return true;
+        else
+            return false;
+    }
     
-    
-    public void updatePlayer(int mouseX, int mouseY)
+    public void updatePlayer(boolean generalCollision, 
+            boolean horizontalCollision, boolean verticalCollision)
+            //int mouseX, int mouseY,
     {
         
     }

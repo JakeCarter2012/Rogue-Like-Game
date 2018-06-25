@@ -7,7 +7,8 @@ public class CollisionDetector {
     {
         Rectangle moverRec = new Rectangle(mover.getX() + mover.getHorizontalSpeed(), 
                 mover.getY() + mover.getVerticalSpeed(), mover.getWidth(), mover.getHeight());
-        Rectangle objRec = new Rectangle(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
+        Rectangle objRec = new Rectangle(obj.getX(), obj.getY(), obj.getWidth(), 
+                obj.getHeight());
         
         if(moverRec.intersects(objRec))
             return true;
@@ -19,7 +20,8 @@ public class CollisionDetector {
     {
         Rectangle moverRec = new Rectangle(mover.getX(), mover.getY() + 
                 mover.getVerticalSpeed(), mover.getWidth(), mover.getHeight());
-        Rectangle objRec = new Rectangle(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
+        Rectangle objRec = new Rectangle(obj.getX(), obj.getY(), obj.getWidth(), 
+                obj.getHeight());
         
         if(moverRec.intersects(objRec))
             return true;
@@ -31,7 +33,21 @@ public class CollisionDetector {
     {
         Rectangle moverRec = new Rectangle(mover.getX() + mover.getHorizontalSpeed(), 
                 mover.getY(), mover.getWidth(), mover.getHeight());
-        Rectangle objRec = new Rectangle(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
+        Rectangle objRec = new Rectangle(obj.getX(), obj.getY(), obj.getWidth(), 
+                obj.getHeight());
+        
+        if(moverRec.intersects(objRec))
+            return true;
+        else
+            return false;
+    }
+    
+    public boolean standingCollision(MovingObject mover, GameObject obj)
+    {
+        Rectangle moverRec = new Rectangle(mover.getX(), mover.getY(), 
+                mover.getWidth(), mover.getHeight());
+        Rectangle objRec = new Rectangle(obj.getX(), obj.getY(), obj.getWidth(), 
+                obj.getHeight());
         
         if(moverRec.intersects(objRec))
             return true;

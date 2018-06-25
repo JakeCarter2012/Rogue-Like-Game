@@ -15,6 +15,7 @@ public class Room {
     private ArrayList<SpikeTrap> SpikeTraps;
     private ArrayList<StationaryObject> Walls;
     private ArrayList<StationaryObject> Barrels;
+    private ArrayList<StationaryObject> Portals;
     private int NorthDoor, SouthDoor, LeftDoor, RightDoor;
     private boolean Shop, RuneRoom, BossRoom;
     
@@ -25,6 +26,8 @@ public class Room {
     //alg for connection rooms
     //room types for shops/multiple rune offerings?
     //need to make sure thaat the added room isnt boxed in, if it is next room wont be created
+    //bossroom for healthbar, portal creation
+    //doors as own object?
     public Room(boolean shopRoom, boolean runeRoom, boolean bossRoom)
     {
         this.PlayerAoes = new ArrayList<AreaOfEffect>();
@@ -39,6 +42,7 @@ public class Room {
         this.SpikeTraps = new ArrayList<SpikeTrap>();
         this.Walls = new ArrayList<StationaryObject>();
         this.Barrels = new ArrayList<StationaryObject>();
+        this.Portals = new ArrayList<StationaryObject>();//doors?
         
         this.NorthDoor = this.SouthDoor = this.LeftDoor = this.RightDoor = -1;
         
@@ -302,7 +306,7 @@ public class Room {
         return this.Enemies.size();
     }
     
-    public int getPageSize()
+    public int PageSize()
     {
         return this.Pages.size();
     }
