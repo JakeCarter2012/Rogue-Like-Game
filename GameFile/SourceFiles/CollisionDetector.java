@@ -42,7 +42,7 @@ public class CollisionDetector {
             return false;
     }
     
-    public boolean standingCollision(MovingObject mover, GameObject obj)
+    public boolean standingCollision(GameObject mover, GameObject obj)
     {
         Rectangle moverRec = new Rectangle(mover.getX(), mover.getY(), 
                 mover.getWidth(), mover.getHeight());

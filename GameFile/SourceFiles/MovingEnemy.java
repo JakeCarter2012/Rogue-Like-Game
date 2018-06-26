@@ -44,9 +44,13 @@ abstract public class MovingEnemy extends MovingObject{
             return false;
     }
     
-    abstract public boolean isShootReady();
+    abstract public boolean isProjectileReady();
+    
+    abstract public Projectile fireProjectile();
     
     abstract public boolean isAoeReady();
+    
+    abstract public AreaOfEffect fireAoe();
     
     abstract public void updateMovingEnemy(int playerX, int playerY, boolean generalCollision,
             boolean horizontalCollision, boolean verticalCollision);

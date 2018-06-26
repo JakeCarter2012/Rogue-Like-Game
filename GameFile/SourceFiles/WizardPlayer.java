@@ -2,6 +2,7 @@ package SourceFiles;
 
 import java.awt.Image;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.Observer;
 import java.util.Observable;
 
@@ -16,7 +17,7 @@ public class WizardPlayer extends MovingObject implements Observer{
     private int CurrentSpellPage;
     //placeholder
     private boolean RuneOne;
-    private Spell SpellOne, SpellTwo, SpellThree, SpellFour;
+    private ArrayList<Spell> SpellBook;
     
     public WizardPlayer(int x, int y, int health, Image[] imgs)
     {
@@ -37,6 +38,9 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.SpellThreeKey = KeyEvent.VK_3;
         this.SpellFourKey = KeyEvent.VK_4;
         this.Up = this.Down = this.Left = this.Right = this.Fire = false;
+        this.SpellBook = new ArrayList<Spell>();
+        this.CurrentSpellPage = 0;
+        
         
         this.RuneOne= false;
     }
@@ -49,6 +53,73 @@ public class WizardPlayer extends MovingObject implements Observer{
             return false;
     }
     
+    public void takeDamage(int dmg)
+    {
+        this.Currenthealth -= dmg;
+    }
+    
+    public void heal(int rest)
+    {
+        if(this.Currenthealth + rest > this.MaxHealth)
+            this.Currenthealth = this.MaxHealth;
+        else
+            this.Currenthealth += rest;
+    }
+    
+    public boolean isProjectileReady()
+    {
+        if(Fire && this.SpellBook.get(CurrentSpellPage).offCooldown() && 
+                this.SpellBook.get(CurrentSpellPage) instanceof ProjectileSpell)
+        {
+            return true;
+        }
+        else
+            return false;
+    }
+    
+    public boolean isAoeReady()
+    {
+        if(Fire && this.SpellBook.get(CurrentSpellPage).offCooldown() && 
+                this.SpellBook.get(CurrentSpellPage) instanceof AoeSpell)
+        {
+            return true;
+        }
+        else
+            return false;
+    }
+    
+    public Projectile fireProjectile()
+    {
+        //adjust x and y's later based on position facing
+        //also need to edit speeds
+        if(this.SpellBook.get(CurrentSpellPage) instanceof ProjectileSpell)
+        {
+            return(new Projectile(this.getCenterX(), this.getCenterY(), 
+                    ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getSpeed(), 
+                    ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getSpeed(), 
+                    ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getDamage(), 
+                    ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getSprite()));
+        }
+        else
+            return null;
+    }
+    
+    public AreaOfEffect fireAoe()
+    {
+        //adjust x and y's later based on position facing
+        //also need to edit speeds
+        if(this.SpellBook.get(CurrentSpellPage) instanceof AoeSpell)
+        {
+            return(new AreaOfEffect(this.getCenterX(), this.getCenterY(), 
+                    ((AoeSpell)this.SpellBook.get(CurrentSpellPage)).getDuration(), 
+                    ((AoeSpell)this.SpellBook.get(CurrentSpellPage)).getDamage(), 
+                    ((AoeSpell)this.SpellBook.get(CurrentSpellPage)).getSprites()));
+        }
+        else
+            return null;
+    }
+            
+    //need take damage timer;
     public void updatePlayer(boolean generalCollision, 
             boolean horizontalCollision, boolean verticalCollision)
             //int mouseX, int mouseY,
