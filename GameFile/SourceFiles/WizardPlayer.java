@@ -45,6 +45,11 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.RuneOne= false;
     }
     
+    public Image getSprite()
+    {
+        return this.Sprites[this.CurrentSprite];
+    }
+    
     public boolean isAlive()
     {
         if(this.Currenthealth > 0)

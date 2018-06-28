@@ -432,9 +432,104 @@ public class PlayGame extends JPanel {
         super.paintComponent(gtemp);
         
         g2d.drawImage(Floor, 0, 0, this);
-        
         //paint order: player > enemy> projectile > itmes > wall
+        //lowest prio is first
         
+        for(int i = 0; i < Rooms.get(RoomsI).get(RoomsJ).BarrelSize(); i++)
+        {
+           g2d.drawImage(Rooms.get(RoomsI).get(RoomsJ).getBarrel(i).getSprite(), 
+                   Rooms.get(RoomsI).get(RoomsJ).getBarrel(i).getX(), 
+                   Rooms.get(RoomsI).get(RoomsJ).getBarrel(i).getY(), this);
+        }
+        
+        for(int i = 0; i < Rooms.get(RoomsI).get(RoomsJ).SpikeTrapSize(); i++)
+        {
+            g2d.drawImage(Rooms.get(RoomsI).get(RoomsJ).getSpikeTrap(i).getSprite(), 
+                    Rooms.get(RoomsI).get(RoomsJ).getSpikeTrap(i).getX(), 
+                    Rooms.get(RoomsI).get(RoomsJ).getSpikeTrap(i).getY(), this);
+        }
+        
+        for(int i = 0; i < Rooms.get(RoomsI).get(RoomsJ).EnemyAoeSize(); i++)
+        {
+            g2d.drawImage(Rooms.get(RoomsI).get(RoomsJ).getEnemyAoe(i).getSprite(),
+                    Rooms.get(RoomsI).get(RoomsJ).getEnemyAoe(i).getX(), 
+                    Rooms.get(RoomsI).get(RoomsJ).getEnemyAoe(i).getY(), this);
+        }
+        
+        for(int i = 0; i < Rooms.get(RoomsI).get(RoomsJ).PlayerAoeSize(); i++)
+        {
+            g2d.drawImage(Rooms.get(RoomsI).get(RoomsJ).getPlayerAoe(i).getSprite(), 
+                    Rooms.get(RoomsI).get(RoomsJ).getPlayerAoe(i).getX(), 
+                    Rooms.get(RoomsI).get(RoomsJ).getPlayerAoe(i).getY(), this);
+        }
+        
+        for(int i = 0; i < Rooms.get(RoomsI).get(RoomsJ).WallSize(); i++)
+        {
+           g2d.drawImage(Rooms.get(RoomsI).get(RoomsJ).getWall(i).getSprite(), 
+                   Rooms.get(RoomsI).get(RoomsJ).getWall(i).getX(), 
+                   Rooms.get(RoomsI).get(RoomsJ).getWall(i).getY(), this);
+        }
+        
+        for(int i = 0; i < Rooms.get(RoomsI).get(RoomsJ).CoinSize(); i++)
+        {
+           g2d.drawImage(Rooms.get(RoomsI).get(RoomsJ).getCoin(i).getSprite(), 
+                   Rooms.get(RoomsI).get(RoomsJ).getCoin(i).getX(),
+                   Rooms.get(RoomsI).get(RoomsJ).getCoin(i).getY(), this);
+        }
+        
+        for(int i = 0; i < Rooms.get(RoomsI).get(RoomsJ).PotionSize(); i++)
+        {
+           g2d.drawImage(Rooms.get(RoomsI).get(RoomsJ).getPotion(i).getSprite(), 
+                   Rooms.get(RoomsI).get(RoomsJ).getPotion(i).getX(), 
+                   Rooms.get(RoomsI).get(RoomsJ).getPotion(i).getY(), this);
+        }
+        
+        for(int i = 0; i < Rooms.get(RoomsI).get(RoomsJ).PotionSize(); i++)
+        {
+           g2d.drawImage(Rooms.get(RoomsI).get(RoomsJ).getPotion(i).getSprite(),
+                   Rooms.get(RoomsI).get(RoomsJ).getPotion(i).getX(), 
+                   Rooms.get(RoomsI).get(RoomsJ).getPotion(i).getY(), this);
+        }
+        
+        for(int i = 0; i < Rooms.get(RoomsI).get(RoomsJ).PageSize(); i++)
+        {
+           g2d.drawImage(Rooms.get(RoomsI).get(RoomsJ).getPage(i).getSprite(), 
+                   Rooms.get(RoomsI).get(RoomsJ).getPage(i).getX(), 
+                   Rooms.get(RoomsI).get(RoomsJ).getPage(i).getY(), this);
+        }
+        
+        for(int i = 0; i < Rooms.get(RoomsI).get(RoomsJ).RuneSize(); i++)
+        {
+           g2d.drawImage(Rooms.get(RoomsI).get(RoomsJ).getRune(i).getSprite(), 
+                   Rooms.get(RoomsI).get(RoomsJ).getRune(i).getX(), 
+                   Rooms.get(RoomsI).get(RoomsJ).getRune(i).getY(), this);
+        }
+        
+        for(int i = 0; i < Rooms.get(RoomsI).get(RoomsJ).PlayerProjectileSize(); i++)
+        {
+           g2d.drawImage(Rooms.get(RoomsI).get(RoomsJ).getPlayerProjectile(i).getSprite(), 
+                   Rooms.get(RoomsI).get(RoomsJ).getPlayerProjectile(i).getX(), 
+                   Rooms.get(RoomsI).get(RoomsJ).getPlayerProjectile(i).getY(), this);
+        }
+        
+        for(int i = 0; i < Rooms.get(RoomsI).get(RoomsJ).EnemySize(); i++)
+        {
+           g2d.drawImage(Rooms.get(RoomsI).get(RoomsJ).getEnemy(i).getSprite(), 
+                   Rooms.get(RoomsI).get(RoomsJ).getEnemy(i).getX(), 
+                   Rooms.get(RoomsI).get(RoomsJ).getEnemy(i).getY(), this);
+        }
+        
+        for(int i = 0; i < Rooms.get(RoomsI).get(RoomsJ).EnemyProjectileSize(); i++)
+        {
+           g2d.drawImage(Rooms.get(RoomsI).get(RoomsJ).getEnemyProjectile(i).getSprite(), 
+                   Rooms.get(RoomsI).get(RoomsJ).getEnemyProjectile(i).getX(), 
+                   Rooms.get(RoomsI).get(RoomsJ).getEnemyProjectile(i).getY(), this);
+        }
+        
+        g2d.drawImage(Player.getSprite(), Player.getX(), Player.getY(), this);
+        
+        gtemp.drawImage(bufImg, 0, 0, this);
+        gtemp.dispose();
     }
     
     public static void main(String[] args) {

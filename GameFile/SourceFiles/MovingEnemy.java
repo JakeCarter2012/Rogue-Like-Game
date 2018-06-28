@@ -26,7 +26,7 @@ abstract public class MovingEnemy extends MovingObject{
         return this.BumpDamage;
     }
     
-    public Image getSprtie()
+    public Image getSprite()
     {
         return this.Sprites[CurrentSprite];
     }

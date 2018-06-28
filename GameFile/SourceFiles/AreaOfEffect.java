@@ -6,6 +6,7 @@ public class AreaOfEffect extends GameObject{
     private Image[] Sprites;
     private int Damage;
     private int Timer;
+    private int CurrentImage;
     
     public AreaOfEffect(int x, int y, int time, int damage, Image[] imgs)
     {
@@ -13,6 +14,12 @@ public class AreaOfEffect extends GameObject{
         this.Sprites = imgs;
         this.Damage = damage;
         this.Timer = time;
+        this.CurrentImage = 0;
+    }
+    
+    public Image getSprite()
+    {
+        return this.Sprites[this.CurrentImage];
     }
     
     public int getDamage()
