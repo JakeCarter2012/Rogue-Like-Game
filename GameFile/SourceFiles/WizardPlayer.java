@@ -2,6 +2,7 @@ package SourceFiles;
 
 import java.awt.Image;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Observer;
 import java.util.Observable;
@@ -47,6 +48,7 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.AimAngle = 0;
         this.BaseSpeed = 8;
         
+        SpellBook.add(new ProjectileSpell(5, 12, 10, imgs[0],imgs[0]));
         
         this.RuneOne= false;
     }
@@ -99,12 +101,23 @@ public class WizardPlayer extends MovingObject implements Observer{
             return false;
     }
     
+    public void fire()
+    {
+        this.Fire = true;
+    }
+    
+    public void stopFire()
+    {
+        this.Fire = false;
+    }
+    
     public Projectile fireProjectile()
     {
         //adjust x and y's later based on position facing
         //also need to edit speeds
         if(this.SpellBook.get(CurrentSpellPage) instanceof ProjectileSpell)
         {
+            System.out.println("down");
             return(new Projectile(this.getCenterX(), this.getCenterY(), this.getLeftBound(), 
                     this.getRightBound(), this.getUpBound(), this.getDownBound(),
                     ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getSpeed(), 
@@ -206,45 +219,60 @@ public class WizardPlayer extends MovingObject implements Observer{
         {
             this.setSpeed(0);
         }
+        
+        for(int i = 0; i < this.SpellBook.size(); i++)
+        {
+            SpellBook.get(i).updateSpell();
+        }
     }
     
     @Override
     public void update(Observable obj, Object arg){
         GameEvents ge = (GameEvents) arg;
-        KeyEvent e = (KeyEvent) ge.event;
-        //Left
-        if(e.getKeyCode() == LeftKey){
-            if(e.getID() == KeyEvent.KEY_RELEASED){
-                Left = false;
-            } else if (e.getID() == KeyEvent.KEY_PRESSED){
-                Left = true;
+        if(ge.event instanceof KeyEvent){
+            KeyEvent e = (KeyEvent) ge.event;
+            //Left
+            if(e.getKeyCode() == LeftKey){
+                if(e.getID() == KeyEvent.KEY_RELEASED){
+                    Left = false;
+                } else if (e.getID() == KeyEvent.KEY_PRESSED){
+                    Left = true;
+                }
+            }
+
+            //Right
+            if(e.getKeyCode() == RightKey){
+                if(e.getID() == KeyEvent.KEY_RELEASED){
+                    Right = false;
+                }else if (e.getID() == KeyEvent.KEY_PRESSED){
+                    Right = true;
+                }
+            }
+
+            //Up
+            if(e.getKeyCode() == UpKey){
+                if(e.getID() == KeyEvent.KEY_RELEASED){
+                    Up = false;
+                }else if (e.getID() == KeyEvent.KEY_PRESSED){
+                    Up = true;
+                }
+            }
+
+            //Down
+            if(e.getKeyCode() == DownKey){
+                if(e.getID() == KeyEvent.KEY_RELEASED){
+                    Down = false;
+                }else if (e.getID() == KeyEvent.KEY_PRESSED){
+                    Down = true;
+                }
             }
         }
-
-        //Right
-        if(e.getKeyCode() == RightKey){
-            if(e.getID() == KeyEvent.KEY_RELEASED){
-                Right = false;
-            }else if (e.getID() == KeyEvent.KEY_PRESSED){
-                Right = true;
-            }
-        }
-
-        //Up
-        if(e.getKeyCode() == UpKey){
-            if(e.getID() == KeyEvent.KEY_RELEASED){
-                Up = false;
-            }else if (e.getID() == KeyEvent.KEY_PRESSED){
-                Up = true;
-            }
-        }
-
-        //Down
-        if(e.getKeyCode() == DownKey){
-            if(e.getID() == KeyEvent.KEY_RELEASED){
-                Down = false;
-            }else if (e.getID() == KeyEvent.KEY_PRESSED){
-                Down = true;
+        else if(ge.event instanceof MouseEvent)
+        {
+            MouseEvent e = (MouseEvent) ge.event;
+            if(e.getButton() == 1)
+            {
+                if(e.getButton() == MouseEvent.BUTTON1);
             }
         }
     }

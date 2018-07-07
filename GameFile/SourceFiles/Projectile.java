@@ -24,4 +24,19 @@ public class Projectile extends MovingObject{
     {
         return this.Damage;
     }
+    
+    public boolean outOfBounds()
+    {
+        if(this.getX() < this.getLeftBound() || this.getX() + this.getWidth() > this.getRightBound() ||
+                this.getY() < this.getUpBound() || this.getY() + this.getHeight() > this.getDownBound())
+            return true;
+        else
+            return false;
+    }
+    
+    public void updateProjectile()
+    {
+        this.setX(this.getX() + (int)Math.round(this.getSpeed()*Math.cos(Math.toRadians(this.getAngle()))));
+        this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
+    }
 }

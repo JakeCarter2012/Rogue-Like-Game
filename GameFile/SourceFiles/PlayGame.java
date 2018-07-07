@@ -13,6 +13,8 @@ import javax.swing.JFrame;
 import java.awt.Dimension;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class PlayGame extends JPanel {
     //private ArrayList<ArrayList<Room>> Rooms;
@@ -27,7 +29,7 @@ public class PlayGame extends JPanel {
     private WizardPlayer Player;
     private int Money;
     private JFrame GameWindow;
-    private GameEvents PlayerEvent;
+    private GameEvents PlayerKeyEvent, PlayerMouseEvent;
     
     public void resourcesInit()
     {
@@ -46,7 +48,6 @@ public class PlayGame extends JPanel {
         GameWindow.setSize(ScreenWidth + 6, ScreenHeight + 35);
         GameWindow.setResizable(false);
         GameWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
         GameWindow.setVisible(true);
         GameWindow.getContentPane().setFocusable(true);
     }
@@ -58,14 +59,23 @@ public class PlayGame extends JPanel {
         tempchar[0] = this.tempchar;
         this.Player = new WizardPlayer(0, 0, 0, this.ScreenWidth, 0, this.ScreenHeight, tempchar);
         
-        PlayerEvent = new GameEvents();
-        PlayerEvent.addObserver(Player);
-        KeyControl playerKeys = new KeyControl(PlayerEvent);
+        PlayerKeyEvent = new GameEvents();
+        PlayerKeyEvent.addObserver(Player);
+        KeyControl playerKeys = new KeyControl(PlayerKeyEvent);
         
         GameWindow.getContentPane().requestFocusInWindow();
         GameWindow.getContentPane().addKeyListener(playerKeys);
+        GameWindow.addMouseListener(new MouseAdapter() { 
+          public void mousePressed(MouseEvent me) { 
+            Player.fire();
+          } 
+          public void mouseReleased(MouseEvent me) { 
+            Player.stopFire();
+          } 
+        }); 
+    }//;
         
-    }
+    //}
     
     public void levelInit()
     {
@@ -372,6 +382,7 @@ public class PlayGame extends JPanel {
         //also need to add elemental effects handling here?
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].PlayerProjectileSize(); i++)
         {
+            generalCol = false;
             for(int j = 0; j < Rooms[RoomsI][RoomsJ].EnemySize(); j++)
             {
                 if(col.normalCollision(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i), Rooms[RoomsI][RoomsJ].getEnemy(j)))
@@ -379,54 +390,91 @@ public class PlayGame extends JPanel {
                     Rooms[RoomsI][RoomsJ].getEnemy(j).takeDamage(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getDamage());
                     Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
                     i--;
+                    generalCol = true;
+                    break;
                 }
             }
-            for(int j = 0; j < Rooms[RoomsI][RoomsJ].WallSize(); j++)
+            if(!generalCol)
             {
-                if(col.normalCollision(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i), Rooms[RoomsI][RoomsJ].getWall(j)))
+                for(int j = 0; j < Rooms[RoomsI][RoomsJ].WallSize(); j++)
                 {
-                    Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
-                    i--;
+                    if(col.normalCollision(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i), Rooms[RoomsI][RoomsJ].getWall(j)))
+                    {
+                        Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
+                        i--;
+                        generalCol = true;
+                        break;
+                    }
                 }
             }
-            for(int j = 0; j < Rooms[RoomsI][RoomsJ].BarrelSize(); j++)
+            if(!generalCol)
             {
-                if(col.normalCollision(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i), Rooms[RoomsI][RoomsJ].getBarrel(j)))
+                for(int j = 0; j < Rooms[RoomsI][RoomsJ].BarrelSize(); j++)
                 {
-                    Rooms[RoomsI][RoomsJ].removeBarrel(j);
-                    j--;
-                    Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
-                    i--;
+                    if(col.normalCollision(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i), Rooms[RoomsI][RoomsJ].getBarrel(j)))
+                    {
+                        Rooms[RoomsI][RoomsJ].removeBarrel(j);
+                        j--;
+                        Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
+                        i--;
+                        generalCol = true;
+                        break;
+                    }
                 }
+            }
+            if(!generalCol)
+            {
+                Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).updateProjectile();
+                if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).outOfBounds())
+                    Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
             }
         }
         
         //enemy projectiles
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].EnemyProjectileSize(); i++)
         {
+            generalCol = false;
             if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i), Player))
             {
                 Player.takeDamage(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getDamage());
                 Rooms[RoomsI][RoomsJ].removeEnemyProjectile(i);
                 i--;
+                generalCol = true;
+                        break;
             }
-            for(int j = 0; j < Rooms[RoomsI][RoomsJ].WallSize(); j++)
+            if(!generalCol)
             {
-                if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i), Rooms[RoomsI][RoomsJ].getWall(j)))
+                for(int j = 0; j < Rooms[RoomsI][RoomsJ].WallSize(); j++)
                 {
-                    Rooms[RoomsI][RoomsJ].removeEnemyProjectile(i);
-                    i--;
+                    if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i), Rooms[RoomsI][RoomsJ].getWall(j)))
+                    {
+                        Rooms[RoomsI][RoomsJ].removeEnemyProjectile(i);
+                        i--;
+                        generalCol = true;
+                        break;
+                    }
                 }
             }
-            for(int j = 0; j < Rooms[RoomsI][RoomsJ].BarrelSize(); j++)
+            if(!generalCol)
             {
-                if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i), Rooms[RoomsI][RoomsJ].getBarrel(j)))
+                for(int j = 0; j < Rooms[RoomsI][RoomsJ].BarrelSize(); j++)
                 {
-                    Rooms[RoomsI][RoomsJ].removeBarrel(j);
-                    j--;
-                    Rooms[RoomsI][RoomsJ].removeEnemyProjectile(i);
-                    i--;
+                    if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i), Rooms[RoomsI][RoomsJ].getBarrel(j)))
+                    {
+                        Rooms[RoomsI][RoomsJ].removeBarrel(j);
+                        j--;
+                        Rooms[RoomsI][RoomsJ].removeEnemyProjectile(i);
+                        i--;
+                        generalCol = true;
+                        break;
+                    }
                 }
+            }
+            if(!generalCol)
+            {
+                Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).updateProjectile();
+                if(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).outOfBounds())
+                    Rooms[RoomsI][RoomsJ].removeEnemyProjectile(i);
             }
         }
         

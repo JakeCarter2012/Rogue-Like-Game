@@ -1,6 +1,7 @@
 package SourceFiles;
 
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.Observable;
 
 public class GameEvents extends Observable{
@@ -11,6 +12,7 @@ public class GameEvents extends Observable{
         setChanged();
         notifyObservers(this);
     }
+    
     public Object getEvent() {
         return this.event;
     }
