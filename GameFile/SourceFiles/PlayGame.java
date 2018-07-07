@@ -10,6 +10,9 @@ import java.awt.event.WindowAdapter;
 import java.io.File;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import java.awt.Dimension;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
 
 public class PlayGame extends JPanel {
     //private ArrayList<ArrayList<Room>> Rooms;
@@ -24,6 +27,7 @@ public class PlayGame extends JPanel {
     private WizardPlayer Player;
     private int Money;
     private JFrame GameWindow;
+    private GameEvents PlayerEvent;
     
     public void resourcesInit()
     {
@@ -36,16 +40,14 @@ public class PlayGame extends JPanel {
         
         //create the window we use
         GameWindow = new JFrame();
-        GameWindow.addWindowListener(new WindowAdapter() {
-        });
+        GameWindow.addWindowListener(new WindowAdapter(){});
         GameWindow.add(this);
-        GameWindow.pack();
-        GameWindow.setVisible(true);
         GameWindow.setTitle("Rogue Game");
-        GameWindow.setSize(ScreenWidth, ScreenHeight);
+        GameWindow.setSize(ScreenWidth + 6, ScreenHeight + 35);
         GameWindow.setResizable(false);
         GameWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        
+        GameWindow.setVisible(true);
         GameWindow.getContentPane().setFocusable(true);
     }
     
@@ -54,7 +56,14 @@ public class PlayGame extends JPanel {
         this.Money = 0;
         Image[] tempchar = new Image[1];
         tempchar[0] = this.tempchar;
-        this.Player = new WizardPlayer(0, 0, tempchar);
+        this.Player = new WizardPlayer(0, 0, 0, this.ScreenWidth, 0, this.ScreenHeight, tempchar);
+        
+        PlayerEvent = new GameEvents();
+        PlayerEvent.addObserver(Player);
+        KeyControl playerKeys = new KeyControl(PlayerEvent);
+        
+        GameWindow.getContentPane().requestFocusInWindow();
+        GameWindow.getContentPane().addKeyListener(playerKeys);
         
     }
     

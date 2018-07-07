@@ -11,6 +11,8 @@ public class WizardPlayer extends MovingObject implements Observer{
     private int CurrentSprite;
     private int BaseDamage, BonusDamage;
     private int MaxHealth, Currenthealth;
+    private int AimAngle;
+    private int BaseSpeed;
     private boolean Up, Down, Left, Right, Fire;
     private int UpKey, DownKey, LeftKey, RightKey, FireKey, SpellOneKey, 
             SpellTwoKey, SpellThreeKey, SpellFourKey;
@@ -19,9 +21,11 @@ public class WizardPlayer extends MovingObject implements Observer{
     private boolean RuneOne;
     private ArrayList<Spell> SpellBook;
     
-    public WizardPlayer(int x, int y, Image[] imgs)
+    public WizardPlayer(int x, int y, int leftbound, int rightbound, int upbound, 
+            int downbound, Image[] imgs)
     {
-        super(x, y, imgs[0].getWidth(null), imgs[0].getHeight(null), 0, 0);
+        super(x, y, leftbound,rightbound, upbound, downbound, imgs[0].getWidth(null), 
+                imgs[0].getHeight(null), 0, 0);
         this.Sprites = imgs;
         this.CurrentSprite = 0;
         this.MaxHealth = 100;
@@ -40,6 +44,8 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.Up = this.Down = this.Left = this.Right = this.Fire = false;
         this.SpellBook = new ArrayList<Spell>();
         this.CurrentSpellPage = 0;
+        this.AimAngle = 0;
+        this.BaseSpeed = 8;
         
         
         this.RuneOne= false;
@@ -99,10 +105,10 @@ public class WizardPlayer extends MovingObject implements Observer{
         //also need to edit speeds
         if(this.SpellBook.get(CurrentSpellPage) instanceof ProjectileSpell)
         {
-            return(new Projectile(this.getCenterX(), this.getCenterY(), 
+            return(new Projectile(this.getCenterX(), this.getCenterY(), this.getLeftBound(), 
+                    this.getRightBound(), this.getUpBound(), this.getDownBound(),
                     ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getSpeed(), 
-                    ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getSpeed(), 
-                    ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getDamage(), 
+                    this.AimAngle, ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getDamage(), 
                     ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getSprite()));
         }
         else
@@ -127,9 +133,79 @@ public class WizardPlayer extends MovingObject implements Observer{
     //need take damage timer;
     public void updatePlayer(boolean generalCollision, 
             boolean horizontalCollision, boolean verticalCollision)
-            //int mouseX, int mouseY,
+            //int mouseX, int mouseY,?
     {
+        //update player first, then change angles; just didnt collision detection
+        //for previous direction
+        if(!generalCollision)
+        {
+            this.setX(this.getX() + (int)Math.round(this.getSpeed()*Math.cos(Math.toRadians(this.getAngle()))));
+            this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
+        }
+        else if(!horizontalCollision)
+        {
+            this.setX(this.getX() + (int)Math.round(this.getSpeed()*Math.cos(Math.toRadians(this.getAngle()))));
+        }
+        else if(!verticalCollision)
+        {
+            this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
+        }
         
+        if(this.getX() < this.getLeftBound())
+            this.setX(this.getLeftBound());
+        if(this.getX() + this.getWidth() > this.getRightBound())
+            this.setX(this.getRightBound() - this.getWidth());
+        if(this.getY() < this.getUpBound())
+            this.setY(this.getUpBound());
+        if(this.getY() + this.getHeight() > this.getDownBound())
+            this.setY(this.getDownBound() - this.getHeight());
+        
+        if(Right && !Left)
+        {
+            this.setSpeed(BaseSpeed);
+            if(Up && !Down)
+            {
+                this.setAngle(315);
+            }
+            else if(!Up && Down)
+            {
+                this.setAngle(45);
+            }
+            else
+            {
+                this.setAngle(0);
+            }
+        }
+        else if(!Right && Left)
+        {
+            this.setSpeed(BaseSpeed);
+            if(Up && !Down)
+            {
+                this.setAngle(225);
+            }
+            else if(!Up && Down)
+            {
+                this.setAngle(135);
+            }
+            else
+            {
+                this.setAngle(180);
+            }
+        }
+        else if(Up && !Down)
+        {
+            this.setSpeed(BaseSpeed);
+            this.setAngle(270);
+        }
+        else if(!Up && Down)
+        {
+            this.setSpeed(BaseSpeed);
+            this.setAngle(90);
+        }
+        else
+        {
+            this.setSpeed(0);
+        }
     }
     
     @Override
