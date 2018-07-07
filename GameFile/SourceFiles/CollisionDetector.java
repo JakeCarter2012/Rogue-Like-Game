@@ -5,8 +5,8 @@ import java.awt.Rectangle;
 public class CollisionDetector {
     public boolean normalCollision(MovingObject mover, GameObject obj)
     {
-        Rectangle moverRec = new Rectangle(mover.getX() + mover.getHorizontalSpeed(), 
-                mover.getY() + mover.getVerticalSpeed(), mover.getWidth(), mover.getHeight());
+        Rectangle moverRec = new Rectangle(mover.getX() + (int)Math.round(mover.getSpeed()*Math.cos(Math.toRadians(mover.getAngle()))), 
+                mover.getY() + (int)Math.round(mover.getSpeed()*Math.sin(Math.toRadians(mover.getAngle()))), mover.getWidth(), mover.getHeight());
         Rectangle objRec = new Rectangle(obj.getX(), obj.getY(), obj.getWidth(), 
                 obj.getHeight());
         
@@ -19,7 +19,7 @@ public class CollisionDetector {
     public boolean verticalCollision(MovingObject mover, GameObject obj)
     {
         Rectangle moverRec = new Rectangle(mover.getX(), mover.getY() + 
-                mover.getVerticalSpeed(), mover.getWidth(), mover.getHeight());
+                (int)Math.round(mover.getSpeed()*Math.sin(Math.toRadians(mover.getAngle()))), mover.getWidth(), mover.getHeight());
         Rectangle objRec = new Rectangle(obj.getX(), obj.getY(), obj.getWidth(), 
                 obj.getHeight());
         
@@ -31,7 +31,7 @@ public class CollisionDetector {
     
     public boolean horizontalCollision(MovingObject mover, GameObject obj)
     {
-        Rectangle moverRec = new Rectangle(mover.getX() + mover.getHorizontalSpeed(), 
+        Rectangle moverRec = new Rectangle(mover.getX() + (int)Math.round(mover.getSpeed()*Math.cos(Math.toRadians(mover.getAngle()))), 
                 mover.getY(), mover.getWidth(), mover.getHeight());
         Rectangle objRec = new Rectangle(obj.getX(), obj.getY(), obj.getWidth(), 
                 obj.getHeight());

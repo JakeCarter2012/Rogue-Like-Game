@@ -6,9 +6,9 @@ public class Projectile extends MovingObject{
     private Image Sprite;
     private int Damage;
     
-    public Projectile(int x, int y, int horizontalSpeed, int verticalSpeed, int damage, Image img)
+    public Projectile(int x, int y, int Speed, int Angle, int damage, Image img)
     {
-        super(x, y, img.getWidth(null), img.getHeight(null), horizontalSpeed, verticalSpeed);
+        super(x, y, img.getWidth(null), img.getHeight(null), Speed, Angle);
         this.Sprite = img;
         this.Damage = damage;
     }

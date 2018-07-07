@@ -19,7 +19,7 @@ public class WizardPlayer extends MovingObject implements Observer{
     private boolean RuneOne;
     private ArrayList<Spell> SpellBook;
     
-    public WizardPlayer(int x, int y, int health, Image[] imgs)
+    public WizardPlayer(int x, int y, Image[] imgs)
     {
         super(x, y, imgs[0].getWidth(null), imgs[0].getHeight(null), 0, 0);
         this.Sprites = imgs;
@@ -134,7 +134,42 @@ public class WizardPlayer extends MovingObject implements Observer{
     
     @Override
     public void update(Observable obj, Object arg){
-        
-        
+        GameEvents ge = (GameEvents) arg;
+        KeyEvent e = (KeyEvent) ge.event;
+        //Left
+        if(e.getKeyCode() == LeftKey){
+            if(e.getID() == KeyEvent.KEY_RELEASED){
+                Left = false;
+            } else if (e.getID() == KeyEvent.KEY_PRESSED){
+                Left = true;
+            }
+        }
+
+        //Right
+        if(e.getKeyCode() == RightKey){
+            if(e.getID() == KeyEvent.KEY_RELEASED){
+                Right = false;
+            }else if (e.getID() == KeyEvent.KEY_PRESSED){
+                Right = true;
+            }
+        }
+
+        //Up
+        if(e.getKeyCode() == UpKey){
+            if(e.getID() == KeyEvent.KEY_RELEASED){
+                Up = false;
+            }else if (e.getID() == KeyEvent.KEY_PRESSED){
+                Up = true;
+            }
+        }
+
+        //Down
+        if(e.getKeyCode() == DownKey){
+            if(e.getID() == KeyEvent.KEY_RELEASED){
+                Down = false;
+            }else if (e.getID() == KeyEvent.KEY_PRESSED){
+                Down = true;
+            }
+        }
     }
 }
