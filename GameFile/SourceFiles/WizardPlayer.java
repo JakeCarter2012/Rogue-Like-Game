@@ -2,17 +2,17 @@ package SourceFiles;
 
 import java.awt.Image;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Observer;
 import java.util.Observable;
+import java.lang.Math;
 
 public class WizardPlayer extends MovingObject implements Observer{
     private Image[] Sprites;
     private int CurrentSprite;
     private int BaseDamage, BonusDamage;
     private int MaxHealth, Currenthealth;
-    private int AimAngle;
+    private double AimAngle;
     private int BaseSpeed;
     private boolean Up, Down, Left, Right, Fire;
     private int UpKey, DownKey, LeftKey, RightKey, FireKey, SpellOneKey, 
@@ -48,7 +48,7 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.AimAngle = 0;
         this.BaseSpeed = 8;
         
-        SpellBook.add(new ProjectileSpell(5, 12, 10, imgs[0],imgs[0]));
+        SpellBook.add(new ProjectileSpell(5, 12, 30, imgs[0],imgs[0]));
         
         this.RuneOne= false;
     }
@@ -117,7 +117,7 @@ public class WizardPlayer extends MovingObject implements Observer{
         //also need to edit speeds
         if(this.SpellBook.get(CurrentSpellPage) instanceof ProjectileSpell)
         {
-            System.out.println("down");
+            this.SpellBook.get(CurrentSpellPage).resetCoolDown();
             return(new Projectile(this.getCenterX(), this.getCenterY(), this.getLeftBound(), 
                     this.getRightBound(), this.getUpBound(), this.getDownBound(),
                     ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getSpeed(), 
@@ -144,7 +144,7 @@ public class WizardPlayer extends MovingObject implements Observer{
     }
             
     //need take damage timer;
-    public void updatePlayer(boolean generalCollision, 
+    public void updatePlayer(int mouseX, int mouseY, boolean generalCollision, 
             boolean horizontalCollision, boolean verticalCollision)
             //int mouseX, int mouseY,?
     {
@@ -224,56 +224,49 @@ public class WizardPlayer extends MovingObject implements Observer{
         {
             SpellBook.get(i).updateSpell();
         }
+        
+        this.AimAngle = 90 - Math.toDegrees(Math.atan2(mouseX - this.getCenterX(), mouseY - this.getCenterY()));
     }
     
     @Override
     public void update(Observable obj, Object arg){
         GameEvents ge = (GameEvents) arg;
-        if(ge.event instanceof KeyEvent){
-            KeyEvent e = (KeyEvent) ge.event;
-            //Left
-            if(e.getKeyCode() == LeftKey){
-                if(e.getID() == KeyEvent.KEY_RELEASED){
-                    Left = false;
-                } else if (e.getID() == KeyEvent.KEY_PRESSED){
-                    Left = true;
-                }
-            }
-
-            //Right
-            if(e.getKeyCode() == RightKey){
-                if(e.getID() == KeyEvent.KEY_RELEASED){
-                    Right = false;
-                }else if (e.getID() == KeyEvent.KEY_PRESSED){
-                    Right = true;
-                }
-            }
-
-            //Up
-            if(e.getKeyCode() == UpKey){
-                if(e.getID() == KeyEvent.KEY_RELEASED){
-                    Up = false;
-                }else if (e.getID() == KeyEvent.KEY_PRESSED){
-                    Up = true;
-                }
-            }
-
-            //Down
-            if(e.getKeyCode() == DownKey){
-                if(e.getID() == KeyEvent.KEY_RELEASED){
-                    Down = false;
-                }else if (e.getID() == KeyEvent.KEY_PRESSED){
-                    Down = true;
-                }
+        KeyEvent e = (KeyEvent) ge.event;
+        //Left
+        if(e.getKeyCode() == LeftKey){
+            if(e.getID() == KeyEvent.KEY_RELEASED){
+                Left = false;
+            } else if (e.getID() == KeyEvent.KEY_PRESSED){
+                Left = true;
             }
         }
-        else if(ge.event instanceof MouseEvent)
-        {
-            MouseEvent e = (MouseEvent) ge.event;
-            if(e.getButton() == 1)
-            {
-                if(e.getButton() == MouseEvent.BUTTON1);
+
+        //Right
+        if(e.getKeyCode() == RightKey){
+            if(e.getID() == KeyEvent.KEY_RELEASED){
+                Right = false;
+            }else if (e.getID() == KeyEvent.KEY_PRESSED){
+                Right = true;
             }
         }
+
+        //Up
+        if(e.getKeyCode() == UpKey){
+            if(e.getID() == KeyEvent.KEY_RELEASED){
+                Up = false;
+            }else if (e.getID() == KeyEvent.KEY_PRESSED){
+                Up = true;
+            }
+        }
+
+        //Down
+        if(e.getKeyCode() == DownKey){
+            if(e.getID() == KeyEvent.KEY_RELEASED){
+                Down = false;
+            }else if (e.getID() == KeyEvent.KEY_PRESSED){
+                Down = true;
+            }
+        }
+
     }
 }

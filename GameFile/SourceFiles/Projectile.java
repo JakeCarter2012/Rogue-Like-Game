@@ -7,7 +7,7 @@ public class Projectile extends MovingObject{
     private int Damage;
     
     public Projectile(int x, int y, int leftbound, int rightbound, int upbound, int downbound,
-            int Speed, int Angle, int damage, Image img)
+            int Speed, double Angle, int damage, Image img)
     {
         super(x, y, leftbound,rightbound, upbound, downbound, img.getWidth(null),
                 img.getHeight(null), Speed, Angle);

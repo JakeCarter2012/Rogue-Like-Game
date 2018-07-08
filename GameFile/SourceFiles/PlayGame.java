@@ -10,11 +10,10 @@ import java.awt.event.WindowAdapter;
 import java.io.File;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
-import java.awt.Dimension;
 import javax.swing.JPanel;
-import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.MouseInfo;
 
 public class PlayGame extends JPanel {
     //private ArrayList<ArrayList<Room>> Rooms;
@@ -66,23 +65,23 @@ public class PlayGame extends JPanel {
         GameWindow.getContentPane().requestFocusInWindow();
         GameWindow.getContentPane().addKeyListener(playerKeys);
         GameWindow.addMouseListener(new MouseAdapter() { 
-          public void mousePressed(MouseEvent me) { 
-            Player.fire();
-          } 
-          public void mouseReleased(MouseEvent me) { 
-            Player.stopFire();
-          } 
+            public void mousePressed(MouseEvent me) { 
+                if(me.getButton() == MouseEvent.BUTTON1)
+                  Player.fire();
+            } 
+            public void mouseReleased(MouseEvent me) { 
+                if(me.getButton() == MouseEvent.BUTTON1)
+                  Player.stopFire();
+            } 
         }); 
-    }//;
-        
-    //}
+    }
     
     public void levelInit()
     {
         Rooms = new Room[5][5];
         this.RoomsI = 0;
         this.RoomsJ = 0;
-        this.Rooms[0][0] = new Room(false, false, false);
+        this.Rooms[0][0] = new Room();
     }
     
     public void timerLoop()
@@ -190,7 +189,8 @@ public class PlayGame extends JPanel {
         }
         
         //now update the player's position
-        Player.updatePlayer(generalCol, horizontalCol, verticalCol);
+        Player.updatePlayer(MouseInfo.getPointerInfo().getLocation().x, 
+                MouseInfo.getPointerInfo().getLocation().y, generalCol, horizontalCol, verticalCol);
         
         //now test for remaining collisions based on where the player ends up standing
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].CoinSize(); i++)

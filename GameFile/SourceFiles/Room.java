@@ -28,7 +28,7 @@ public class Room {
     //need to make sure thaat the added room isnt boxed in, if it is next room wont be created
     //bossroom for healthbar, portal creation
     //doors as own object?
-    public Room(boolean shopRoom, boolean runeRoom, boolean bossRoom)
+    public Room()
     {
         this.PlayerAoes = new ArrayList<AreaOfEffect>();
         this.EnemyAoes = new ArrayList<AreaOfEffect>();
@@ -46,9 +46,24 @@ public class Room {
         
         this.NorthDoor = this.SouthDoor = this.LeftDoor = this.RightDoor = -1;
         
-        this.Shop = shopRoom;
-        this.RuneRoom = runeRoom;
-        this.BossRoom = bossRoom;
+        this.Shop = false;
+        this.RuneRoom = false;
+        this.BossRoom = false;
+    }
+    
+    public void setShopRoom()
+    {
+        this.Shop = true;
+    }
+    
+    public void setBossRoom()
+    {
+        this.BossRoom = true;
+    }
+    
+    public void setRuneRoom()
+    {
+        this.RuneRoom = true;
     }
     
     public void addNorthDoor(int i)

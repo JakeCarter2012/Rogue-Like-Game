@@ -3,11 +3,12 @@ package SourceFiles;
 abstract public class MovingObject extends GameObject{
     
     //private int VerticalSpeed, HorizontalSpeed;
-    private int Speed, Angle;
+    private int Speed;
+    private double Angle;
     private int LeftBound, RightBound, UpBound, DownBound;
     
     public MovingObject(int x, int y, int leftbound, int rightbound, int upbound, 
-            int downbound, int width, int height, int speed, int angle)
+            int downbound, int width, int height, int speed, double angle)
     {
         super(x, y, width, height);
         this.Speed = speed;
@@ -18,7 +19,7 @@ abstract public class MovingObject extends GameObject{
         this.UpBound = upbound;
     }
     
-    public int getAngle()
+    public double getAngle()
     {
         return this.Angle;
     }

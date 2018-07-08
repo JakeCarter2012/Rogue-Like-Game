@@ -12,6 +12,11 @@ public abstract class Spell {
         this.Icon = ico;
     }
     
+    public void resetCoolDown()
+    {
+        this.Timer = this.CoolDownTime;
+    }
+    
     public void updateSpell()
     {
         Timer -= 1;
