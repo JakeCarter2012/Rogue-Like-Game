@@ -189,8 +189,9 @@ public class PlayGame extends JPanel {
         }
         
         //now update the player's position
-        Player.updatePlayer(MouseInfo.getPointerInfo().getLocation().x, 
-                MouseInfo.getPointerInfo().getLocation().y, generalCol, horizontalCol, verticalCol);
+        Player.updatePlayer(MouseInfo.getPointerInfo().getLocation().x - (int)GameWindow.getLocation().getX(), 
+                MouseInfo.getPointerInfo().getLocation().y - (int)GameWindow.getLocation().getY(), 
+                generalCol, horizontalCol, verticalCol);
         
         //now test for remaining collisions based on where the player ends up standing
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].CoinSize(); i++)

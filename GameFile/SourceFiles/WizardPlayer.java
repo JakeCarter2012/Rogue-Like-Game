@@ -5,7 +5,6 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Observer;
 import java.util.Observable;
-import java.lang.Math;
 
 public class WizardPlayer extends MovingObject implements Observer{
     private Image[] Sprites;
@@ -13,6 +12,7 @@ public class WizardPlayer extends MovingObject implements Observer{
     private int BaseDamage, BonusDamage;
     private int MaxHealth, Currenthealth;
     private double AimAngle;
+    private int MouseX, MouseY;
     private int BaseSpeed;
     private boolean Up, Down, Left, Right, Fire;
     private int UpKey, DownKey, LeftKey, RightKey, FireKey, SpellOneKey, 
@@ -46,6 +46,8 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.SpellBook = new ArrayList<Spell>();
         this.CurrentSpellPage = 0;
         this.AimAngle = 0;
+        this.MouseX = 0;
+        this.MouseY = 0;
         this.BaseSpeed = 8;
         
         SpellBook.add(new ProjectileSpell(5, 12, 30, imgs[0],imgs[0]));
@@ -225,6 +227,8 @@ public class WizardPlayer extends MovingObject implements Observer{
             SpellBook.get(i).updateSpell();
         }
         
+        this.MouseX = mouseX;
+        this.MouseY = mouseY;
         this.AimAngle = 90 - Math.toDegrees(Math.atan2(mouseX - this.getCenterX(), mouseY - this.getCenterY()));
     }
     
