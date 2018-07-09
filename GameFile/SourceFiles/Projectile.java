@@ -14,8 +14,8 @@ public class Projectile extends MovingObject{
                 img.getHeight(null), Speed, Angle);
         this.Sprite = img;
         this.Damage = damage;
-        this.AccurateX = x;
-        this.AccurateY = y;
+        this.AccurateX = x - (0.5)*img.getWidth(null);
+        this.AccurateY = y - (0.5)*img.getHeight(null);
     }
     
     public Image getSprite()
@@ -41,9 +41,6 @@ public class Projectile extends MovingObject{
     {
         this.AccurateX = this.AccurateX + this.getSpeed()*Math.cos(Math.toRadians(this.getAngle()));
         this.AccurateY = this.AccurateY + this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()));
-        //this.setX(this.getX() + (int)Math.round(this.getSpeed()*Math.cos(Math.toRadians(this.getAngle()))));
-        //this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
-        System.out.println(AccurateY);
     }
     
     @Override

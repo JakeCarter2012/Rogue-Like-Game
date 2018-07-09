@@ -22,6 +22,7 @@ public class WizardPlayer extends MovingObject implements Observer{
     private boolean RuneOne;
     private ArrayList<Spell> SpellBook;
     
+    
     public WizardPlayer(int x, int y, int leftbound, int rightbound, int upbound, 
             int downbound, Image[] imgs)
     {
@@ -50,7 +51,7 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.MouseY = 0;
         this.BaseSpeed = 8;
         
-        SpellBook.add(new ProjectileSpell(5, 12, 30, imgs[0],imgs[0]));
+        SpellBook.add(new ProjectileSpell(5,10, 30, imgs[0],imgs[0]));
         
         this.RuneOne= false;
     }
@@ -120,7 +121,7 @@ public class WizardPlayer extends MovingObject implements Observer{
         if(this.SpellBook.get(CurrentSpellPage) instanceof ProjectileSpell)
         {
             this.SpellBook.get(CurrentSpellPage).resetCoolDown();
-            return(new Projectile(this.getCenterX(), this.getCenterY(), this.getLeftBound(), 
+            return(new Projectile(this.getCenterX(), this.getCenterY(), this.getLeftBound(),
                     this.getRightBound(), this.getUpBound(), this.getDownBound(),
                     ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getSpeed(), 
                     this.AimAngle, ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getDamage(), 

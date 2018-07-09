@@ -191,8 +191,8 @@ public class PlayGame extends JPanel {
         }
         
         //now update the player's position
-        Player.updatePlayer(MouseInfo.getPointerInfo().getLocation().x - (int)GameWindow.getLocation().getX(), 
-                MouseInfo.getPointerInfo().getLocation().y - (int)GameWindow.getLocation().getY(), 
+        Player.updatePlayer(MouseInfo.getPointerInfo().getLocation().x - (int)GameWindow.getLocation().getX() - 4, 
+                MouseInfo.getPointerInfo().getLocation().y - (int)GameWindow.getLocation().getY() - 32, 
                 generalCol, horizontalCol, verticalCol);
         
         //now test for remaining collisions based on where the player ends up standing

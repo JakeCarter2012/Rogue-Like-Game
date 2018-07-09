@@ -34,12 +34,12 @@ abstract public class GameObject{
     
     public int getCenterX()
     {
-        return this.x + this.width * 1/2;
+        return this.x + this.width/2;
     }
     
     public int getCenterY()
     {
-        return this.y + this.height * 1/2;
+        return this.y + this.height/2;
     }
     
     public int getWidth()
