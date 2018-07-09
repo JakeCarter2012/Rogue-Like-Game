@@ -76,12 +76,14 @@ public class PlayGame extends JPanel {
         }); 
     }
     
-    public void levelInit()
+    public void testLevelInit()
     {
         Rooms = new Room[5][5];
         this.RoomsI = 0;
         this.RoomsJ = 0;
         this.Rooms[0][0] = new Room();
+        
+        Rooms[RoomsI][RoomsJ].addWall(new StationaryObject(200, 200, this.tempchar));
     }
     
     public void timerLoop()
@@ -631,7 +633,7 @@ public class PlayGame extends JPanel {
         PlayGame game = new PlayGame();
         game.resourcesInit();
         game.newGameInit();
-        game.levelInit();
+        game.testLevelInit();
         //game.musicThreadLoop();
         //game.mainMenu();
         game.timerLoop();
