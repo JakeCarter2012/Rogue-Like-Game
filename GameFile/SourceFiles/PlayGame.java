@@ -28,13 +28,90 @@ public class PlayGame extends JPanel {
     private WizardPlayer Player;
     private int Money;
     private JFrame GameWindow;
-    private GameEvents PlayerKeyEvent, PlayerMouseEvent;
+    private GameEvents PlayerKeyEvent;
+    
+    private Image[] WizRightForwardAttack, WizRightForward, WizRightBackAttack,
+            WizRightAttack, WizRight, WizLeftForwardAttack, WizLeftForward,
+            WizLeftBackwardAttack, WizLeftAttack, WizLeft, WizForwardAttack, 
+            WizForward, WizBackAttack, WizBack;
     
     public void resourcesInit()
     {
+        
         try{
             this.ForestFloor = ImageIO.read(new File("Resources/ForestBackground.png"));
             this.tempchar = ImageIO.read(new File("Resources/char.png"));
+            
+            WizRightForwardAttack = new Image[3];
+            WizRightForwardAttack[0] = ImageIO.read(new File("Resources/WizRightForwardAttack1.png"));
+            WizRightForwardAttack[1] = ImageIO.read(new File("Resources/WizRightForwardAttack2.png"));
+            WizRightForwardAttack[2] = ImageIO.read(new File("Resources/WizRightForwardAttack3.png"));
+            
+            WizRightForward = new Image[3];
+            WizRightForward[0] = ImageIO.read(new File("Resources/WizRightForward1.png"));
+            WizRightForward[1] = ImageIO.read(new File("Resources/WizRightForward2.png"));
+            WizRightForward[2] = ImageIO.read(new File("Resources/WizRightForward3.png"));
+            
+            WizRightBackAttack = new Image[3];
+            WizRightBackAttack[0] = ImageIO.read(new File("Resources/WizRightBackAttack1.png"));
+            WizRightBackAttack[1] = ImageIO.read(new File("Resources/WizRightBackAttack2.png"));
+            WizRightBackAttack[2] = ImageIO.read(new File("Resources/WizRightBackAttack3.png"));
+            
+            WizRightAttack = new Image[3];
+            WizRightAttack[0] = ImageIO.read(new File("Resources/WizRightAttack1.png"));
+            WizRightAttack[1] = ImageIO.read(new File("Resources/WizRightAttack2.png"));
+            WizRightAttack[2] = ImageIO.read(new File("Resources/WizRightAttack3.png"));
+            
+            WizRight = new Image[3];
+            WizRight[0] = ImageIO.read(new File("Resources/WizRight1.png"));
+            WizRight[1] = ImageIO.read(new File("Resources/WizRight2.png"));
+            WizRight[2] = ImageIO.read(new File("Resources/WizRight3.png"));
+            
+            WizLeftForwardAttack = new Image[3];
+            WizLeftForwardAttack[0] = ImageIO.read(new File("Resources/WizLeftForwardAttack1.png"));
+            WizLeftForwardAttack[1] = ImageIO.read(new File("Resources/WizLeftForwardAttack2.png"));
+            WizLeftForwardAttack[2] = ImageIO.read(new File("Resources/WizLeftForwardAttack3.png"));
+            
+            WizLeftForward = new Image[3];
+            WizLeftForward[0] = ImageIO.read(new File("Resources/WizLeftForward1.png"));
+            WizLeftForward[1] = ImageIO.read(new File("Resources/WizLeftForward2.png"));
+            WizLeftForward[2] = ImageIO.read(new File("Resources/WizLeftForward3.png"));
+            
+            WizLeftBackwardAttack = new Image[3];
+            WizLeftBackwardAttack[0] = ImageIO.read(new File("Resources/WizLeftBackAttack1.png"));
+            WizLeftBackwardAttack[1] = ImageIO.read(new File("Resources/WizLeftBackAttack2.png"));
+            WizLeftBackwardAttack[2] = ImageIO.read(new File("Resources/WizLeftBackAttack3.png"));
+            
+            WizLeftAttack = new Image[3];
+            WizLeftAttack[0] = ImageIO.read(new File("Resources/WizLeftAttack1.png"));
+            WizLeftAttack[1] = ImageIO.read(new File("Resources/WizLeftAttack2.png"));
+            WizLeftAttack[2] = ImageIO.read(new File("Resources/WizLeftAttack3.png"));
+            
+            WizLeft = new Image[3];
+            WizLeft[0] = ImageIO.read(new File("Resources/WizLeft1.png"));
+            WizLeft[1] = ImageIO.read(new File("Resources/WizLeft2.png"));
+            WizLeft[2] = ImageIO.read(new File("Resources/WizLeft3.png"));
+            
+            WizForwardAttack = new Image[3];
+            WizForwardAttack[0] = ImageIO.read(new File("Resources/WizForwardAttack1.png"));
+            WizForwardAttack[1] = ImageIO.read(new File("Resources/WizForwardAttack2.png"));
+            WizForwardAttack[2] = ImageIO.read(new File("Resources/WizForwardAttack3.png"));
+            
+            WizForward = new Image[3];
+            WizForward[0] = ImageIO.read(new File("Resources/WizForward1.png"));
+            WizForward[1] = ImageIO.read(new File("Resources/WizForward2.png"));
+            WizForward[2] = ImageIO.read(new File("Resources/WizForward3.png"));
+            
+            WizBackAttack = new Image[3];
+            WizBackAttack[0] = ImageIO.read(new File("Resources/WizBackAttack1.png"));
+            WizBackAttack[1] = ImageIO.read(new File("Resources/WizBackAttack2.png"));
+            WizBackAttack[2] = ImageIO.read(new File("Resources/WizBackAttack3.png"));
+            
+            WizBack = new Image[3];           
+            WizBack[0] = ImageIO.read(new File("Resources/WizBack1.png"));
+            WizBack[1] = ImageIO.read(new File("Resources/WizBack2.png"));
+            WizBack[2] = ImageIO.read(new File("Resources/WizBack3.png"));
+            
         } catch (Exception e) {
             System.out.print(e.getStackTrace() + " Error loading resources");
         }
@@ -54,9 +131,14 @@ public class PlayGame extends JPanel {
     public void newGameInit()
     {
         this.Money = 0;
-        Image[] tempchar = new Image[1];
-        tempchar[0] = this.tempchar;
-        this.Player = new WizardPlayer(0, 0, 0, this.ScreenWidth, 0, this.ScreenHeight, tempchar);
+        this.Player = new WizardPlayer(0, 0, 0, this.ScreenWidth, 0, this.ScreenHeight, 
+                WizRightForwardAttack, WizRightForward, WizRightBackAttack,
+                WizRightAttack, WizRight, WizLeftForwardAttack, WizLeftForward,
+                WizLeftBackwardAttack, WizLeftAttack, WizLeft, WizForwardAttack, 
+                WizForward, WizBackAttack, WizBack);
+        
+        this.Player.addNewSpell(new ProjectileSpell(5,10, 30, tempchar,tempchar));
+        
         
         PlayerKeyEvent = new GameEvents();
         PlayerKeyEvent.addObserver(Player);
