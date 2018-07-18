@@ -684,18 +684,20 @@ public class PlayGame extends JPanel {
                    Rooms[RoomsI][RoomsJ].getRune(i).getY(), this);
         }
         
-        for(int i = 0; i < Rooms[RoomsI][RoomsJ].PlayerProjectileSize(); i++)
-        {
-           g2d.drawImage(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getSprite(), 
-                   Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getX(), 
-                   Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getY(), this);
-        }
-        
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].EnemySize(); i++)
         {
            g2d.drawImage(Rooms[RoomsI][RoomsJ].getEnemy(i).getSprite(), 
                    Rooms[RoomsI][RoomsJ].getEnemy(i).getX(), 
                    Rooms[RoomsI][RoomsJ].getEnemy(i).getY(), this);
+        }
+        
+        g2d.drawImage(Player.getSprite(), Player.getX(), Player.getY(), this);
+        
+        for(int i = 0; i < Rooms[RoomsI][RoomsJ].PlayerProjectileSize(); i++)
+        {
+           g2d.drawImage(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getSprite(), 
+                   Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getX(), 
+                   Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getY(), this);
         }
         
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].EnemyProjectileSize(); i++)
@@ -704,8 +706,6 @@ public class PlayGame extends JPanel {
                    Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getX(), 
                    Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getY(), this);
         }
-        
-        g2d.drawImage(Player.getSprite(), Player.getX(), Player.getY(), this);
         
         gtemp.drawImage(bufImg, 0, 0, this);
         gtemp.dispose();

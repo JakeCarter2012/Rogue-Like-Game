@@ -18,6 +18,7 @@ public class WizardPlayer extends MovingObject implements Observer{
     private int MaxHealth, Currenthealth;
     private double AimAngle;
     private int MouseX, MouseY;
+    private int FireX, FireY;
     private int BaseSpeed;
     private boolean Up, Down, Left, Right, Fire;
     private int UpKey, DownKey, LeftKey, RightKey, FireKey, SpellOneKey, 
@@ -76,6 +77,8 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.MouseY = 0;
         this.BaseSpeed = 8;
         this.LevitateCounter = 0;
+        this.FireX = 0;
+        this.FireY = 0;
         
         this.RuneOne= false;
     }
@@ -161,7 +164,7 @@ public class WizardPlayer extends MovingObject implements Observer{
         if(this.SpellBook.get(CurrentSpellPage) instanceof ProjectileSpell)
         {
             this.SpellBook.get(CurrentSpellPage).resetCoolDown();
-            return(new Projectile(this.getCenterX(), this.getCenterY(), this.getLeftBound(),
+            return(new Projectile(this.FireX, this.FireY, this.getLeftBound(),
                     this.getRightBound(), this.getUpBound(), this.getDownBound(),
                     ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getSpeed(), 
                     this.AimAngle, ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getDamage(), 
@@ -226,22 +229,32 @@ public class WizardPlayer extends MovingObject implements Observer{
                 if(this.AimAngle <= 135 && this.AimAngle >= 45 && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizForwardAttack;
+                    this.FireX = this.getX() + 30;
+                    this.FireY = this.getY() + 54;
                 }
                 else if(this.AimAngle <= 225 && this.AimAngle >= 135 && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizLeftBackwardAttack;
+                    this.FireX = this.getX();
+                    this.FireY = this.getY() + 54;
                 }
                 else if(((this.AimAngle <= 315 && this.AimAngle >= 225) || (this.AimAngle <= -45)) && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizBackAttack;
+                    this.FireX = this.getX() + 30;
+                    this.FireY = this.getY() + 30;
                 }
                 else if((this.AimAngle <= 45 || this.AimAngle >= 315) && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizRightForwardAttack;
+                    this.FireX = this.getX() + 62;
+                    this.FireY = this.getY() + 54;
                 }
                 else
                 {
                     this.CurrentSpriteSet = this.WizRightForward;
+                    this.FireX = this.getX() + 62;
+                    this.FireY = this.getY() + 54;
                 }
             }
             else if(!Up && Down)
@@ -251,22 +264,32 @@ public class WizardPlayer extends MovingObject implements Observer{
                 if(this.AimAngle <= 135 && this.AimAngle >= 45 && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizForwardAttack;
+                    this.FireX = this.getX() + 30;
+                    this.FireY = this.getY() + 54;
                 }
                 else if(this.AimAngle <= 225 && this.AimAngle >= 135 && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizLeftBackwardAttack;
+                    this.FireX = this.getX();
+                    this.FireY = this.getY() + 54;
                 }
                 else if(((this.AimAngle <= 315 && this.AimAngle >= 225) || (this.AimAngle <= -45)) && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizBackAttack;
+                    this.FireX = this.getX() + 30;
+                    this.FireY = this.getY() + 30;
                 }
                 else if((this.AimAngle <= 45 || this.AimAngle >= 315) && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizRightForwardAttack;
+                    this.FireX = this.getX() + 62;
+                    this.FireY = this.getY() + 54;
                 }
                 else
                 {
                     this.CurrentSpriteSet = this.WizRightForward;
+                    this.FireX = this.getX() + 62;
+                    this.FireY = this.getY() + 54;
                 }
             }
             else
@@ -276,22 +299,32 @@ public class WizardPlayer extends MovingObject implements Observer{
                 if(this.AimAngle <= 135 && this.AimAngle >= 45 && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizForwardAttack;
+                    this.FireX = this.getX() + 30;
+                    this.FireY = this.getY() + 54;
                 }
                 else if(this.AimAngle <= 225 && this.AimAngle >= 135 && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizLeftBackwardAttack;
+                    this.FireX = this.getX();
+                    this.FireY = this.getY() + 54;
                 }
                 else if(((this.AimAngle <= 315 && this.AimAngle >= 225) || (this.AimAngle <= -45)) && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizBackAttack;
+                    this.FireX = this.getX() + 30;
+                    this.FireY = this.getY() + 30;
                 }
                 else if((this.AimAngle <= 45 || this.AimAngle >= 315) && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizRightForwardAttack;
+                    this.FireX = this.getX() + 62;
+                    this.FireY = this.getY() + 54;
                 }
                 else
                 {
                     this.CurrentSpriteSet = this.WizRightForward;
+                    this.FireX = this.getX() + 62;
+                    this.FireY = this.getY() + 54;
                 }
             }
         }
@@ -304,22 +337,32 @@ public class WizardPlayer extends MovingObject implements Observer{
                 if(this.AimAngle <= 135 && this.AimAngle >= 45 && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizForwardAttack;
+                    this.FireX = this.getX() + 30;
+                    this.FireY = this.getY() + 54;
                 }
                 else if(this.AimAngle <= 225 && this.AimAngle >= 135 && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizLeftForwardAttack;
+                    this.FireX = this.getX();
+                    this.FireY = this.getY() + 54;
                 }
                 else if(((this.AimAngle <= 315 && this.AimAngle >= 225) || (this.AimAngle <= -45)) && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizBackAttack;
+                    this.FireX = this.getX() + 30;
+                    this.FireY = this.getY() + 30;
                 }
                 else if((this.AimAngle <= 45 || this.AimAngle >= 315) && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizRightBackAttack;
+                    this.FireX = this.getX() + 62;
+                    this.FireY = this.getY() + 54;
                 }
                 else
                 {
                     this.CurrentSpriteSet = this.WizLeftForward;
+                    this.FireX = this.getX();
+                    this.FireY = this.getY() + 54;
                 }
             }
             else if(!Up && Down)
@@ -329,22 +372,32 @@ public class WizardPlayer extends MovingObject implements Observer{
                 if(this.AimAngle <= 135 && this.AimAngle >= 45 && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizForwardAttack;
+                    this.FireX = this.getX() + 30;
+                    this.FireY = this.getY() + 54;
                 }
                 else if(this.AimAngle <= 225 && this.AimAngle >= 135 && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizLeftForwardAttack;
+                    this.FireX = this.getX();
+                    this.FireY = this.getY() + 54;
                 }
                 else if(((this.AimAngle <= 315 && this.AimAngle >= 225) || (this.AimAngle <= -45)) && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizBackAttack;
+                    this.FireX = this.getX() + 30;
+                    this.FireY = this.getY() + 30;
                 }
                 else if((this.AimAngle <= 45 || this.AimAngle >= 315) && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizRightBackAttack;
+                    this.FireX = this.getX() + 62;
+                    this.FireY = this.getY() + 54;
                 }
                 else
                 {
                     this.CurrentSpriteSet = this.WizLeftForward;
+                    this.FireX = this.getX();
+                    this.FireY = this.getY() + 54;
                 }
             }
             else
@@ -354,22 +407,32 @@ public class WizardPlayer extends MovingObject implements Observer{
                 if(this.AimAngle <= 135 && this.AimAngle >= 45 && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizForwardAttack;
+                    this.FireX = this.getX() + 30;
+                    this.FireY = this.getY() + 54;
                 }
                 else if(this.AimAngle <= 225 && this.AimAngle >= 135 && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizLeftForwardAttack;
+                    this.FireX = this.getX();
+                    this.FireY = this.getY() + 54;
                 }
                 else if(((this.AimAngle <= 315 && this.AimAngle >= 225) || (this.AimAngle <= -45)) && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizBackAttack;
+                    this.FireX = this.getX() + 30;
+                    this.FireY = this.getY() + 30;
                 }
                 else if((this.AimAngle <= 45 || this.AimAngle >= 315) && this.Fire)
                 {
                     this.CurrentSpriteSet = this.WizRightBackAttack;
+                    this.FireX = this.getX() + 62;
+                    this.FireY = this.getY() + 54;
                 }
                 else
                 {
                     this.CurrentSpriteSet = this.WizLeftForward;
+                    this.FireX = this.getX();
+                    this.FireY = this.getY() + 54;
                 }
             }
         }
@@ -381,22 +444,32 @@ public class WizardPlayer extends MovingObject implements Observer{
             if(this.AimAngle <= 135 && this.AimAngle >= 45 && this.Fire)
             {
                 this.CurrentSpriteSet = this.WizForwardAttack;
+                this.FireX = this.getX() + 30;
+                this.FireY = this.getY() + 54;
             }
             else if(this.AimAngle <= 225 && this.AimAngle >= 135 && this.Fire)
             {
                 this.CurrentSpriteSet = this.WizLeftAttack;
+                this.FireX = this.getX();
+                this.FireY = this.getY() + 54;
             }
             else if(((this.AimAngle <= 315 && this.AimAngle >= 225) || (this.AimAngle <= -45)) && this.Fire)
             {
                 this.CurrentSpriteSet = this.WizBackAttack;
+                this.FireX = this.getX() + 30;
+                this.FireY = this.getY() + 30;
             }
             else if((this.AimAngle <= 45 || this.AimAngle >= 315) && this.Fire)
             {
                 this.CurrentSpriteSet = this.WizRightAttack;
+                this.FireX = this.getX() + 62;
+                this.FireY = this.getY() + 54;
             }
             else
             {
                 this.CurrentSpriteSet = this.WizBack;
+                this.FireX = this.getX() + 30;
+                this.FireY = this.getY() + 30;
             }
         }
         else if(!Up && Down)
@@ -407,22 +480,32 @@ public class WizardPlayer extends MovingObject implements Observer{
             if(this.AimAngle <= 135 && this.AimAngle >= 45 && this.Fire)
             {
                 this.CurrentSpriteSet = this.WizForwardAttack;
+                this.FireX = this.getX() + 30;
+                this.FireY = this.getY() + 54;
             }
             else if(this.AimAngle <= 225 && this.AimAngle >= 135 && this.Fire)
             {
                 this.CurrentSpriteSet = this.WizLeftAttack;
+                this.FireX = this.getX();
+                this.FireY = this.getY() + 54;
             }
             else if(((this.AimAngle <= 315 && this.AimAngle >= 225) || (this.AimAngle <= -45)) && this.Fire)
             {
                 this.CurrentSpriteSet = this.WizBackAttack;
+                this.FireX = this.getX() + 30;
+                this.FireY = this.getY() + 30;
             }
             else if((this.AimAngle <= 45 || this.AimAngle >= 315) && this.Fire)
             {
                 this.CurrentSpriteSet = this.WizRightAttack;
+                this.FireX = this.getX() + 62;
+                this.FireY = this.getY() + 54;
             }
             else
             {
                 this.CurrentSpriteSet = this.WizForward;
+                this.FireX = this.getX() + 30;
+                this.FireY = this.getY() + 54;
             }
         }
         else
@@ -433,39 +516,55 @@ public class WizardPlayer extends MovingObject implements Observer{
             {
                 this.setAngle(90);
                 this.CurrentSpriteSet = this.WizForwardAttack;
+                this.FireX = this.getX() + 30;
+                this.FireY = this.getY() + 54;
             }
             else if(this.AimAngle <= 225 && this.AimAngle >= 135 && this.Fire)
             {
                 this.setAngle(180);
                 this.CurrentSpriteSet = this.WizLeftAttack;
+                this.FireX = this.getX();
+                this.FireY = this.getY() + 54;
             }
             else if(((this.AimAngle <= 315 && this.AimAngle >= 225) || (this.AimAngle <= -45)) && this.Fire)
             {
                 this.setAngle(270);
                 this.CurrentSpriteSet = this.WizBackAttack;
+                this.FireX = this.getX() + 30;
+                this.FireY = this.getY() + 30;
             }
             else if((this.AimAngle <= 45 || this.AimAngle >= 315) && this.Fire)
             {
                 this.setAngle(0);
                 this.CurrentSpriteSet = this.WizRightAttack;
+                this.FireX = this.getX() + 62;
+                this.FireY = this.getY() + 54;
             }
             else
             {
                 if(this.getAngle() <= 135 && this.getAngle() >= 45)
                 {
                     this.CurrentSpriteSet = this.WizForward;
+                    this.FireX = this.getX() + 30;
+                    this.FireY = this.getY() + 54;
                 }
                 else if(this.getAngle() <= 225 && this.getAngle() >= 135)
                 {
                     this.CurrentSpriteSet = this.WizLeft;
+                    this.FireX = this.getX();
+                    this.FireY = this.getY() + 54;
                 }
                 else if(this.getAngle() <= 315 && this.getAngle() >= 225)
                 {
                     this.CurrentSpriteSet = this.WizBack;
+                    this.FireX = this.getX() + 30;
+                    this.FireY = this.getY() + 30;
                 }
                 else if(this.getAngle() <= 45 || this.getAngle() >= 315)
                 {
                     this.CurrentSpriteSet = this.WizRight;
+                    this.FireX = this.getX() + 62;
+                    this.FireY = this.getY() + 54;
                 }
             }
         }
