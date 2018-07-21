@@ -12,6 +12,7 @@ public abstract class Spell {
         this.CoolDownTime = cooldown;
         this.Icon = ico;
         this.SpellName = spellName;
+        this.Timer = -61;
     }
     
     public Image getIcon()
@@ -26,10 +27,10 @@ public abstract class Spell {
     
     public int getCoolDown(int fps)
     {
-        if(this.Timer < fps)
+        if(this.CoolDownTime < fps)
             return 0;
         else
-            return this.Timer/fps;
+            return 1 + this.Timer/fps;
     }
     
     public void resetCoolDown()

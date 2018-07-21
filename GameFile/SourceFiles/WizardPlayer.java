@@ -27,6 +27,7 @@ public class WizardPlayer extends MovingObject implements Observer{
     //placeholder
     private boolean RuneOne;
     private ArrayList<Spell> SpellBook;
+    private int DamageTimer;
     
     
     public WizardPlayer(int x, int y, int leftbound, int rightbound, int upbound, 
@@ -57,8 +58,8 @@ public class WizardPlayer extends MovingObject implements Observer{
         
         this.CurrentSpriteSet = this.WizForward;
         this.CurrentSprite = this.WizForward[0];
-        this.MaxHealth = 100;
-        this.Currenthealth = 100;
+        this.MaxHealth = 500;
+        this.Currenthealth = 500;
         this.BaseDamage = 4;
         this.BonusDamage = 0;
         this.UpKey = KeyEvent.VK_W;
@@ -79,6 +80,7 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.LevitateCounter = 0;
         this.FireX = 0;
         this.FireY = 0;
+        this.DamageTimer = 0;
         
         this.RuneOne= false;
     }
@@ -106,7 +108,14 @@ public class WizardPlayer extends MovingObject implements Observer{
     
     public Image getSprite()
     {
-        return this.CurrentSprite;
+        if(this.DamageTimer >110 || (this.DamageTimer < 100 && this.DamageTimer > 90) 
+                || (this.DamageTimer < 80 && this.DamageTimer > 70) || (this.DamageTimer < 60 && this.DamageTimer > 50)
+                || (this.DamageTimer < 40 && this.DamageTimer > 30) || (this.DamageTimer < 20 && this.DamageTimer > 10))
+        {
+            return null;
+        }
+        else
+            return this.CurrentSprite;
     }
     
     public boolean isAlive()
@@ -119,7 +128,12 @@ public class WizardPlayer extends MovingObject implements Observer{
     
     public void takeDamage(int dmg)
     {
-        this.Currenthealth -= dmg;
+        if(this.DamageTimer <= 0)
+        {
+            this.Currenthealth -= dmg;
+            if(dmg >= 50)
+                this.DamageTimer = 120;
+        }
     }
     
     public void heal(int rest)
@@ -606,6 +620,9 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.MouseX = mouseX;
         this.MouseY = mouseY;
         this.AimAngle = 90 - Math.toDegrees(Math.atan2(mouseX - this.getCenterX(), mouseY - this.getCenterY()));
+        
+        this.DamageTimer--;
+        
         if(this.LevitateCounter < 60)
             this.LevitateCounter++;
         else

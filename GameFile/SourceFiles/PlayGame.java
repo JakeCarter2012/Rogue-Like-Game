@@ -142,7 +142,7 @@ public class PlayGame extends JPanel {
                 WizLeftBackwardAttack, WizLeftAttack, WizLeft, WizForwardAttack, 
                 WizForward, WizBackAttack, WizBack);
         
-        this.Player.addNewSpell(new ProjectileSpell("Test Spell", 5,10, 30000, tempchar,this.NullSpellIcon));
+        this.Player.addNewSpell(new ProjectileSpell("Test Spell", 5,10, 30, tempchar,this.NullSpellIcon));
         this.Player.addNewSpell(new ProjectileSpell("Test Spell", 5,10, 300, tempchar,this.NullSpellIcon));
         
         
@@ -169,9 +169,11 @@ public class PlayGame extends JPanel {
         Rooms = new Room[5][5];
         this.RoomsI = 0;
         this.RoomsJ = 0;
-        this.Rooms[0][0] = new Room();
+        this.Rooms[RoomsI][RoomsJ] = new Room();
         
         Rooms[RoomsI][RoomsJ].addWall(new StationaryObject(200, 200, this.tempchar));
+        
+        this.Rooms[RoomsI][RoomsJ].addEnemyAoe(new AreaOfEffect(400, 400, 60000, 60, this.WizBack));
     }
     
     public void timerLoop()
@@ -732,7 +734,8 @@ public class PlayGame extends JPanel {
                    Rooms[RoomsI][RoomsJ].getEnemy(i).getY(), this);
         }
         
-        g2d.drawImage(Player.getSprite(), Player.getX(), Player.getY(), this);
+        if(Player.getSprite() != null);
+            g2d.drawImage(Player.getSprite(), Player.getX(), Player.getY(), this);
         
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].PlayerProjectileSize(); i++)
         {
