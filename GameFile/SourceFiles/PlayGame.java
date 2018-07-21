@@ -1,8 +1,11 @@
 package SourceFiles;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.util.ArrayList;
 import javax.swing.JPanel;
 import java.awt.Image;
@@ -21,7 +24,7 @@ public class PlayGame extends JPanel {
     private int RoomsI, RoomsJ;
     private BufferedImage bufImg;
     private Graphics2D g2d;
-    private Image ForestFloor, tempchar;
+    private Image ForestFloor, tempchar, NullSpellIcon, CurrentSpellIcon;
     private final int ScreenWidth = 1280, ScreenHeight = 960;
     private final int FPS = 60;
     private boolean levelFinished;
@@ -41,6 +44,8 @@ public class PlayGame extends JPanel {
         try{
             this.ForestFloor = ImageIO.read(new File("Resources/ForestBackground.png"));
             this.tempchar = ImageIO.read(new File("Resources/char.png"));
+            this.NullSpellIcon = ImageIO.read(new File("Resources/NullIcon.png"));
+            this.CurrentSpellIcon = ImageIO.read(new File("Resources/CurrentSpellIcon.png"));
             
             WizRightForwardAttack = new Image[3];
             WizRightForwardAttack[0] = ImageIO.read(new File("Resources/WizRightForwardAttack1.png"));
@@ -113,7 +118,7 @@ public class PlayGame extends JPanel {
             WizBack[2] = ImageIO.read(new File("Resources/WizBack3.png"));
             
         } catch (Exception e) {
-            System.out.print(e.getStackTrace() + " Error loading resources");
+            System.out.print(e.getStackTrace() + " Error loading resources \n");
         }
         
         //create the window we use
@@ -137,7 +142,8 @@ public class PlayGame extends JPanel {
                 WizLeftBackwardAttack, WizLeftAttack, WizLeft, WizForwardAttack, 
                 WizForward, WizBackAttack, WizBack);
         
-        this.Player.addNewSpell(new ProjectileSpell(5,10, 30, tempchar,tempchar));
+        this.Player.addNewSpell(new ProjectileSpell("Test Spell", 5,10, 30000, tempchar,this.NullSpellIcon));
+        this.Player.addNewSpell(new ProjectileSpell("Test Spell", 5,10, 300, tempchar,this.NullSpellIcon));
         
         
         PlayerKeyEvent = new GameEvents();
@@ -461,6 +467,41 @@ public class PlayGame extends JPanel {
             {
                 Rooms[RoomsI][RoomsJ].addEnemyAoe(Rooms[RoomsI][RoomsJ].getEnemy(i).fireAoe());
             }
+            
+            if(Rooms[RoomsI][RoomsJ].getEnemy(i).isSummonReady())
+            {
+                MovingEnemy newSummon = Rooms[RoomsI][RoomsJ].getEnemy(i).getSummon();
+                boolean freeSpace = true;
+                
+                freeSpace = col.standingCollision(Player, newSummon);
+                
+                for(int j = 0; j < Rooms[RoomsI][RoomsJ].BarrelSize(); j++)
+                {
+                    if(!freeSpace)
+                        break;
+                    freeSpace = col.standingCollision(Rooms[RoomsI][RoomsJ].getBarrel(j), newSummon);
+                }
+                
+                for(int j = 0; j < Rooms[RoomsI][RoomsJ].EnemySize(); j++)
+                {
+                    if(!freeSpace)
+                        break;
+                    freeSpace = col.standingCollision(Rooms[RoomsI][RoomsJ].getEnemy(j), newSummon);
+                }
+                
+                for(int j = 0; j < Rooms[RoomsI][RoomsJ].WallSize(); j++)
+                {
+                    if(!freeSpace)
+                        break;
+                    freeSpace = col.standingCollision(Rooms[RoomsI][RoomsJ].getWall(j), newSummon);
+                }
+                
+                //Not i++; don't want new enemies to be updated the frame they are spawned
+                //(may screw up summons on next frame)
+                if(freeSpace){
+                    Rooms[RoomsI][RoomsJ].addEnemy(newSummon);
+                }
+            }
         }
         
         //now test for collisions for player projectiles
@@ -707,7 +748,75 @@ public class PlayGame extends JPanel {
                    Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getY(), this);
         }
         
+        //draw overlay now
+        
+        for(int i = 0; i < 4; i ++)
+        {
+            if(Player.getSpell(i) == null)
+            {
+                g2d.drawImage(this.NullSpellIcon, 54 + 100 * i, 850, this);
+            }
+            else
+            {
+                g2d.drawImage(Player.getSpell(i).getIcon(), 54 + 100 * i, 850, this);
+                if(i == Player.getCurrentSpellNumber())
+                {
+                    g2d.drawImage(this.CurrentSpellIcon, 52 + 100 * i, 848, this);
+                }
+            }
+        }
+        
         gtemp.drawImage(bufImg, 0, 0, this);
+        
+        
+        //Text for items
+        gtemp.setColor(Color.WHITE);
+        Font spellNameFont = (new Font("Arial Black", Font.PLAIN, 16));
+        Font spellCoolDownFont = (new Font("Arial Black", Font.PLAIN, 32));
+        FontMetrics metrics = gtemp.getFontMetrics(spellNameFont);
+        
+        for(int i = 0; i < 4; i ++)
+        {
+            if(Player.getSpell(i) != null)
+            {
+                gtemp.setFont(spellNameFont);
+                metrics = gtemp.getFontMetrics(spellNameFont);
+                gtemp.drawString(Player.getSpell(i).getSpellName(), 
+                        86 + 100 * i - (metrics.stringWidth(Player.getSpell(i).getSpellName()))/2, 840);
+                if(Player.getSpell(i).getCoolDown(FPS) > 0)
+                {
+                    gtemp.setFont(spellCoolDownFont);
+                    metrics = gtemp.getFontMetrics(spellCoolDownFont);
+                    gtemp.drawString(Integer.toString(Player.getSpell(i).getCoolDown(FPS)), 
+                            86 + 100 * i - metrics.stringWidth(Integer.toString(Player.getSpell(i).getCoolDown(FPS)))/2, 893);
+                }
+            }
+            gtemp.setFont(spellNameFont);
+            metrics = gtemp.getFontMetrics(spellNameFont);
+            gtemp.drawString(Integer.toString(i+1), 
+                    86 + 100 * i - (metrics.stringWidth(Integer.toString(i+1)))/2, 940);
+        }
+        
+        Font itemNameFont = (new Font("Arial Black", Font.PLAIN, 14));
+        gtemp.setFont(itemNameFont);
+        metrics = gtemp.getFontMetrics(itemNameFont);
+        
+        for(int i = 0; i < this.Rooms[RoomsI][RoomsJ].RuneSize(); i++)
+        {
+            gtemp.drawString(this.Rooms[RoomsI][RoomsJ].getRune(i).getRuneName(), 
+                        this.Rooms[RoomsI][RoomsJ].getRune(i).getCenterX() - 
+                                metrics.stringWidth(this.Rooms[RoomsI][RoomsJ].getRune(i).getRuneName())/2, 
+                        this.Rooms[RoomsI][RoomsJ].getRune(i).getY() - 10);
+        }
+        
+        for(int i = 0; i < this.Rooms[RoomsI][RoomsJ].PageSize(); i++)
+        {
+            gtemp.drawString(this.Rooms[RoomsI][RoomsJ].getPage(i).getSpellName(), 
+                        this.Rooms[RoomsI][RoomsJ].getPage(i).getCenterX() - 
+                                metrics.stringWidth(this.Rooms[RoomsI][RoomsJ].getPage(i).getSpellName())/2, 
+                        this.Rooms[RoomsI][RoomsJ].getPage(i).getY() - 10);
+        }
+        
         gtemp.dispose();
     }
     

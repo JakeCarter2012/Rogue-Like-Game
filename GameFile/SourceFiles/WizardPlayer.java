@@ -38,7 +38,7 @@ public class WizardPlayer extends MovingObject implements Observer{
             Image[] WizBack)
     {
         super(x, y, leftbound,rightbound, upbound, downbound, WizForward[0].getWidth(null), 
-                WizForward[0].getHeight(null), 0, 0);
+                WizForward[0].getHeight(null), 0, 90);
         
         this.WizRightForwardAttack = WizRightForwardAttack;
         this.WizRightForward = WizRightForward;
@@ -72,7 +72,7 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.Up = this.Down = this.Left = this.Right = this.Fire = false;
         this.SpellBook = new ArrayList<Spell>();
         this.CurrentSpellPage = 0;
-        this.AimAngle = 0;
+        this.AimAngle = 90;
         this.MouseX = 0;
         this.MouseY = 0;
         this.BaseSpeed = 8;
@@ -97,6 +97,11 @@ public class WizardPlayer extends MovingObject implements Observer{
             this.SpellBook.remove(this.CurrentSpellPage + 1);
             return tempSpell;
         }
+    }
+    
+    public int getCurrentSpellNumber()
+    {
+        return this.CurrentSpellPage;
     }
     
     public Image getSprite()
@@ -187,6 +192,14 @@ public class WizardPlayer extends MovingObject implements Observer{
         }
         else
             return null;
+    }
+    
+    public Spell getSpell(int index)
+    {
+        if(index > this.SpellBook.size() - 1 || index < 0)
+            return null;
+        
+        return this.SpellBook.get(index);
     }
             
     //need take damage timer;
@@ -604,40 +617,88 @@ public class WizardPlayer extends MovingObject implements Observer{
         GameEvents ge = (GameEvents) arg;
         KeyEvent e = (KeyEvent) ge.event;
         //Left
-        if(e.getKeyCode() == LeftKey){
-            if(e.getID() == KeyEvent.KEY_RELEASED){
+        if(e.getKeyCode() == LeftKey)
+        {
+            if(e.getID() == KeyEvent.KEY_RELEASED)
+            {
                 Left = false;
-            } else if (e.getID() == KeyEvent.KEY_PRESSED){
+            } 
+            else if (e.getID() == KeyEvent.KEY_PRESSED)
+            {
                 Left = true;
             }
         }
 
         //Right
-        if(e.getKeyCode() == RightKey){
-            if(e.getID() == KeyEvent.KEY_RELEASED){
+        if(e.getKeyCode() == RightKey)
+        {
+            if(e.getID() == KeyEvent.KEY_RELEASED)
+            {
                 Right = false;
-            }else if (e.getID() == KeyEvent.KEY_PRESSED){
+            }
+            else if (e.getID() == KeyEvent.KEY_PRESSED)
+            {
                 Right = true;
             }
         }
 
         //Up
-        if(e.getKeyCode() == UpKey){
-            if(e.getID() == KeyEvent.KEY_RELEASED){
+        if(e.getKeyCode() == UpKey)
+        {
+            if(e.getID() == KeyEvent.KEY_RELEASED)
+            {
                 Up = false;
-            }else if (e.getID() == KeyEvent.KEY_PRESSED){
+            }
+            else if (e.getID() == KeyEvent.KEY_PRESSED)
+            {
                 Up = true;
             }
         }
 
         //Down
-        if(e.getKeyCode() == DownKey){
-            if(e.getID() == KeyEvent.KEY_RELEASED){
+        if(e.getKeyCode() == DownKey)
+        {
+            if(e.getID() == KeyEvent.KEY_RELEASED)
+            {
                 Down = false;
-            }else if (e.getID() == KeyEvent.KEY_PRESSED){
+            }
+            else if (e.getID() == KeyEvent.KEY_PRESSED)
+            {
                 Down = true;
             }
         }
-
+        
+        //SpellSwapping
+        if(e.getKeyCode() == SpellOneKey){
+            if (e.getID() == KeyEvent.KEY_PRESSED)
+            {
+                if(this.SpellBook.size() > 0)
+                    this.CurrentSpellPage = 0;
+            }
+        }
+        
+        if(e.getKeyCode() == SpellTwoKey){
+            if (e.getID() == KeyEvent.KEY_PRESSED)
+            {
+                if(this.SpellBook.size() > 1)
+                    this.CurrentSpellPage = 1;
+            }
+        }
+        
+        if(e.getKeyCode() == SpellThreeKey){
+            if (e.getID() == KeyEvent.KEY_PRESSED)
+            {
+                if(this.SpellBook.size() > 2)
+                    this.CurrentSpellPage = 2;
+            }
+        }
+        
+            if(e.getKeyCode() == SpellFourKey){
+            if (e.getID() == KeyEvent.KEY_PRESSED)
+            {
+                if(this.SpellBook.size() > 3)
+                    this.CurrentSpellPage = 3;
+            }
+        }
     }
 }

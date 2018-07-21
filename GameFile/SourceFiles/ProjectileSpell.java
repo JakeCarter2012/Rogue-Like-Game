@@ -7,9 +7,9 @@ public class ProjectileSpell extends Spell{
     private int Speed;
     private Image Sprite;
     
-    public ProjectileSpell(int dmg, int speed, int cooldown, Image img, Image ico)
+    public ProjectileSpell(String spellName, int dmg, int speed, int cooldown, Image img, Image ico)
     {
-        super(cooldown, ico);
+        super(spellName, cooldown, ico);
         this.Damage = dmg;
         this.Speed = speed;
         this.Sprite = img;

@@ -53,6 +53,10 @@ abstract public class MovingEnemy extends MovingObject{
     
     abstract public AreaOfEffect fireAoe();
     
+    abstract public boolean isSummonReady();
+    
+    abstract public MovingEnemy getSummon();
+    
     abstract public void updateMovingEnemy(int playerX, int playerY, boolean generalCollision,
             boolean horizontalCollision, boolean verticalCollision);
 }
