@@ -21,8 +21,8 @@ public class WizardPlayer extends MovingObject implements Observer{
     private int FireX, FireY;
     private int BaseSpeed;
     private boolean Up, Down, Left, Right, Fire;
-    private int UpKey, DownKey, LeftKey, RightKey, FireKey, SpellOneKey, 
-            SpellTwoKey, SpellThreeKey, SpellFourKey;
+    private int UpKey, DownKey, LeftKey, RightKey, UpKey2, DownKey2, LeftKey2, RightKey2,
+            FireKey, SpellOneKey, SpellTwoKey, SpellThreeKey, SpellFourKey;
     private int CurrentSpellPage;
     //placeholder
     private boolean RuneOne;
@@ -66,6 +66,10 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.DownKey = KeyEvent.VK_S;
         this.LeftKey = KeyEvent.VK_A;
         this.RightKey = KeyEvent.VK_D;
+        this.UpKey2 = KeyEvent.VK_UP;
+        this.DownKey2 = KeyEvent.VK_DOWN;
+        this.LeftKey2 = KeyEvent.VK_LEFT;
+        this.RightKey2 = KeyEvent.VK_RIGHT;
         this.SpellOneKey = KeyEvent.VK_1;
         this.SpellTwoKey = KeyEvent.VK_2;
         this.SpellThreeKey = KeyEvent.VK_3;
@@ -634,7 +638,7 @@ public class WizardPlayer extends MovingObject implements Observer{
         GameEvents ge = (GameEvents) arg;
         KeyEvent e = (KeyEvent) ge.event;
         //Left
-        if(e.getKeyCode() == LeftKey)
+        if(e.getKeyCode() == LeftKey || e.getKeyCode() == LeftKey2)
         {
             if(e.getID() == KeyEvent.KEY_RELEASED)
             {
@@ -647,7 +651,7 @@ public class WizardPlayer extends MovingObject implements Observer{
         }
 
         //Right
-        if(e.getKeyCode() == RightKey)
+        if(e.getKeyCode() == RightKey || e.getKeyCode() == RightKey2)
         {
             if(e.getID() == KeyEvent.KEY_RELEASED)
             {
@@ -660,7 +664,7 @@ public class WizardPlayer extends MovingObject implements Observer{
         }
 
         //Up
-        if(e.getKeyCode() == UpKey)
+        if(e.getKeyCode() == UpKey || e.getKeyCode() == UpKey2)
         {
             if(e.getID() == KeyEvent.KEY_RELEASED)
             {
@@ -673,7 +677,7 @@ public class WizardPlayer extends MovingObject implements Observer{
         }
 
         //Down
-        if(e.getKeyCode() == DownKey)
+        if(e.getKeyCode() == DownKey || e.getKeyCode() == DownKey2)
         {
             if(e.getID() == KeyEvent.KEY_RELEASED)
             {

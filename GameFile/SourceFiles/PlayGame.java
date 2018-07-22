@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.MouseInfo;
+import java.awt.geom.AffineTransform;
 
 public class PlayGame extends JPanel {
     //private ArrayList<ArrayList<Room>> Rooms;
@@ -24,7 +25,8 @@ public class PlayGame extends JPanel {
     private int RoomsI, RoomsJ;
     private BufferedImage bufImg;
     private Graphics2D g2d;
-    private Image ForestFloor, tempchar, NullSpellIcon, CurrentSpellIcon;
+    private Image ForestFloor, tempchar, NullSpellIcon, CurrentSpellIcon, 
+            IceShardsImg, IceShardsIcon;
     private final int ScreenWidth = 1280, ScreenHeight = 960;
     private final int FPS = 60;
     private boolean levelFinished;
@@ -32,6 +34,7 @@ public class PlayGame extends JPanel {
     private int Money;
     private JFrame GameWindow;
     private GameEvents PlayerKeyEvent;
+    private Spell FireBall, IceShards, WildFire, Meteor, DragonBreath, Blizzard;
     
     private Image[] WizRightForwardAttack, WizRightForward, WizRightBackAttack,
             WizRightAttack, WizRight, WizLeftForwardAttack, WizLeftForward,
@@ -46,6 +49,10 @@ public class PlayGame extends JPanel {
             this.tempchar = ImageIO.read(new File("Resources/char.png"));
             this.NullSpellIcon = ImageIO.read(new File("Resources/NullIcon.png"));
             this.CurrentSpellIcon = ImageIO.read(new File("Resources/CurrentSpellIcon.png"));
+            
+            
+            this.IceShardsImg = ImageIO.read(new File("Resources/IceShardsImg.png"));
+            this.IceShardsIcon = ImageIO.read(new File("Resources/IceShardsIcon.png"));
             
             WizRightForwardAttack = new Image[3];
             WizRightForwardAttack[0] = ImageIO.read(new File("Resources/WizRightForwardAttack1.png"));
@@ -121,6 +128,8 @@ public class PlayGame extends JPanel {
             System.out.print(e.getStackTrace() + " Error loading resources \n");
         }
         
+        IceShards = new ProjectileSpell("Ice Shards", 5,10, 30, IceShardsImg, IceShardsIcon);
+        
         //create the window we use
         GameWindow = new JFrame();
         GameWindow.addWindowListener(new WindowAdapter(){});
@@ -142,7 +151,8 @@ public class PlayGame extends JPanel {
                 WizLeftBackwardAttack, WizLeftAttack, WizLeft, WizForwardAttack, 
                 WizForward, WizBackAttack, WizBack);
         
-        this.Player.addNewSpell(new ProjectileSpell("Test Spell", 5,10, 30, tempchar,this.NullSpellIcon));
+        
+        this.Player.addNewSpell(IceShards);
         this.Player.addNewSpell(new ProjectileSpell("Test Spell", 5,10, 300, tempchar,this.NullSpellIcon));
         
         
@@ -173,7 +183,7 @@ public class PlayGame extends JPanel {
         
         Rooms[RoomsI][RoomsJ].addWall(new StationaryObject(200, 200, this.tempchar));
         
-        this.Rooms[RoomsI][RoomsJ].addEnemyAoe(new AreaOfEffect(400, 400, 60000, 60, this.WizBack));
+        
     }
     
     public void timerLoop()
@@ -739,16 +749,18 @@ public class PlayGame extends JPanel {
         
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].PlayerProjectileSize(); i++)
         {
-           g2d.drawImage(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getSprite(), 
+            paintRotatedImg(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getSprite(), 
+                   Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getAngle(),
                    Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getX(), 
-                   Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getY(), this);
+                   Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getY());
         }
         
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].EnemyProjectileSize(); i++)
         {
-           g2d.drawImage(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getSprite(), 
+            paintRotatedImg(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getSprite(), 
+                   Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getAngle(),
                    Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getX(), 
-                   Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getY(), this);
+                   Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getY());
         }
         
         //draw overlay now
@@ -785,19 +797,19 @@ public class PlayGame extends JPanel {
                 gtemp.setFont(spellNameFont);
                 metrics = gtemp.getFontMetrics(spellNameFont);
                 gtemp.drawString(Player.getSpell(i).getSpellName(), 
-                        86 + 100 * i - (metrics.stringWidth(Player.getSpell(i).getSpellName()))/2, 840);
+                        88 + 100 * i - (metrics.stringWidth(Player.getSpell(i).getSpellName()))/2, 840);
                 if(Player.getSpell(i).getCoolDown(FPS) > 0)
                 {
                     gtemp.setFont(spellCoolDownFont);
                     metrics = gtemp.getFontMetrics(spellCoolDownFont);
                     gtemp.drawString(Integer.toString(Player.getSpell(i).getCoolDown(FPS)), 
-                            86 + 100 * i - metrics.stringWidth(Integer.toString(Player.getSpell(i).getCoolDown(FPS)))/2, 893);
+                            88 + 100 * i - metrics.stringWidth(Integer.toString(Player.getSpell(i).getCoolDown(FPS)))/2, 895);
                 }
             }
             gtemp.setFont(spellNameFont);
             metrics = gtemp.getFontMetrics(spellNameFont);
             gtemp.drawString(Integer.toString(i+1), 
-                    86 + 100 * i - (metrics.stringWidth(Integer.toString(i+1)))/2, 940);
+                    88 + 100 * i - (metrics.stringWidth(Integer.toString(i+1)))/2, 940);
         }
         
         Font itemNameFont = (new Font("Arial Black", Font.PLAIN, 14));
@@ -821,6 +833,30 @@ public class PlayGame extends JPanel {
         }
         
         gtemp.dispose();
+    }
+    
+    public BufferedImage bufferedImageConverter(Image img) {
+        BufferedImage bimg = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = bimg.createGraphics();
+        g.drawImage(img, 0, 0, null);
+        g.dispose();
+
+        return bimg;
+    }
+
+    public void paintRotatedImg(Image img, double angle, int x, int y) {
+        double rAngle = Math.toRadians(angle);
+        int h = (int) (img.getWidth(null) * Math.abs(Math.sin(rAngle)) + img.getHeight(null) * Math.abs(Math.cos(rAngle)));
+        int w = (int) (img.getHeight(null) * Math.abs(Math.sin(rAngle)) + img.getWidth(null) * Math.abs(Math.cos(rAngle)));
+
+        BufferedImage bimgTemp = bufferedImageConverter(img);
+
+        AffineTransform old = g2d.getTransform();
+
+        AffineTransform at = AffineTransform.getRotateInstance(rAngle, x + img.getWidth(this) / 2, y + img.getHeight(this) / 2);
+        g2d.setTransform(at);
+        g2d.drawImage(bimgTemp, x, y, null);
+        g2d.setTransform(old);
     }
     
     public static void main(String[] args) {
