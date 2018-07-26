@@ -4,15 +4,23 @@ import java.awt.Image;
 
 public abstract class Spell {
     private int CoolDownTime, Timer;
+    private boolean Fire, Ice, Void;
     private Image Icon;
     private String SpellName;
+    private int ElementChance;
     
-    public Spell(String spellName, int cooldown, Image ico)
+    public Spell(String spellName, int cooldown, boolean fire, boolean ice,
+            boolean Void, int elementChance, Image ico)
     {
         this.CoolDownTime = cooldown;
         this.Icon = ico;
         this.SpellName = spellName;
         this.Timer = -61;
+        
+        this.Fire = fire;
+        this.Ice = ice;
+        this.Void = Void;
+        this.ElementChance = elementChance;
     }
     
     public Image getIcon()
@@ -23,6 +31,26 @@ public abstract class Spell {
     public String getSpellName()
     {
         return this.SpellName;
+    }
+    
+    public boolean isFire()
+    {
+        return this.Fire;
+    }
+    
+    public boolean isIce()
+    {
+        return this.Ice;
+    }
+    
+    public boolean isVoid()
+    {
+        return this.Void;
+    }
+    
+    public int getElementChance()
+    {
+        return this.ElementChance;
     }
     
     public int getCoolDown(int fps)

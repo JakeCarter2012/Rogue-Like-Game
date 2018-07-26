@@ -6,8 +6,6 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.util.ArrayList;
-import javax.swing.JPanel;
 import java.awt.Image;
 import java.awt.event.WindowAdapter;
 import java.io.File;
@@ -26,7 +24,8 @@ public class PlayGame extends JPanel {
     private BufferedImage bufImg;
     private Graphics2D g2d;
     private Image ForestFloor, tempchar, NullSpellIcon, CurrentSpellIcon, 
-            IceShardsImg, IceShardsIcon;
+            IceShardsImg, IceShardsIcon, FireBallImg, FireBallIcon, VoidWaveImg,
+            VoidWaveIcon, TestSpellImg;
     private final int ScreenWidth = 1280, ScreenHeight = 960;
     private final int FPS = 60;
     private boolean levelFinished;
@@ -34,7 +33,7 @@ public class PlayGame extends JPanel {
     private int Money;
     private JFrame GameWindow;
     private GameEvents PlayerKeyEvent;
-    private Spell FireBall, IceShards, WildFire, Meteor, DragonBreath, Blizzard;
+        private Spell FireBall, IceShards, VoidWave, WildFire, Blizzard, BlackHole, Meteor, Comet, FrostFlame;//FrostFlame:: Blue Fire
     
     private Image[] WizRightForwardAttack, WizRightForward, WizRightBackAttack,
             WizRightAttack, WizRight, WizLeftForwardAttack, WizLeftForward,
@@ -50,9 +49,14 @@ public class PlayGame extends JPanel {
             this.NullSpellIcon = ImageIO.read(new File("Resources/NullIcon.png"));
             this.CurrentSpellIcon = ImageIO.read(new File("Resources/CurrentSpellIcon.png"));
             
+            this.TestSpellImg = ImageIO.read(new File("Resources/TestSpell.png"));
             
             this.IceShardsImg = ImageIO.read(new File("Resources/IceShardsImg.png"));
             this.IceShardsIcon = ImageIO.read(new File("Resources/IceShardsIcon.png"));
+            this.FireBallImg = ImageIO.read(new File("Resources/FireBallImg.png"));
+            this.FireBallIcon = ImageIO.read(new File("Resources/FireBallIcon.png"));
+            this.VoidWaveImg = ImageIO.read(new File("Resources/VoidWaveImg.png"));
+            this.VoidWaveIcon = ImageIO.read(new File("Resources/VoidWaveIcon.png"));
             
             WizRightForwardAttack = new Image[3];
             WizRightForwardAttack[0] = ImageIO.read(new File("Resources/WizRightForwardAttack1.png"));
@@ -128,7 +132,9 @@ public class PlayGame extends JPanel {
             System.out.print(e.getStackTrace() + " Error loading resources \n");
         }
         
-        IceShards = new ProjectileSpell("Ice Shards", 5,10, 30, IceShardsImg, IceShardsIcon);
+        IceShards = new ProjectileSpell("Ice Shards", 5,10, 30, false, true, false, 30, IceShardsImg, IceShardsIcon);
+        FireBall = new ProjectileSpell("Fire Ball", 5,10, 30, true, false, false, 30, FireBallImg, FireBallIcon);
+        VoidWave = new ProjectileSpell("Void Wave", 1,10, 59, false, false, true, 0, VoidWaveImg, VoidWaveIcon);
         
         //create the window we use
         GameWindow = new JFrame();
@@ -153,7 +159,9 @@ public class PlayGame extends JPanel {
         
         
         this.Player.addNewSpell(IceShards);
-        this.Player.addNewSpell(new ProjectileSpell("Test Spell", 5,10, 300, tempchar,this.NullSpellIcon));
+        this.Player.addNewSpell(FireBall);
+        this.Player.addNewSpell(VoidWave);
+        this.Player.addNewSpell(new ProjectileSpell("Test Spell", 5,10, 30, false, false, false, 0, TestSpellImg,this.NullSpellIcon));
         
         
         PlayerKeyEvent = new GameEvents();
@@ -457,6 +465,15 @@ public class PlayGame extends JPanel {
                         Rooms[RoomsI][RoomsJ].getPlayerAoe(j)))
                 {
                     Rooms[RoomsI][RoomsJ].getEnemy(i).takeDamage(Rooms[RoomsI][RoomsJ].getPlayerAoe(j).getDamage());
+                    if(Rooms[RoomsI][RoomsJ].getPlayerAoe(j).isFire() && Rooms[RoomsI][RoomsJ].getPlayerAoe(j).isIce())
+                        Rooms[RoomsI][RoomsJ].getEnemy(i).frostBurn(Rooms[RoomsI][RoomsJ].getPlayerAoe(j).getElementChance(),
+                                Player.getBurnDamage(), Player.getBurnTime(), Player.getFreezeTime());
+                    else if(Rooms[RoomsI][RoomsJ].getPlayerAoe(j).isFire())
+                        Rooms[RoomsI][RoomsJ].getEnemy(i).ignite(Rooms[RoomsI][RoomsJ].getPlayerAoe(j).getElementChance(),
+                                Player.getBurnDamage(), Player.getBurnTime());
+                    else if(Rooms[RoomsI][RoomsJ].getPlayerAoe(j).isIce())
+                        Rooms[RoomsI][RoomsJ].getEnemy(i).freeze(Rooms[RoomsI][RoomsJ].getPlayerAoe(j).getElementChance(),
+                                Player.getFreezeTime());
                 }
             }
             
@@ -526,10 +543,31 @@ public class PlayGame extends JPanel {
                 if(col.normalCollision(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i), Rooms[RoomsI][RoomsJ].getEnemy(j)))
                 {
                     Rooms[RoomsI][RoomsJ].getEnemy(j).takeDamage(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getDamage());
-                    Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
-                    i--;
-                    generalCol = true;
-                    break;
+                    if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).isFire() && 
+                            Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).isIce())
+                    {
+                        Rooms[RoomsI][RoomsJ].getEnemy(i).frostBurn(Rooms[RoomsI][RoomsJ].getPlayerProjectile(j).getElementChance(),
+                                Player.getBurnDamage(), Player.getBurnTime(), Player.getFreezeTime());
+                    }
+                    if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).isFire())
+                    {
+                        Rooms[RoomsI][RoomsJ].getEnemy(j).ignite(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getElementChance(),
+                                Player.getBurnDamage(), Player.getBurnTime());
+                    }
+                    
+                    if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).isIce())
+                    {
+                        Rooms[RoomsI][RoomsJ].getEnemy(j).freeze(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getElementChance(),
+                                Player.getFreezeTime());
+                    }
+                    
+                    if(!Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).isVoid())
+                    {
+                        Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
+                        i--;
+                        generalCol = true;
+                        break;
+                    }
                 }
             }
             if(!generalCol)
@@ -553,10 +591,13 @@ public class PlayGame extends JPanel {
                     {
                         Rooms[RoomsI][RoomsJ].removeBarrel(j);
                         j--;
-                        Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
-                        i--;
-                        generalCol = true;
-                        break;
+                        if(!Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).isVoid())
+                        {
+                            Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
+                            i--;
+                            generalCol = true;
+                            break;
+                        }
                     }
                 }
             }
@@ -744,15 +785,25 @@ public class PlayGame extends JPanel {
                    Rooms[RoomsI][RoomsJ].getEnemy(i).getY(), this);
         }
         
+        for(int i = 0; i < Rooms[RoomsI][RoomsJ].PlayerProjectileSize(); i++)
+        {
+            if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getY() < this.Player.getY() + 45)
+                paintRotatedImg(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getSprite(), 
+                       Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getAngle(),
+                       Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getX(), 
+                       Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getY());
+        }
+        
         if(Player.getSprite() != null);
             g2d.drawImage(Player.getSprite(), Player.getX(), Player.getY(), this);
         
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].PlayerProjectileSize(); i++)
         {
-            paintRotatedImg(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getSprite(), 
-                   Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getAngle(),
-                   Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getX(), 
-                   Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getY());
+            if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getY() >= this.Player.getY() + 4)
+                paintRotatedImg(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getSprite(), 
+                       Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getAngle(),
+                       Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getX(), 
+                       Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getY());
         }
         
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].EnemyProjectileSize(); i++)

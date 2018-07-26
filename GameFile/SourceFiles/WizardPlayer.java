@@ -16,6 +16,9 @@ public class WizardPlayer extends MovingObject implements Observer{
     private int LevitateCounter;
     private int BaseDamage, BonusDamage;
     private int MaxHealth, Currenthealth;
+    private int Vitality, Intellect, Flame, Frost, Void;
+    private int BurnTime, BurnDamage, FreezeTime, BonusBurnChance, BonusFreezeChance,
+            BonusFireDamage, BonusFrostDamage, BonusVoidDamage;
     private double AimAngle;
     private int MouseX, MouseY;
     private int FireX, FireY;
@@ -80,11 +83,25 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.AimAngle = 90;
         this.MouseX = 0;
         this.MouseY = 0;
-        this.BaseSpeed = 8;
+        this.BaseSpeed = 6;
         this.LevitateCounter = 0;
         this.FireX = 0;
         this.FireY = 0;
         this.DamageTimer = 0;
+        
+        this.Vitality = 0;  
+        this.Intellect = 0;  
+        this.Flame = 0;  
+        this.Frost = 0;  
+        this.Void = 0;
+        this.BurnTime = 120;  
+        this.BurnDamage = 5;  
+        this.FreezeTime = 120;  
+        this.BonusBurnChance = 0;  
+        this.BonusFreezeChance = 0;  
+        this.BonusFireDamage = 0;  
+        this.BonusFrostDamage = 0;  
+        this.BonusVoidDamage = 0;
         
         this.RuneOne= false;
     }
@@ -159,6 +176,21 @@ public class WizardPlayer extends MovingObject implements Observer{
             return false;
     }
     
+    public int getBurnTime()
+    {
+        return this.BurnTime;
+    }
+    
+    public int getFreezeTime()
+    {
+        return this.FreezeTime;
+    }
+    
+    public int getBurnDamage()
+    {
+        return this.BurnDamage + this.Flame;
+    }
+    
     public boolean isAoeReady()
     {
         if(Fire && this.SpellBook.get(CurrentSpellPage).offCooldown() && 
@@ -180,32 +212,56 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.Fire = false;
     }
     
-    public Projectile fireProjectile()
+    public PlayerProjectile fireProjectile()
     {
         //adjust x and y's later based on position facing
         //also need to edit speeds
         if(this.SpellBook.get(CurrentSpellPage) instanceof ProjectileSpell)
         {
+            int spellDamage = 0, eleChance = 0;
+            if(this.SpellBook.get(CurrentSpellPage).isFire())
+            {
+                spellDamage = spellDamage + this.BonusFireDamage + this.Flame;
+                eleChance = eleChance + this.BonusBurnChance;
+            }
+            if(this.SpellBook.get(CurrentSpellPage).isIce())
+            {
+                spellDamage = spellDamage + this.BonusFrostDamage + this.Frost;
+                eleChance = eleChance + this.BonusFreezeChance + this.Frost;
+            }
+            if(this.SpellBook.get(CurrentSpellPage).isVoid())
+            {
+                spellDamage = spellDamage + this.BonusVoidDamage + this.Void;
+            }
+            
             this.SpellBook.get(CurrentSpellPage).resetCoolDown();
-            return(new Projectile(this.FireX, this.FireY, this.getLeftBound(),
+            return(new PlayerProjectile(this.FireX, this.FireY, this.getLeftBound(),
                     this.getRightBound(), this.getUpBound(), this.getDownBound(),
-                    ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getSpeed(), 
-                    this.AimAngle, ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getDamage(), 
+                    ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getSpeed(), this.AimAngle, 
+                    ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getDamage() + spellDamage + this.Intellect, 
+                    this.SpellBook.get(CurrentSpellPage).isFire(),
+                    this.SpellBook.get(CurrentSpellPage).isIce(),
+                    this.SpellBook.get(CurrentSpellPage).isVoid(),
+                    ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getElementChance() + eleChance,
                     ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getSprite()));
         }
         else
             return null;
     }
     
-    public AreaOfEffect fireAoe()
+    public PlayerAoe fireAoe()
     {
         //adjust x and y's later based on position facing
         //also need to edit speeds
         if(this.SpellBook.get(CurrentSpellPage) instanceof AoeSpell)
         {
-            return(new AreaOfEffect(this.getCenterX(), this.getCenterY(), 
+            return(new PlayerAoe(this.MouseX, this.MouseY, 
                     ((AoeSpell)this.SpellBook.get(CurrentSpellPage)).getDuration(), 
-                    ((AoeSpell)this.SpellBook.get(CurrentSpellPage)).getDamage(), 
+                    ((AoeSpell)this.SpellBook.get(CurrentSpellPage)).getDamage(),
+                    ((AoeSpell)this.SpellBook.get(CurrentSpellPage)).isFire(),
+                    ((AoeSpell)this.SpellBook.get(CurrentSpellPage)).isIce(),
+                    ((AoeSpell)this.SpellBook.get(CurrentSpellPage)).isVoid(),
+                    ((AoeSpell)this.SpellBook.get(CurrentSpellPage)).getElementChance(),
                     ((AoeSpell)this.SpellBook.get(CurrentSpellPage)).getSprites()));
         }
         else
@@ -273,7 +329,7 @@ public class WizardPlayer extends MovingObject implements Observer{
                 {
                     this.CurrentSpriteSet = this.WizBackAttack;
                     this.FireX = this.getX() + 30;
-                    this.FireY = this.getY() + 30;
+                    this.FireY = this.getY() + 40;
                 }
                 else if((this.AimAngle <= 45 || this.AimAngle >= 315) && this.Fire)
                 {

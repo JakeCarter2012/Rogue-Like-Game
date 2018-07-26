@@ -3,14 +3,14 @@ package SourceFiles;
 import java.util.ArrayList;
 
 public class Room {
-    private ArrayList<AreaOfEffect> PlayerAoes;
+    private ArrayList<PlayerAoe> PlayerAoes;
     private ArrayList<AreaOfEffect> EnemyAoes;
     private ArrayList<Coin> Coins;
     private ArrayList<MovingEnemy> Enemies;
     private ArrayList<Page> Pages;
     private ArrayList<Rune> Runes;
     private ArrayList<Potion> Potions;
-    private ArrayList<Projectile> PlayerProjectiles;
+    private ArrayList<PlayerProjectile> PlayerProjectiles;
     private ArrayList<Projectile> EnemyProjectiles;
     private ArrayList<SpikeTrap> SpikeTraps;
     private ArrayList<StationaryObject> Walls;
@@ -30,14 +30,14 @@ public class Room {
     //doors as own object?
     public Room()
     {
-        this.PlayerAoes = new ArrayList<AreaOfEffect>();
+        this.PlayerAoes = new ArrayList<PlayerAoe>();
         this.EnemyAoes = new ArrayList<AreaOfEffect>();
         this.Coins = new ArrayList<Coin>();
         this.Enemies = new ArrayList<MovingEnemy>();
         this.Pages = new ArrayList<Page>();
         this.Runes = new ArrayList<Rune>();
         this.Potions = new ArrayList<Potion>();
-        this.PlayerProjectiles = new ArrayList<Projectile>();
+        this.PlayerProjectiles = new ArrayList<PlayerProjectile>();
         this.EnemyProjectiles = new ArrayList<Projectile>();
         this.SpikeTraps = new ArrayList<SpikeTrap>();
         this.Walls = new ArrayList<StationaryObject>();
@@ -121,7 +121,7 @@ public class Room {
         return this.isBossRoom();
     }
     
-    public void addPlayerAoe(AreaOfEffect aoe)
+    public void addPlayerAoe(PlayerAoe aoe)
     {
         this.PlayerAoes.add(aoe);
     }
@@ -156,7 +156,7 @@ public class Room {
         this.Potions.add(p);
     }
     
-    public void addPlayerProjectile(Projectile p)
+    public void addPlayerProjectile(PlayerProjectile p)
     {
         this.PlayerProjectiles.add(p);
     }
@@ -241,7 +241,7 @@ public class Room {
         this.Barrels.remove(i);
     }
     
-    public AreaOfEffect getPlayerAoe(int i)
+    public PlayerAoe getPlayerAoe(int i)
     {
         return this.PlayerAoes.get(i);
     }
@@ -276,7 +276,7 @@ public class Room {
         return this.Potions.get(i);
     }
     
-    public Projectile getPlayerProjectile(int i)
+    public PlayerProjectile getPlayerProjectile(int i)
     {
         return this.PlayerProjectiles.get(i);
     }
