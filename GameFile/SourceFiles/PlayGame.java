@@ -1,5 +1,16 @@
 package SourceFiles;
 
+import SourceFiles.Room.Room;
+import SourceFiles.GameObjects.MovingObjects.Player.Spell;
+import SourceFiles.GameObjects.MovingObjects.Player.ProjectileSpell;
+import SourceFiles.GameObjects.MovingObjects.Player.WizardPlayer;
+import SourceFiles.GameLogic.GameEvents;
+import SourceFiles.GameObjects.MovingObjects.Enemies.MovingEnemy;
+import SourceFiles.GameObjects.MovingObjects.Enemies.SpearGoblin;
+import SourceFiles.GameObjects.MovingObjects.Enemies.DartGoblin;
+import SourceFiles.GameObjects.StationaryObjects.StationaryObject;
+import SourceFiles.GameLogic.KeyControl;
+import SourceFiles.GameLogic.CollisionDetector;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -25,7 +36,7 @@ public class PlayGame extends JPanel {
     private Graphics2D g2d;
     private Image ForestFloor, tempchar, NullSpellIcon, CurrentSpellIcon, 
             IceShardsImg, IceShardsIcon, FireBallImg, FireBallIcon, VoidWaveImg,
-            VoidWaveIcon, TestSpellImg;
+            VoidWaveIcon, TestSpellImg, testenemy;
     private final int ScreenWidth = 1280, ScreenHeight = 960;
     private final int FPS = 60;
     private boolean levelFinished;
@@ -40,83 +51,87 @@ public class PlayGame extends JPanel {
             WizLeftBackwardAttack, WizLeftAttack, WizLeft, WizForwardAttack, 
             WizForward, WizBackAttack, WizBack;
     
+    private Image[] SpearGoblinRight, SpearGoblinLeft, DartGoblinLeft, DartGoblinRight,
+            DartGoblinLeftAttack, DartGoblinRightAttack;
+    
     public void resourcesInit()
     {
         
         try{
-            this.ForestFloor = ImageIO.read(new File("Resources/ForestBackground.png"));
-            this.tempchar = ImageIO.read(new File("Resources/char.png"));
-            this.NullSpellIcon = ImageIO.read(new File("Resources/NullIcon.png"));
-            this.CurrentSpellIcon = ImageIO.read(new File("Resources/CurrentSpellIcon.png"));
+            this.ForestFloor = ImageIO.read(new File("Resources" + File.separator + "ForestBackground.png"));
+            this.tempchar = ImageIO.read(new File("Resources" + File.separator + "char.png"));
+            this.NullSpellIcon = ImageIO.read(new File("Resources" + File.separator + "NullIcon.png"));
+            this.CurrentSpellIcon = ImageIO.read(new File("Resources" + File.separator + "CurrentSpellIcon.png"));
+            this.testenemy = ImageIO.read(new File("Resources" + File.separator + "testenemy.png"));
             
-            this.TestSpellImg = ImageIO.read(new File("Resources/TestSpell.png"));
+            this.TestSpellImg = ImageIO.read(new File("Resources" + File.separator + "TestSpell.png"));
             
-            this.IceShardsImg = ImageIO.read(new File("Resources/IceShardsImg.png"));
-            this.IceShardsIcon = ImageIO.read(new File("Resources/IceShardsIcon.png"));
-            this.FireBallImg = ImageIO.read(new File("Resources/FireBallImg.png"));
-            this.FireBallIcon = ImageIO.read(new File("Resources/FireBallIcon.png"));
-            this.VoidWaveImg = ImageIO.read(new File("Resources/VoidWaveImg.png"));
-            this.VoidWaveIcon = ImageIO.read(new File("Resources/VoidWaveIcon.png"));
+            this.IceShardsImg = ImageIO.read(new File("Resources" + File.separator + "IceShardsImg.png"));
+            this.IceShardsIcon = ImageIO.read(new File("Resources" + File.separator + "IceShardsIcon.png"));
+            this.FireBallImg = ImageIO.read(new File("Resources" + File.separator + "FireBallImg.png"));
+            this.FireBallIcon = ImageIO.read(new File("Resources" + File.separator + "FireBallIcon.png"));
+            this.VoidWaveImg = ImageIO.read(new File("Resources" + File.separator + "VoidWaveImg.png"));
+            this.VoidWaveIcon = ImageIO.read(new File("Resources" + File.separator + "VoidWaveIcon.png"));
             
             WizRightForwardAttack = new Image[3];
-            WizRightForwardAttack[0] = ImageIO.read(new File("Resources/WizRightForwardAttack1.png"));
-            WizRightForwardAttack[1] = ImageIO.read(new File("Resources/WizRightForwardAttack2.png"));
-            WizRightForwardAttack[2] = ImageIO.read(new File("Resources/WizRightForwardAttack3.png"));
+            WizRightForwardAttack[0] = ImageIO.read(new File("Resources" + File.separator + "WizRightForwardAttack1.png"));
+            WizRightForwardAttack[1] = ImageIO.read(new File("Resources" + File.separator + "WizRightForwardAttack2.png"));
+            WizRightForwardAttack[2] = ImageIO.read(new File("Resources" + File.separator + "WizRightForwardAttack3.png"));
             
             WizRightForward = new Image[3];
-            WizRightForward[0] = ImageIO.read(new File("Resources/WizRightForward1.png"));
-            WizRightForward[1] = ImageIO.read(new File("Resources/WizRightForward2.png"));
-            WizRightForward[2] = ImageIO.read(new File("Resources/WizRightForward3.png"));
+            WizRightForward[0] = ImageIO.read(new File("Resources" + File.separator + "WizRightForward1.png"));
+            WizRightForward[1] = ImageIO.read(new File("Resources" + File.separator + "WizRightForward2.png"));
+            WizRightForward[2] = ImageIO.read(new File("Resources" + File.separator + "WizRightForward3.png"));
             
             WizRightBackAttack = new Image[3];
-            WizRightBackAttack[0] = ImageIO.read(new File("Resources/WizRightBackAttack1.png"));
-            WizRightBackAttack[1] = ImageIO.read(new File("Resources/WizRightBackAttack2.png"));
-            WizRightBackAttack[2] = ImageIO.read(new File("Resources/WizRightBackAttack3.png"));
+            WizRightBackAttack[0] = ImageIO.read(new File("Resources" + File.separator + "WizRightBackAttack1.png"));
+            WizRightBackAttack[1] = ImageIO.read(new File("Resources" + File.separator + "WizRightBackAttack2.png"));
+            WizRightBackAttack[2] = ImageIO.read(new File("Resources" + File.separator + "WizRightBackAttack3.png"));
             
             WizRightAttack = new Image[3];
-            WizRightAttack[0] = ImageIO.read(new File("Resources/WizRightAttack1.png"));
-            WizRightAttack[1] = ImageIO.read(new File("Resources/WizRightAttack2.png"));
-            WizRightAttack[2] = ImageIO.read(new File("Resources/WizRightAttack3.png"));
+            WizRightAttack[0] = ImageIO.read(new File("Resources" + File.separator + "WizRightAttack1.png"));
+            WizRightAttack[1] = ImageIO.read(new File("Resources" + File.separator + "WizRightAttack2.png"));
+            WizRightAttack[2] = ImageIO.read(new File("Resources" + File.separator + "WizRightAttack3.png"));
             
             WizRight = new Image[3];
-            WizRight[0] = ImageIO.read(new File("Resources/WizRight1.png"));
-            WizRight[1] = ImageIO.read(new File("Resources/WizRight2.png"));
-            WizRight[2] = ImageIO.read(new File("Resources/WizRight3.png"));
+            WizRight[0] = ImageIO.read(new File("Resources" + File.separator + "WizRight1.png"));
+            WizRight[1] = ImageIO.read(new File("Resources" + File.separator + "WizRight2.png"));
+            WizRight[2] = ImageIO.read(new File("Resources" + File.separator + "WizRight3.png"));
             
             WizLeftForwardAttack = new Image[3];
-            WizLeftForwardAttack[0] = ImageIO.read(new File("Resources/WizLeftForwardAttack1.png"));
-            WizLeftForwardAttack[1] = ImageIO.read(new File("Resources/WizLeftForwardAttack2.png"));
-            WizLeftForwardAttack[2] = ImageIO.read(new File("Resources/WizLeftForwardAttack3.png"));
+            WizLeftForwardAttack[0] = ImageIO.read(new File("Resources" + File.separator + "WizLeftForwardAttack1.png"));
+            WizLeftForwardAttack[1] = ImageIO.read(new File("Resources" + File.separator + "WizLeftForwardAttack2.png"));
+            WizLeftForwardAttack[2] = ImageIO.read(new File("Resources" + File.separator + "WizLeftForwardAttack3.png"));
             
             WizLeftForward = new Image[3];
-            WizLeftForward[0] = ImageIO.read(new File("Resources/WizLeftForward1.png"));
-            WizLeftForward[1] = ImageIO.read(new File("Resources/WizLeftForward2.png"));
-            WizLeftForward[2] = ImageIO.read(new File("Resources/WizLeftForward3.png"));
+            WizLeftForward[0] = ImageIO.read(new File("Resources" + File.separator + "WizLeftForward1.png"));
+            WizLeftForward[1] = ImageIO.read(new File("Resources" + File.separator + "WizLeftForward2.png"));
+            WizLeftForward[2] = ImageIO.read(new File("Resources" + File.separator + "WizLeftForward3.png"));
             
             WizLeftBackwardAttack = new Image[3];
-            WizLeftBackwardAttack[0] = ImageIO.read(new File("Resources/WizLeftBackAttack1.png"));
-            WizLeftBackwardAttack[1] = ImageIO.read(new File("Resources/WizLeftBackAttack2.png"));
-            WizLeftBackwardAttack[2] = ImageIO.read(new File("Resources/WizLeftBackAttack3.png"));
+            WizLeftBackwardAttack[0] = ImageIO.read(new File("Resources" + File.separator + "WizLeftBackAttack1.png"));
+            WizLeftBackwardAttack[1] = ImageIO.read(new File("Resources" + File.separator + "WizLeftBackAttack2.png"));
+            WizLeftBackwardAttack[2] = ImageIO.read(new File("Resources" + File.separator + "WizLeftBackAttack3.png"));
             
             WizLeftAttack = new Image[3];
-            WizLeftAttack[0] = ImageIO.read(new File("Resources/WizLeftAttack1.png"));
-            WizLeftAttack[1] = ImageIO.read(new File("Resources/WizLeftAttack2.png"));
-            WizLeftAttack[2] = ImageIO.read(new File("Resources/WizLeftAttack3.png"));
+            WizLeftAttack[0] = ImageIO.read(new File("Resources" + File.separator + "WizLeftAttack1.png"));
+            WizLeftAttack[1] = ImageIO.read(new File("Resources" + File.separator + "WizLeftAttack2.png"));
+            WizLeftAttack[2] = ImageIO.read(new File("Resources" + File.separator + "WizLeftAttack3.png"));
             
             WizLeft = new Image[3];
-            WizLeft[0] = ImageIO.read(new File("Resources/WizLeft1.png"));
-            WizLeft[1] = ImageIO.read(new File("Resources/WizLeft2.png"));
-            WizLeft[2] = ImageIO.read(new File("Resources/WizLeft3.png"));
+            WizLeft[0] = ImageIO.read(new File("Resources" + File.separator + "WizLeft1.png"));
+            WizLeft[1] = ImageIO.read(new File("Resources" + File.separator + "WizLeft2.png"));
+            WizLeft[2] = ImageIO.read(new File("Resources" + File.separator + "WizLeft3.png"));
             
             WizForwardAttack = new Image[3];
-            WizForwardAttack[0] = ImageIO.read(new File("Resources/WizForwardAttack1.png"));
-            WizForwardAttack[1] = ImageIO.read(new File("Resources/WizForwardAttack2.png"));
-            WizForwardAttack[2] = ImageIO.read(new File("Resources/WizForwardAttack3.png"));
+            WizForwardAttack[0] = ImageIO.read(new File("Resources" + File.separator + "WizForwardAttack1.png"));
+            WizForwardAttack[1] = ImageIO.read(new File("Resources" + File.separator + "WizForwardAttack2.png"));
+            WizForwardAttack[2] = ImageIO.read(new File("Resources" + File.separator + "WizForwardAttack3.png"));
             
             WizForward = new Image[3];
-            WizForward[0] = ImageIO.read(new File("Resources/WizForward1.png"));
-            WizForward[1] = ImageIO.read(new File("Resources/WizForward2.png"));
-            WizForward[2] = ImageIO.read(new File("Resources/WizForward3.png"));
+            WizForward[0] = ImageIO.read(new File("Resources" + File.separator + "WizForward1.png"));
+            WizForward[1] = ImageIO.read(new File("Resources" + File.separator + "WizForward2.png"));
+            WizForward[2] = ImageIO.read(new File("Resources" + File.separator + "WizForward3.png"));
             
             WizBackAttack = new Image[3];
             WizBackAttack[0] = ImageIO.read(new File("Resources/WizBackAttack1.png"));
@@ -124,10 +139,49 @@ public class PlayGame extends JPanel {
             WizBackAttack[2] = ImageIO.read(new File("Resources/WizBackAttack3.png"));
             
             WizBack = new Image[3];           
-            WizBack[0] = ImageIO.read(new File("Resources/WizBack1.png"));
-            WizBack[1] = ImageIO.read(new File("Resources/WizBack2.png"));
-            WizBack[2] = ImageIO.read(new File("Resources/WizBack3.png"));
+            WizBack[0] = ImageIO.read(new File("Resources" + File.separator + "WizBack1.png"));
+            WizBack[1] = ImageIO.read(new File("Resources" + File.separator + "WizBack2.png"));
+            WizBack[2] = ImageIO.read(new File("Resources" + File.separator + "WizBack3.png"));
             
+            SpearGoblinRight = new Image[6];           
+            SpearGoblinRight[0] = ImageIO.read(new File("Resources" + File.separator + "SpearGoblinRight1.png"));
+            SpearGoblinRight[1] = ImageIO.read(new File("Resources" + File.separator + "SpearGoblinRight2.png"));
+            SpearGoblinRight[2] = ImageIO.read(new File("Resources" + File.separator + "SpearGoblinRight3.png"));
+            SpearGoblinRight[3] = ImageIO.read(new File("Resources" + File.separator + "SpearGoblinRight4.png"));
+            SpearGoblinRight[4] = ImageIO.read(new File("Resources" + File.separator + "SpearGoblinRight5.png"));
+            SpearGoblinRight[5] = ImageIO.read(new File("Resources" + File.separator + "SpearGoblinRight6.png"));
+            
+            SpearGoblinLeft = new Image[6];           
+            SpearGoblinLeft[0] = ImageIO.read(new File("Resources" + File.separator + "SpearGoblinLeft1.png"));
+            SpearGoblinLeft[1] = ImageIO.read(new File("Resources" + File.separator + "SpearGoblinLeft2.png"));
+            SpearGoblinLeft[2] = ImageIO.read(new File("Resources" + File.separator + "SpearGoblinLeft3.png"));
+            SpearGoblinLeft[3] = ImageIO.read(new File("Resources" + File.separator + "SpearGoblinLeft4.png"));
+            SpearGoblinLeft[4] = ImageIO.read(new File("Resources" + File.separator + "SpearGoblinLeft5.png"));
+            SpearGoblinLeft[5] = ImageIO.read(new File("Resources" + File.separator + "SpearGoblinLeft6.png"));
+            
+            DartGoblinLeft = new Image[6];           
+            DartGoblinLeft[0] = ImageIO.read(new File("Resources" + File.separator + "DartGoblinLeft1.png"));
+            DartGoblinLeft[1] = ImageIO.read(new File("Resources" + File.separator + "DartGoblinLeft2.png"));
+            DartGoblinLeft[2] = ImageIO.read(new File("Resources" + File.separator + "DartGoblinLeft3.png"));
+            DartGoblinLeft[3] = ImageIO.read(new File("Resources" + File.separator + "DartGoblinLeft4.png"));
+            DartGoblinLeft[4] = ImageIO.read(new File("Resources" + File.separator + "DartGoblinLeft5.png"));
+            DartGoblinLeft[5] = ImageIO.read(new File("Resources" + File.separator + "DartGoblinLeft6.png"));
+            
+            DartGoblinRight = new Image[6];           
+            DartGoblinRight[0] = ImageIO.read(new File("Resources" + File.separator + "DartGoblinRight1.png"));
+            DartGoblinRight[1] = ImageIO.read(new File("Resources" + File.separator + "DartGoblinRight2.png"));
+            DartGoblinRight[2] = ImageIO.read(new File("Resources" + File.separator + "DartGoblinRight3.png"));
+            DartGoblinRight[3] = ImageIO.read(new File("Resources" + File.separator + "DartGoblinRight4.png"));
+            DartGoblinRight[4] = ImageIO.read(new File("Resources" + File.separator + "DartGoblinRight5.png"));
+            DartGoblinRight[5] = ImageIO.read(new File("Resources" + File.separator + "DartGoblinRight6.png"));
+            
+            DartGoblinLeftAttack = new Image[2];           
+            DartGoblinLeftAttack[0] = ImageIO.read(new File("Resources" + File.separator + "DartGoblinLeftAttack1.png"));
+            DartGoblinLeftAttack[1] = ImageIO.read(new File("Resources" + File.separator + "DartGoblinLeftAttack2.png"));
+            
+            DartGoblinRightAttack = new Image[2];           
+            DartGoblinRightAttack[0] = ImageIO.read(new File("Resources" + File.separator + "DartGoblinRightAttack1.png"));
+            DartGoblinRightAttack[1] = ImageIO.read(new File("Resources" + File.separator + "DartGoblinRightAttack2.png"));
         } catch (Exception e) {
             System.out.print(e.getStackTrace() + " Error loading resources \n");
         }
@@ -191,7 +245,15 @@ public class PlayGame extends JPanel {
         
         Rooms[RoomsI][RoomsJ].addWall(new StationaryObject(200, 200, this.tempchar));
         
+       // SpearGoblin gobo = new SpearGoblin(400, 400, 0, this.ScreenWidth, 0, 
+                //this.ScreenHeight, 1, this.SpearGoblinLeft, this.SpearGoblinRight);
+        DartGoblin gobo2 = new DartGoblin(600, 600, 0, this.ScreenWidth, 0, 
+                this.ScreenHeight, 1, this.DartGoblinLeft, this.DartGoblinRight,
+                this.DartGoblinLeftAttack, this.DartGoblinRightAttack, 
+                this.tempchar);
         
+        //Rooms[RoomsI][RoomsJ].addEnemy(gobo);
+        Rooms[RoomsI][RoomsJ].addEnemy(gobo2);
     }
     
     public void timerLoop()
@@ -219,7 +281,7 @@ public class PlayGame extends JPanel {
         }
     }
     
-    public void updateGame()
+    public void updatePlayer()
     {
         CollisionDetector col = new CollisionDetector();
         
@@ -283,8 +345,6 @@ public class PlayGame extends JPanel {
             if(col.normalCollision(Player, Rooms[RoomsI][RoomsJ].getEnemy(i)))
             {
                 generalCol = true;
-                
-                Player.takeDamage(Rooms[RoomsI][RoomsJ].getEnemy(i).getBumpDamage());
                 
                 if(col.horizontalCollision(Player, Rooms[RoomsI][RoomsJ].getEnemy(i)))
                 {
@@ -353,15 +413,27 @@ public class PlayGame extends JPanel {
         {
             Rooms[RoomsI][RoomsJ].addPlayerAoe(Player.fireAoe());
         }
+    }
+    
+    public void updateEnemies()
+    {
+        CollisionDetector col = new CollisionDetector();
         
-        //now test for collisions for enemies 
-        
-        ////HAVE AOE COLLISIONS WITH BARRELS CHECK WHEN THEY'RE CREATED
+        boolean generalCol = false;
+        boolean verticalCol = false;
+        boolean horizontalCol = false;
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].EnemySize(); i++)
         {
             generalCol = false;
             verticalCol = false;
             horizontalCol = false;
+            
+            if(Rooms[RoomsI][RoomsJ].getEnemy(i).isDead())
+            {
+                Rooms[RoomsI][RoomsJ].removeEnemy(i);
+                i--;
+                continue;
+            }
             
             for(int j = 0; j < Rooms[RoomsI][RoomsJ].WallSize(); j++)
             {
@@ -421,7 +493,12 @@ public class PlayGame extends JPanel {
                 {
                     break;
                 }
-
+                
+                if(i == j)
+                {
+                    continue;
+                }
+                
                 if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
                         Rooms[RoomsI][RoomsJ].getEnemy(j)))
                 {
@@ -444,6 +521,8 @@ public class PlayGame extends JPanel {
             if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), Player))
             {
                 generalCol = true;
+                
+                Player.takeDamage(Rooms[RoomsI][RoomsJ].getEnemy(i).getBumpDamage());
 
                 if(col.horizontalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), Player))
                 {
@@ -532,9 +611,13 @@ public class PlayGame extends JPanel {
                 }
             }
         }
+    }
+    
+    public void updatePlayerProjectiles()
+    {
+        CollisionDetector col = new CollisionDetector();
+        boolean generalCol = false;
         
-        //now test for collisions for player projectiles
-        //also need to add elemental effects handling here?
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].PlayerProjectileSize(); i++)
         {
             generalCol = false;
@@ -549,13 +632,12 @@ public class PlayGame extends JPanel {
                         Rooms[RoomsI][RoomsJ].getEnemy(i).frostBurn(Rooms[RoomsI][RoomsJ].getPlayerProjectile(j).getElementChance(),
                                 Player.getBurnDamage(), Player.getBurnTime(), Player.getFreezeTime());
                     }
-                    if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).isFire())
+                    else if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).isFire())
                     {
                         Rooms[RoomsI][RoomsJ].getEnemy(j).ignite(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getElementChance(),
                                 Player.getBurnDamage(), Player.getBurnTime());
                     }
-                    
-                    if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).isIce())
+                    else if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).isIce())
                     {
                         Rooms[RoomsI][RoomsJ].getEnemy(j).freeze(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getElementChance(),
                                 Player.getFreezeTime());
@@ -608,8 +690,14 @@ public class PlayGame extends JPanel {
                     Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
             }
         }
+    }
+    
+    public void updateEnemyProjectiles()
+    {
+        CollisionDetector col = new CollisionDetector();
         
-        //enemy projectiles
+        boolean generalCol = false;
+        
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].EnemyProjectileSize(); i++)
         {
             generalCol = false;
@@ -656,18 +744,11 @@ public class PlayGame extends JPanel {
                     Rooms[RoomsI][RoomsJ].removeEnemyProjectile(i);
             }
         }
-        
-        //now update traps/aoes; timers for non-movers
-        for(int i = 0; i < Rooms[RoomsI][RoomsJ].EnemyAoeSize(); i++)
-        {
-            Rooms[RoomsI][RoomsJ].getEnemyAoe(i).updateObject();
-            if(Rooms[RoomsI][RoomsJ].getEnemyAoe(i).isDone())
-            {
-                Rooms[RoomsI][RoomsJ].removeEnemyAoe(i);
-                i--;
-            }
-        }
-        
+    }
+    
+    public void updatePlayerAoe()
+    {
+         
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].PlayerAoeSize(); i++)
         {
             Rooms[RoomsI][RoomsJ].getPlayerAoe(i).updateObject();
@@ -677,11 +758,40 @@ public class PlayGame extends JPanel {
                 i--;
             }
         }
-        
+    }
+    
+    public void updateEnemyAoe()
+    {
+        for(int i = 0; i < Rooms[RoomsI][RoomsJ].EnemyAoeSize(); i++)
+        {
+            Rooms[RoomsI][RoomsJ].getEnemyAoe(i).updateObject();
+            if(Rooms[RoomsI][RoomsJ].getEnemyAoe(i).isDone())
+            {
+                Rooms[RoomsI][RoomsJ].removeEnemyAoe(i);
+                i--;
+            }
+        }
+    }
+    
+    public void updateTraps()
+    {
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].SpikeTrapSize(); i++)
         {
             Rooms[RoomsI][RoomsJ].getSpikeTrap(i).updateObject();
         }
+    }
+    
+    public void updateGame()
+    {
+        updatePlayer();
+        updateEnemies();
+        updatePlayerProjectiles();
+        updateEnemyProjectiles();
+        updatePlayerAoe();
+        updateEnemyAoe();
+        updateTraps();
+        
+        ////HAVE AOE COLLISIONS WITH BARRELS CHECK WHEN THEY'RE CREATED
     }
     
     public void mainMenu()
