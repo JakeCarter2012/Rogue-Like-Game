@@ -7,7 +7,7 @@ import java.awt.Image;
 public class DartGoblin extends MovingEnemy{
     private Image[] MoveLeftImages, MoveRightImages, AttackLeft, AttackRight;
     private Image Dart;
-    private int ProjectileTimer, ImageTimer, CurrentFrame;
+    private int ProjectileTimer, ImageTimer, CurrentFrame, ShotsInBurst;
     private boolean FacingRight, CloseToPlayer;
     private Image CurrentSprite;
     
@@ -24,6 +24,7 @@ public class DartGoblin extends MovingEnemy{
         this.AttackRight = attackRight;
         this.Dart = dart;
         this.ProjectileTimer = 120;
+        this.ShotsInBurst = 3;
         this.ImageTimer = 0;
         this.CurrentFrame = 0;
         this.FacingRight = true;
@@ -44,7 +45,17 @@ public class DartGoblin extends MovingEnemy{
     
     public Projectile fireProjectile()
     {
-        this.ProjectileTimer = 120;
+        if(this.ShotsInBurst > 0)
+        {
+            this.ProjectileTimer = 15;
+            this.ShotsInBurst--;
+            
+            if(this.ShotsInBurst <= 0)
+            {
+                this.ProjectileTimer = 120;
+                this.ShotsInBurst = 3;
+            }
+        }
         
         int dartX;
         
@@ -142,7 +153,7 @@ public class DartGoblin extends MovingEnemy{
             
             if(this.FacingRight)
             {
-                if(this.ProjectileTimer < 30 || this.ProjectileTimer > 115)
+                if(this.ProjectileTimer < 30 || this.ProjectileTimer > 110)
                 {
                     this.CurrentSprite = this.AttackRight[1];
                 }
@@ -157,7 +168,7 @@ public class DartGoblin extends MovingEnemy{
             }
             else
             {
-                if(this.ProjectileTimer < 30 || this.ProjectileTimer > 115)
+                if(this.ProjectileTimer < 30 || this.ProjectileTimer > 110)
                 {
                     this.CurrentSprite = this.AttackLeft[1];
                 }
@@ -178,7 +189,7 @@ public class DartGoblin extends MovingEnemy{
     
     private void updatePosition(boolean generalCollision, boolean horizontalCollision, boolean verticalCollision) 
     {
-        if(this.CloseToPlayer || this.ProjectileTimer < 30 || this.ProjectileTimer > 115)
+        if(this.CloseToPlayer || this.ProjectileTimer < 30 || this.ProjectileTimer > 110)
         {
             return;
         }

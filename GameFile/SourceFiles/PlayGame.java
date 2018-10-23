@@ -26,9 +26,12 @@ import javax.swing.JPanel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.MouseInfo;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
+import javax.swing.*;
 
-public class PlayGame extends JPanel {
+public class PlayGame extends JPanel implements KeyListener{
     //private ArrayList<ArrayList<Room>> Rooms;
     private Room[][] Rooms;
     private int RoomsI, RoomsJ;
@@ -42,10 +45,12 @@ public class PlayGame extends JPanel {
     private boolean levelFinished;
     private WizardPlayer Player;
     private int Money;
+    private boolean Paused, InGame;
     private JFrame GameWindow;
+    private JPanel PauseMenu, MainMenu;
     private GameEvents PlayerKeyEvent;
-        private Spell FireBall, IceShards, VoidWave, WildFire, Blizzard, BlackHole, Meteor, Comet, FrostFlame;//FrostFlame:: Blue Fire
-    
+    private Spell FireBall, IceShards, VoidWave, WildFire, Blizzard, BlackHole, Meteor, Comet, FrostFlame;//FrostFlame:: Blue Fire
+ 
     private Image[] WizRightForwardAttack, WizRightForward, WizRightBackAttack,
             WizRightAttack, WizRight, WizLeftForwardAttack, WizLeftForward,
             WizLeftBackwardAttack, WizLeftAttack, WizLeft, WizForwardAttack, 
@@ -53,6 +58,83 @@ public class PlayGame extends JPanel {
     
     private Image[] SpearGoblinRight, SpearGoblinLeft, DartGoblinLeft, DartGoblinRight,
             DartGoblinLeftAttack, DartGoblinRightAttack;
+    
+    private Image SmallProjectileGreen;
+    
+    private JButton testButton;
+    
+    public void startGame()
+    {
+        //create the window we use
+        GameWindow = new JFrame();
+        GameWindow.addWindowListener(new WindowAdapter(){});
+        GameWindow.add(this);
+        GameWindow.setTitle("Rogue Game");
+        GameWindow.setSize(ScreenWidth + 6, ScreenHeight + 35);
+        GameWindow.setResizable(false);
+        GameWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        GameWindow.setVisible(true);
+        GameWindow.getContentPane().setFocusable(true);
+        GameWindow.getContentPane().addKeyListener(this);
+        this.Paused = false;
+        this.InGame = false;
+    }
+    
+    public void mainMenuInit()
+    {
+        
+    }
+    
+    public void pauseMenuInit()
+    {
+        this.PauseMenu = new JPanel();
+        JButton testbut = new JButton("test");
+        testbut.setToolTipText("test");
+        PauseMenu.add(testbut);
+        GameWindow.add(PauseMenu);
+    }
+    
+    public void pauseGame()
+    {
+        this.setVisible(false);
+        this.PauseMenu.setVisible(true);
+        
+        
+        //don't use new class? use jpanel in this class so i can have an
+        //unpause button call timerloop
+        //also dont have pause be tied to the player, instead tied to window
+        
+        //this.timerLoop();
+    }
+    
+    @Override
+    public void keyPressed(KeyEvent e) {}
+    
+    @Override
+    public void keyTyped(KeyEvent e) {}
+    
+    @Override
+    public void keyReleased(KeyEvent e) 
+    {
+        int key = e.getKeyCode();
+        
+        System.out.println("key pressed");
+        
+        if(key == KeyEvent.VK_P || key == KeyEvent.VK_ESCAPE)
+        {
+            if(!Paused && InGame)
+            {
+                this.Paused = true;
+            }
+            else if (InGame)
+            {
+                this.Paused = false;
+                this.PauseMenu.setVisible(false);
+                this.setVisible(true);
+                //this.timerLoop();
+            }
+        }
+    }
     
     public void resourcesInit()
     {
@@ -134,9 +216,9 @@ public class PlayGame extends JPanel {
             WizForward[2] = ImageIO.read(new File("Resources" + File.separator + "WizForward3.png"));
             
             WizBackAttack = new Image[3];
-            WizBackAttack[0] = ImageIO.read(new File("Resources/WizBackAttack1.png"));
-            WizBackAttack[1] = ImageIO.read(new File("Resources/WizBackAttack2.png"));
-            WizBackAttack[2] = ImageIO.read(new File("Resources/WizBackAttack3.png"));
+            WizBackAttack[0] = ImageIO.read(new File("Resources" + File.separator + "WizBackAttack1.png"));
+            WizBackAttack[1] = ImageIO.read(new File("Resources" + File.separator + "WizBackAttack2.png"));
+            WizBackAttack[2] = ImageIO.read(new File("Resources" + File.separator + "WizBackAttack3.png"));
             
             WizBack = new Image[3];           
             WizBack[0] = ImageIO.read(new File("Resources" + File.separator + "WizBack1.png"));
@@ -182,6 +264,8 @@ public class PlayGame extends JPanel {
             DartGoblinRightAttack = new Image[2];           
             DartGoblinRightAttack[0] = ImageIO.read(new File("Resources" + File.separator + "DartGoblinRightAttack1.png"));
             DartGoblinRightAttack[1] = ImageIO.read(new File("Resources" + File.separator + "DartGoblinRightAttack2.png"));
+            
+            SmallProjectileGreen = ImageIO.read(new File("Resources" + File.separator + "SmallProjectileGreen.png"));
         } catch (Exception e) {
             System.out.print(e.getStackTrace() + " Error loading resources \n");
         }
@@ -190,20 +274,12 @@ public class PlayGame extends JPanel {
         FireBall = new ProjectileSpell("Fire Ball", 5,10, 30, true, false, false, 30, FireBallImg, FireBallIcon);
         VoidWave = new ProjectileSpell("Void Wave", 1,10, 59, false, false, true, 0, VoidWaveImg, VoidWaveIcon);
         
-        //create the window we use
-        GameWindow = new JFrame();
-        GameWindow.addWindowListener(new WindowAdapter(){});
-        GameWindow.add(this);
-        GameWindow.setTitle("Rogue Game");
-        GameWindow.setSize(ScreenWidth + 6, ScreenHeight + 35);
-        GameWindow.setResizable(false);
-        GameWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        GameWindow.setVisible(true);
-        GameWindow.getContentPane().setFocusable(true);
     }
     
     public void newGameInit()
     {
+        this.Paused = false;
+        this.InGame = true;
         this.Money = 0;
         this.Player = new WizardPlayer(0, 0, 0, this.ScreenWidth, 0, this.ScreenHeight, 
                 WizRightForwardAttack, WizRightForward, WizRightBackAttack,
@@ -216,7 +292,6 @@ public class PlayGame extends JPanel {
         this.Player.addNewSpell(FireBall);
         this.Player.addNewSpell(VoidWave);
         this.Player.addNewSpell(new ProjectileSpell("Test Spell", 5,10, 30, false, false, false, 0, TestSpellImg,this.NullSpellIcon));
-        
         
         PlayerKeyEvent = new GameEvents();
         PlayerKeyEvent.addObserver(Player);
@@ -245,15 +320,16 @@ public class PlayGame extends JPanel {
         
         Rooms[RoomsI][RoomsJ].addWall(new StationaryObject(200, 200, this.tempchar));
         
-       // SpearGoblin gobo = new SpearGoblin(400, 400, 0, this.ScreenWidth, 0, 
-                //this.ScreenHeight, 1, this.SpearGoblinLeft, this.SpearGoblinRight);
+        SpearGoblin gobo = new SpearGoblin(400, 400, 0, this.ScreenWidth, 0, 
+                this.ScreenHeight, 1, this.SpearGoblinLeft, this.SpearGoblinRight);
         DartGoblin gobo2 = new DartGoblin(600, 600, 0, this.ScreenWidth, 0, 
                 this.ScreenHeight, 1, this.DartGoblinLeft, this.DartGoblinRight,
                 this.DartGoblinLeftAttack, this.DartGoblinRightAttack, 
-                this.tempchar);
+                this.SmallProjectileGreen);
         
+        //this.pauseGame();
         //Rooms[RoomsI][RoomsJ].addEnemy(gobo);
-        Rooms[RoomsI][RoomsJ].addEnemy(gobo2);
+        //Rooms[RoomsI][RoomsJ].addEnemy(gobo2);
     }
     
     public void timerLoop()
@@ -262,15 +338,28 @@ public class PlayGame extends JPanel {
         long currTime;
         //target time hoping to aim for each loop
         long targetTime = 1000000000 / FPS;
+        
 
         while ((Player.isAlive()) && !levelFinished) {
             currTime = System.nanoTime();
 
             updateGame();
             repaint();
-
+            
+            if(this.Paused)
+            {
+                pauseGame();
+                while(Paused)
+                {
+                    try{
+                        Thread.sleep(100);
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            }
+            
             //sleep for any remaining time
-            //if statement for potential negative time, then don't sleep
             if ((currTime - System.nanoTime() + targetTime) > 0) {
                 try {
                     Thread.sleep((currTime - System.nanoTime() + targetTime) / 1000000);
@@ -924,6 +1013,7 @@ public class PlayGame extends JPanel {
                    Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getY());
         }
         
+        
         //draw overlay now
         
         for(int i = 0; i < 4; i ++)
@@ -1022,7 +1112,11 @@ public class PlayGame extends JPanel {
     
     public static void main(String[] args) {
         PlayGame game = new PlayGame();
+        //game.startGame();//start game heres throughs null pointers; painting before intialized?
         game.resourcesInit();
+        game.startGame();
+        game.pauseMenuInit();
+        game.mainMenuInit();
         game.newGameInit();
         game.testLevelInit();
         //game.musicThreadLoop();

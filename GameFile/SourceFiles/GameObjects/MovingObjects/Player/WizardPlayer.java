@@ -29,7 +29,7 @@ public class WizardPlayer extends MovingObject implements Observer{
     private int BaseSpeed;
     private boolean Up, Down, Left, Right, Fire;
     private int UpKey, DownKey, LeftKey, RightKey, UpKey2, DownKey2, LeftKey2, RightKey2,
-            FireKey, SpellOneKey, SpellTwoKey, SpellThreeKey, SpellFourKey;
+            FireKey, SpellOneKey, SpellTwoKey, SpellThreeKey, SpellFourKey, PauseKey;
     private int CurrentSpellPage;
     //placeholder
     private boolean RuneOne;
@@ -81,6 +81,7 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.SpellTwoKey = KeyEvent.VK_2;
         this.SpellThreeKey = KeyEvent.VK_3;
         this.SpellFourKey = KeyEvent.VK_4;
+        this.PauseKey = KeyEvent.VK_P;
         this.Up = this.Down = this.Left = this.Right = this.Fire = false;
         this.SpellBook = new ArrayList<Spell>();
         this.CurrentSpellPage = 0;
@@ -195,6 +196,11 @@ public class WizardPlayer extends MovingObject implements Observer{
     public int getBurnDamage()
     {
         return this.BurnDamage + this.Flame;
+    }
+    
+    public int getCurrentHealth()
+    {
+        return this.Currenthealth;
     }
     
     public boolean isAoeReady()
