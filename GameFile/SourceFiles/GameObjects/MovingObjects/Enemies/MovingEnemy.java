@@ -32,6 +32,21 @@ abstract public class MovingEnemy extends MovingObject{
         this.NormalSpeed = this.CurrentSpeed = speed;
     }
     
+    public boolean isChilled()
+    {
+        return this.Chilled;
+    }
+    
+    public boolean isFrozen()
+    {
+        return this.Frozen;
+    }
+    
+    public boolean isBurning()
+    {
+        return this.Burning;
+    }
+    
     public int getBumpDamage()
     {
         return this.BumpDamage;
