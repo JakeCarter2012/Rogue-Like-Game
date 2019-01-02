@@ -4,16 +4,17 @@ import SourceFiles.GameObjects.MovingObjects.MovingObject;
 import java.awt.Image;
 
 public class Projectile extends MovingObject{
-    private Image Sprite;
+    private Image Sprite, Shadow;
     private double AccurateX, AccurateY;
     private int Damage;
     
     public Projectile(int x, int y, int leftbound, int rightbound, int upbound, int downbound,
-            int Speed, double Angle, int damage, Image img)
+            int Speed, double Angle, int damage, Image img, Image shadow)
     {
         super(x, y, leftbound,rightbound, upbound, downbound, img.getWidth(null),
                 img.getHeight(null), Speed, Angle);
         this.Sprite = img;
+        this.Shadow = shadow;
         this.Damage = damage;
         this.AccurateX = x - (0.5)*img.getWidth(null);
         this.AccurateY = y - (0.5)*img.getHeight(null);
@@ -22,6 +23,11 @@ public class Projectile extends MovingObject{
     public Image getSprite()
     {
         return this.Sprite;
+    }
+    
+    public Image getShadow()
+    {
+        return this.Shadow;
     }
     
     public int getDamage()

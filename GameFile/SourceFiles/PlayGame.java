@@ -43,7 +43,8 @@ public class PlayGame extends JPanel implements KeyListener{
     private Graphics2D g2d;
     private Image ForestFloor, TempleFloor, tempchar, NullSpellIcon, CurrentSpellIcon, 
             IceShardsImg, IceShardsIcon, FireBallImg, FireBallIcon, VoidWaveImg,
-            VoidWaveIcon, TestSpellImg, ChilledImg, FrozenImg, testenemy;
+            VoidWaveIcon, TestSpellImg, ChilledImg, FrozenImg, IceShardsShadow,
+            FireBallShadow, SmallProjectileShadow, VoidWaveShadow, testenemy;
     private Image TopWallLeftImg, TopWallRightImg, TopWallMidImg,
             LeftWallTopImg, LeftWallBottomImg, LeftWallMidImg,
             RightWallTopImg, RightWallBottomImg, RightWallMidImg,
@@ -52,6 +53,7 @@ public class PlayGame extends JPanel implements KeyListener{
     //private final int ScreenWidth = 1280, ScreenHeight = 720;
     private final int ScreenWidth = 1280, ScreenHeight = 960;
     private final int FPS = 60;
+    private final int ShadowHeight = 60;
     private boolean levelFinished;
     private WizardPlayer Player;
     private int Money;
@@ -214,6 +216,11 @@ public class PlayGame extends JPanel implements KeyListener{
             this.FireBallIcon = ImageIO.read(new File("Resources" + File.separator + "FireBallIcon.png"));
             this.VoidWaveImg = ImageIO.read(new File("Resources" + File.separator + "VoidWaveImg.png"));
             this.VoidWaveIcon = ImageIO.read(new File("Resources" + File.separator + "VoidWaveIcon.png"));
+            
+            IceShardsShadow = ImageIO.read(new File("Resources" + File.separator + "IceShardsShadow.png"));
+            FireBallShadow = ImageIO.read(new File("Resources" + File.separator + "FireBallShadow.png"));
+            VoidWaveShadow = ImageIO.read(new File("Resources" + File.separator + "VoidWaveShadow.png"));
+            SmallProjectileShadow = ImageIO.read(new File("Resources" + File.separator + "SmallProjectileShadow.png"));
             
             WizRightForwardAttack = new Image[3];
             WizRightForwardAttack[0] = ImageIO.read(new File("Resources" + File.separator + "WizRightForwardAttack1.png"));
@@ -384,13 +391,13 @@ public class PlayGame extends JPanel implements KeyListener{
             System.out.print(e.getStackTrace() + " Error loading resources \n");
         }
         
-        IceShards = new ProjectileSpell("Ice Shards", 5,10, 30, false, true, false, 30, IceShardsImg, IceShardsIcon);
-        FireBall = new ProjectileSpell("Fire Ball", 5,10, 30, true, false, false, 30, FireBallImg, FireBallIcon);
-        VoidWave = new ProjectileSpell("Void Wave", 1,10, 59, false, false, true, 0, VoidWaveImg, VoidWaveIcon);
+        IceShards = new ProjectileSpell("Ice Shards", 5,10, 30, false, true, false, 30, IceShardsImg, IceShardsIcon, IceShardsShadow);
+        FireBall = new ProjectileSpell("Fire Ball", 5,10, 30, true, false, false, 30, FireBallImg, FireBallIcon, FireBallShadow);
+        VoidWave = new ProjectileSpell("Void Wave", 1,10, 59, false, false, true, 0, VoidWaveImg, VoidWaveIcon, VoidWaveShadow);
         
         Walls = new Wall[8];
-        Walls[0] = new Wall(0, 0, 579, 60, TopWallLeftImg);
-        Walls[1] = new Wall(700, 0, 580, 60, TopWallRightImg);
+        Walls[0] = new Wall(0, 0, 579, 128 - ShadowHeight, TopWallLeftImg);
+        Walls[1] = new Wall(700, 0, 580, 128 - ShadowHeight, TopWallRightImg);
         Walls[2] = new Wall(0, 0, 128, 580, LeftWallTopImg);
         Walls[3] = new Wall(0, 701, 128, 579, LeftWallBottomImg);
         Walls[4] = new Wall(0, 1152, 580, 128, BottomWallLeftImg);
@@ -424,7 +431,7 @@ public class PlayGame extends JPanel implements KeyListener{
         this.Player.addNewSpell(IceShards);
         this.Player.addNewSpell(FireBall);
         this.Player.addNewSpell(VoidWave);
-        this.Player.addNewSpell(new ProjectileSpell("Test Spell", 5,10, 30, false, false, false, 0, TestSpellImg,this.NullSpellIcon));
+        this.Player.addNewSpell(new ProjectileSpell("Test Spell", 5,10, 30, false, false, false, 0, TestSpellImg,this.NullSpellIcon,this.SmallProjectileShadow));
         
         PlayerKeyEvent = new GameEvents();
         PlayerKeyEvent.addObserver(Player);
@@ -462,7 +469,7 @@ public class PlayGame extends JPanel implements KeyListener{
         DartGoblin gobo2 = new DartGoblin(600, 600, 0, this.ScreenWidth, 0, 
                 this.ScreenHeight, 1, this.DartGoblinLeft, this.DartGoblinRight,
                 this.DartGoblinLeftAttack, this.DartGoblinRightAttack, 
-                this.SmallProjectileGreen);
+                this.SmallProjectileGreen, this.SmallProjectileShadow);
         
         //this.pauseGame();
         Rooms[RoomsI][RoomsJ].lockDoors();
@@ -1208,6 +1215,23 @@ public class PlayGame extends JPanel implements KeyListener{
                 g2d.drawImage(TempleFloor, i * TempleFloor.getWidth(null) + 128, j * TempleFloor.getHeight(null) + 128, this);
             }
         }
+        
+        for(int i = 0; i < Rooms[RoomsI][RoomsJ].PlayerProjectileSize(); i++)
+        {
+            paintRotatedImg(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getShadow(), 
+                   Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getAngle(),
+                   Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getX(), 
+                   Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getY() + ShadowHeight);
+        }
+        
+        for(int i = 0; i < Rooms[RoomsI][RoomsJ].EnemyProjectileSize(); i++)
+        {
+            paintRotatedImg(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getShadow(), 
+                   Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getAngle(),
+                   Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getX(), 
+                   Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getY() + ShadowHeight);
+        }
+        
         //paint order: player > enemy> projectile > itmes > wall
         //lowest prio is first
         

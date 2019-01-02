@@ -258,7 +258,8 @@ public class WizardPlayer extends MovingObject implements Observer{
                     this.SpellBook.get(CurrentSpellPage).isIce(),
                     this.SpellBook.get(CurrentSpellPage).isVoid(),
                     ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getElementChance() + eleChance,
-                    ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getSprite()));
+                    ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getSprite(),
+                    ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getShadow()));
         }
         else
             return null;
