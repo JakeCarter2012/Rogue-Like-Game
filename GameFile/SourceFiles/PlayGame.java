@@ -27,6 +27,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelListener;
+import java.awt.event.MouseWheelEvent;
 import java.awt.MouseInfo;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -449,6 +451,18 @@ public class PlayGame extends JPanel implements KeyListener{
                   Player.stopFire();
             } 
         }); 
+        GameWindow.addMouseWheelListener(new MouseWheelListener() {
+            public void mouseWheelMoved(MouseWheelEvent e){
+                if(e.getWheelRotation() < 0)
+                {
+                    Player.scrollUp();
+                }
+                else if(e.getWheelRotation() > 0)
+                {
+                    Player.scrollDown();
+                }
+            }
+        });
     }
     
     public void testLevelInit()
@@ -464,9 +478,9 @@ public class PlayGame extends JPanel implements KeyListener{
         
         //Rooms[RoomsI][RoomsJ].addWall(new StationaryObject(200, 200, this.tempchar));
         
-        SpearGoblin gobo = new SpearGoblin(400, 400, 0, this.ScreenWidth, 0, 
+        SpearGoblin gobo = new SpearGoblin(700, 700, 0, this.ScreenWidth, 0, 
                 this.ScreenHeight, 1, this.SpearGoblinLeft, this.SpearGoblinRight);
-        DartGoblin gobo2 = new DartGoblin(600, 600, 0, this.ScreenWidth, 0, 
+        DartGoblin gobo2 = new DartGoblin(900, 900, 0, this.ScreenWidth, 0, 
                 this.ScreenHeight, 1, this.DartGoblinLeft, this.DartGoblinRight,
                 this.DartGoblinLeftAttack, this.DartGoblinRightAttack, 
                 this.SmallProjectileGreen, this.SmallProjectileShadow);
