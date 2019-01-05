@@ -54,6 +54,7 @@ public class PlayGame extends JPanel implements KeyListener{
     //private final int ScreenWidth = 1024, ScreenHeight = 960;
     //private final int ScreenWidth = 1280, ScreenHeight = 720;
     private final int ScreenWidth = 1280, ScreenHeight = 960;
+    private final int GameWidth = 1280, GameHeight = 1280;
     private final int FPS = 60;
     private final int ShadowHeight = 60;
     private boolean levelFinished;
@@ -423,7 +424,7 @@ public class PlayGame extends JPanel implements KeyListener{
         this.Paused = false;
         this.InGame = true;
         this.Money = 0;
-        this.Player = new WizardPlayer(200, 200, 0, this.ScreenWidth, 0, this.ScreenHeight, 
+        this.Player = new WizardPlayer(200, 200, 0, this.GameWidth, 0, this.GameHeight, 
                 WizRightForwardAttack, WizRightForward, WizRightBackAttack,
                 WizRightAttack, WizRight, WizLeftForwardAttack, WizLeftForward,
                 WizLeftBackwardAttack, WizLeftAttack, WizLeft, WizForwardAttack, 
@@ -475,17 +476,15 @@ public class PlayGame extends JPanel implements KeyListener{
         this.Rooms[RoomsI][RoomsJ].addDoor(TopDoor);
         this.Rooms[RoomsI][RoomsJ].addDoor(LeftDoor);
         this.Rooms[RoomsI][RoomsJ].addWall(RightWallMid);
-        
-        //Rooms[RoomsI][RoomsJ].addWall(new StationaryObject(200, 200, this.tempchar));
-        
-        SpearGoblin gobo = new SpearGoblin(700, 700, 0, this.ScreenWidth, 0, 
-                this.ScreenHeight, 1, this.SpearGoblinLeft, this.SpearGoblinRight);
-        DartGoblin gobo2 = new DartGoblin(900, 900, 0, this.ScreenWidth, 0, 
-                this.ScreenHeight, 1, this.DartGoblinLeft, this.DartGoblinRight,
+        this.Rooms[RoomsI][RoomsJ].addWall(BottomWallMid);
+       
+        SpearGoblin gobo = new SpearGoblin(700, 700, 0, this.GameWidth, 0, 
+                this.GameHeight, 1, this.SpearGoblinLeft, this.SpearGoblinRight);
+        DartGoblin gobo2 = new DartGoblin(900, 900, 0, this.GameWidth, 0, 
+                this.GameHeight, 1, this.DartGoblinLeft, this.DartGoblinRight,
                 this.DartGoblinLeftAttack, this.DartGoblinRightAttack, 
                 this.SmallProjectileGreen, this.SmallProjectileShadow);
         
-        //this.pauseGame();
         Rooms[RoomsI][RoomsJ].lockDoors();
         Rooms[RoomsI][RoomsJ].addEnemy(gobo);
         Rooms[RoomsI][RoomsJ].addEnemy(gobo2);
@@ -686,10 +685,27 @@ public class PlayGame extends JPanel implements KeyListener{
             }
         }
         
+        double scale;
+        
+        if(ScreenHeight < ScreenWidth)
+        {
+            scale = (double)ScreenWidth/GameWidth;
+        }
+        else if(ScreenHeight > ScreenWidth)
+        {
+            scale = (double)ScreenHeight/GameHeight;
+        }
+        else
+        {
+            scale = 1;
+        }
+        
+        
+        double mouseX = (MouseInfo.getPointerInfo().getLocation().x - (int)GameWindow.getLocation().getX() - 4) / scale + screenShiftX();
+        double mouseY = (MouseInfo.getPointerInfo().getLocation().y - (int)GameWindow.getLocation().getY() - 32) / scale + screenShiftY();
+        
         //now update the player's position
-        Player.updatePlayer(MouseInfo.getPointerInfo().getLocation().x - (int)GameWindow.getLocation().getX() - 4, 
-                MouseInfo.getPointerInfo().getLocation().y - (int)GameWindow.getLocation().getY() - 32, 
-                generalCol, horizontalCol, verticalCol);
+        Player.updatePlayer((int)mouseX, (int)mouseY, generalCol, horizontalCol, verticalCol);
         
         //now test for remaining collisions based on where the player ends up standing
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].CoinSize(); i++)
@@ -1209,6 +1225,62 @@ public class PlayGame extends JPanel implements KeyListener{
         
     }
     
+    public int screenShiftY()
+    {
+        if(ScreenHeight >= ScreenWidth)
+        {
+            return 0;
+        }
+        
+        int yShift;
+        
+        double scale = (double)ScreenWidth/GameWidth;
+        double scaledHeight = ScreenHeight / scale;
+        
+        if(Player.getCenterY() < scaledHeight/2)
+        {
+            yShift = 0;
+        }
+        else if(Player.getCenterY() > GameHeight - scaledHeight/2)
+        {
+            yShift = GameHeight - (int)scaledHeight;            
+        }
+        else
+        {
+            yShift = Player.getCenterY() - (int)scaledHeight/2;
+        }
+        
+        return yShift;
+    }
+    
+    public int screenShiftX()
+    {
+        if(ScreenWidth >= ScreenHeight)
+        {
+            return 0;
+        }
+        
+        int xShift;
+        
+        double scale = (double)ScreenHeight/GameHeight;
+        double scaledWidth = ScreenWidth / scale;
+        
+        if(Player.getCenterX() < scaledWidth/2)
+        {
+            xShift = 0;
+        }
+        else if(Player.getCenterX() > GameWidth - scaledWidth/2)
+        {
+            xShift = GameWidth - (int)scaledWidth;            
+        }
+        else
+        {
+            xShift = Player.getCenterX() - (int)scaledWidth/2;
+        }
+        
+        return xShift;
+    }
+    
     @Override
     public void paintComponent(Graphics g) {
         //DONT USE PAINT UNTIL IN GAME<^>
@@ -1216,7 +1288,7 @@ public class PlayGame extends JPanel implements KeyListener{
             return;
         
         if (bufImg == null) {
-            bufImg = (BufferedImage) createImage(ScreenWidth, ScreenHeight);
+            bufImg = (BufferedImage) createImage(GameWidth, GameHeight);
         }
         Graphics2D gtemp = (Graphics2D) g;
         g2d = bufImg.createGraphics();
@@ -1384,25 +1456,44 @@ public class PlayGame extends JPanel implements KeyListener{
         
         
         //draw overlay now
+        int yShift = screenShiftY();
+        int xShift = screenShiftX();
+        double scale;
+        if(ScreenHeight < ScreenWidth)
+        {
+            scale = (double)ScreenWidth/GameWidth;
+        }
+        else if(ScreenHeight > ScreenWidth)
+        {
+            scale = (double)ScreenHeight/GameHeight;
+        }
+        else
+        {
+            scale = 1;
+        }
+        double scaledHeight = ScreenHeight / scale;
+        double scaledWidth = ScreenWidth / scale;
         
         for(int i = 0; i < 4; i ++)
         {
             if(Player.getSpell(i) == null)
             {
-                g2d.drawImage(this.NullSpellIcon, 54 + 100 * i, 850, this);
+                g2d.drawImage(this.NullSpellIcon, 54 + (int)xShift + 100 * i, (int)scaledHeight - 110 + yShift, this);
             }
             else
             {
-                g2d.drawImage(Player.getSpell(i).getIcon(), 54 + 100 * i, 850, this);
+                g2d.drawImage(Player.getSpell(i).getIcon(), 54 + (int)xShift + 100 * i, (int)scaledHeight - 110 + yShift, this);
                 if(i == Player.getCurrentSpellNumber())
                 {
-                    g2d.drawImage(this.CurrentSpellIcon, 52 + 100 * i, 848, this);
+                    g2d.drawImage(this.CurrentSpellIcon, 52 + (int)xShift + 100 * i, (int)scaledHeight - 112 + yShift, this);
                 }
             }
         }
         
-        gtemp.drawImage(bufImg, 0, 0, this);
-        
+        BufferedImage shiftImg = bufImg.getSubimage(xShift, yShift, (int)scaledWidth, (int)scaledHeight);
+        //if player.centerY > ScreenHeight/2 Or player.cbterY < GameHeight - ScreenHeight/2 SCALED
+        gtemp.scale(scale, scale);
+        gtemp.drawImage(shiftImg, 0, 0, this);
         
         //Text for items
         gtemp.setColor(Color.WHITE);
@@ -1417,19 +1508,19 @@ public class PlayGame extends JPanel implements KeyListener{
                 gtemp.setFont(spellNameFont);
                 metrics = gtemp.getFontMetrics(spellNameFont);
                 gtemp.drawString(Player.getSpell(i).getSpellName(), 
-                        88 + 100 * i - (metrics.stringWidth(Player.getSpell(i).getSpellName()))/2, 840);
+                        88 + 100 * i - (metrics.stringWidth(Player.getSpell(i).getSpellName()))/2, (int)scaledHeight - 120);
                 if(Player.getSpell(i).getCoolDown(FPS) > 0)
                 {
                     gtemp.setFont(spellCoolDownFont);
                     metrics = gtemp.getFontMetrics(spellCoolDownFont);
                     gtemp.drawString(Integer.toString(Player.getSpell(i).getCoolDown(FPS)), 
-                            88 + 100 * i - metrics.stringWidth(Integer.toString(Player.getSpell(i).getCoolDown(FPS)))/2, 895);
+                            88 + 100 * i - metrics.stringWidth(Integer.toString(Player.getSpell(i).getCoolDown(FPS)))/2, (int)scaledHeight - 65);
                 }
             }
             gtemp.setFont(spellNameFont);
             metrics = gtemp.getFontMetrics(spellNameFont);
             gtemp.drawString(Integer.toString(i+1), 
-                    88 + 100 * i - (metrics.stringWidth(Integer.toString(i+1)))/2, 940);
+                    88 + 100 * i - (metrics.stringWidth(Integer.toString(i+1)))/2, (int)scaledHeight - 20);
         }
         
         Font itemNameFont = (new Font("Arial Black", Font.PLAIN, 14));
@@ -1440,16 +1531,16 @@ public class PlayGame extends JPanel implements KeyListener{
         {
             gtemp.drawString(this.Rooms[RoomsI][RoomsJ].getRune(i).getRuneName(), 
                         this.Rooms[RoomsI][RoomsJ].getRune(i).getCenterX() - 
-                                metrics.stringWidth(this.Rooms[RoomsI][RoomsJ].getRune(i).getRuneName())/2, 
-                        this.Rooms[RoomsI][RoomsJ].getRune(i).getY() - 10);
+                                metrics.stringWidth(this.Rooms[RoomsI][RoomsJ].getRune(i).getRuneName())/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getRune(i).getY() - 10 - yShift);
         }
         
         for(int i = 0; i < this.Rooms[RoomsI][RoomsJ].PageSize(); i++)
         {
             gtemp.drawString(this.Rooms[RoomsI][RoomsJ].getPage(i).getSpellName(), 
                         this.Rooms[RoomsI][RoomsJ].getPage(i).getCenterX() - 
-                                metrics.stringWidth(this.Rooms[RoomsI][RoomsJ].getPage(i).getSpellName())/2, 
-                        this.Rooms[RoomsI][RoomsJ].getPage(i).getY() - 10);
+                                metrics.stringWidth(this.Rooms[RoomsI][RoomsJ].getPage(i).getSpellName())/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getPage(i).getY() - 10 - yShift);
         }
         
         gtemp.dispose();
