@@ -13,6 +13,7 @@ import SourceFiles.GameObjects.StationaryObjects.SpikeTrap;
 import SourceFiles.GameObjects.StationaryObjects.Potion;
 import SourceFiles.GameObjects.StationaryObjects.Door;
 import SourceFiles.GameObjects.StationaryObjects.Wall;
+import SourceFiles.GameObjects.Animations.Animation;
 import java.util.ArrayList;
 
 public class Room {
@@ -29,6 +30,7 @@ public class Room {
     private ArrayList<Wall> Walls;
     private ArrayList<StationaryObject> Barrels;
     private ArrayList<Door> Doors;
+    private ArrayList<Animation> Animations;
     private boolean Shop, RuneRoom, BossRoom;
     
     
@@ -55,6 +57,7 @@ public class Room {
         this.Walls = new ArrayList<Wall>();
         this.Barrels = new ArrayList<StationaryObject>();
         this.Doors = new ArrayList<Door>();
+        this.Animations = new ArrayList<Animation>();
         
         this.Shop = false;
         this.RuneRoom = false;
@@ -160,6 +163,11 @@ public class Room {
         this.Barrels.add(barrel);
     }
     
+    public void addAnimation(Animation animate)
+    {
+        this.Animations.add(animate);
+    }
+    
     public void removePlayerAoe(int i)
     {
         this.PlayerAoes.remove(i);
@@ -218,6 +226,11 @@ public class Room {
     public void removeBarrel(int i)
     {
         this.Barrels.remove(i);
+    }
+    
+    public void removeAnimation(int i)
+    {
+        this.Animations.remove(i);
     }
     
     public PlayerAoe getPlayerAoe(int i)
@@ -280,6 +293,11 @@ public class Room {
         return this.Barrels.get(i);
     }
     
+    public Animation getAnimation(int i)
+    {
+        return this.Animations.get(i);
+    }
+    
     public int PlayerAoeSize()
     {
         return this.PlayerAoes.size();
@@ -340,6 +358,11 @@ public class Room {
         return this.Barrels.size();
     }
     
+    public int AnimationSize()
+    {
+        return this.Animations.size();
+    }
+    
     public int DoorSize()
     {
         return this.Doors.size();
@@ -366,6 +389,7 @@ public class Room {
         updatePlayerAoe();
         updateEnemyAoe();
         updateTraps();
+        updateAnimations();
     }
     
     private void updatePlayerAoe()
@@ -405,6 +429,19 @@ public class Room {
         for(int i = 0; i < DoorSize(); i++)
         {
             getDoor(i).updateDoor();
+        }
+    }
+    
+    private void updateAnimations()
+    {
+        for(int i = 0; i < AnimationSize(); i++)
+        {
+            getAnimation(i).updateAnimation();
+            if(getAnimation(i).isDone())
+            {
+                removeAnimation(i);
+                i--;
+            }
         }
     }
 }

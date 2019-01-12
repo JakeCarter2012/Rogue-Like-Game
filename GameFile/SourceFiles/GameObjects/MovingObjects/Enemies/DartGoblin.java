@@ -6,6 +6,7 @@ import java.awt.Image;
 
 public class DartGoblin extends MovingEnemy{
     private Image[] MoveLeftImages, MoveRightImages, AttackLeft, AttackRight;
+    private Image[] EndProjectile;
     private Image Dart, DartShadow;
     private int ProjectileTimer, ImageTimer, CurrentFrame, ShotsInBurst;
     private boolean FacingRight, CloseToPlayer;
@@ -13,7 +14,8 @@ public class DartGoblin extends MovingEnemy{
     
     public DartGoblin(int x, int y, int leftbound, int rightbound, int upbound, 
             int downbound, int floor, Image[] moveLeft, Image[] moveRight, 
-            Image[] attackLeft, Image[] attackRight, Image dart, Image dartShadow)
+            Image[] attackLeft, Image[] attackRight, Image dart, Image dartShadow,
+            Image[] endProjectile)
     {
         super(x, y, moveLeft[0].getWidth(null), moveLeft[0].getHeight(null), 
                 leftbound, rightbound, upbound, downbound, 100 + 50 * floor, 3, 50 + 25 * floor,
@@ -24,6 +26,7 @@ public class DartGoblin extends MovingEnemy{
         this.AttackRight = attackRight;
         this.Dart = dart;
         this.DartShadow = dartShadow;
+        this.EndProjectile = endProjectile;
         this.ProjectileTimer = 120;
         this.ShotsInBurst = 3;
         this.ImageTimer = 0;
@@ -71,7 +74,8 @@ public class DartGoblin extends MovingEnemy{
         
         Projectile dart = new Projectile(this.getX() + dartX, this.getY() + 36, 
                 this.getLeftBound(), this.getRightBound(), this.getUpBound(), 
-                this.getDownBound(), 8, this.getAngle(), 50, this.Dart, this.DartShadow);
+                this.getDownBound(), 8, this.getAngle(), 50, this.Dart, this.DartShadow,
+                this.EndProjectile);
         
         return dart;
     }

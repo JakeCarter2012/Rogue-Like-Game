@@ -11,6 +11,7 @@ import SourceFiles.GameObjects.MovingObjects.Enemies.DartGoblin;
 import SourceFiles.GameObjects.StationaryObjects.StationaryObject;
 import SourceFiles.GameObjects.StationaryObjects.Wall;
 import SourceFiles.GameObjects.StationaryObjects.Door;
+import SourceFiles.GameObjects.Animations.Animation;
 import SourceFiles.GameLogic.KeyControl;
 import SourceFiles.GameLogic.CollisionDetector;
 import java.awt.Color;
@@ -47,6 +48,7 @@ public class PlayGame extends JPanel implements KeyListener{
             IceShardsImg, IceShardsIcon, FireBallImg, FireBallIcon, VoidWaveImg,
             VoidWaveIcon, TestSpellImg, ChilledImg, FrozenImg, IceShardsShadow,
             FireBallShadow, SmallProjectileShadow, VoidWaveShadow, testenemy;
+    private Image[] IceShardsBreak, VoidWaveEnd, FireBallEnd;
     private Image TopWallLeftImg, TopWallRightImg, TopWallMidImg,
             LeftWallTopImg, LeftWallBottomImg, LeftWallMidImg,
             RightWallTopImg, RightWallBottomImg, RightWallMidImg,
@@ -79,6 +81,7 @@ public class PlayGame extends JPanel implements KeyListener{
     private Image[] TopDoorImgs, LeftDoorImgs, BottomDoorImgs, RightDoorImgs;
     
     private Image SmallProjectileGreen;
+    private Image[] SmallGreenProjectileEnd;
     
     private JButton testButton;
     
@@ -390,13 +393,42 @@ public class PlayGame extends JPanel implements KeyListener{
             BottomDoorImgs[6] = ImageIO.read(new File("Resources" + File.separator + "BottomDoorClosed.png"));
             
             TempleFloor = ImageIO.read(new File("Resources" + File.separator + "Floor.png"));
+            
+            SmallGreenProjectileEnd = new Image[4];
+            SmallGreenProjectileEnd[0] = ImageIO.read(new File("Resources" + File.separator + "SmallProjectileGreenEnd1.png"));
+            SmallGreenProjectileEnd[1] = ImageIO.read(new File("Resources" + File.separator + "SmallProjectileGreenEnd2.png"));
+            SmallGreenProjectileEnd[2] = ImageIO.read(new File("Resources" + File.separator + "SmallProjectileGreenEnd3.png"));
+            SmallGreenProjectileEnd[3] = ImageIO.read(new File("Resources" + File.separator + "SmallProjectileGreenEnd4.png"));
+            
+            IceShardsBreak = new Image[4];
+            IceShardsBreak[0] = ImageIO.read(new File("Resources" + File.separator + "IceShardsBreak1.png"));
+            IceShardsBreak[1] = ImageIO.read(new File("Resources" + File.separator + "IceShardsBreak2.png"));
+            IceShardsBreak[2] = ImageIO.read(new File("Resources" + File.separator + "IceShardsBreak3.png"));
+            IceShardsBreak[3] = ImageIO.read(new File("Resources" + File.separator + "IceShardsBreak4.png"));
+            
+            VoidWaveEnd = new Image[4];
+            VoidWaveEnd[0] = ImageIO.read(new File("Resources" + File.separator + "VoidWaveEnd1.png"));
+            VoidWaveEnd[1] = ImageIO.read(new File("Resources" + File.separator + "VoidWaveEnd2.png"));
+            VoidWaveEnd[2] = ImageIO.read(new File("Resources" + File.separator + "VoidWaveEnd3.png"));
+            VoidWaveEnd[3] = ImageIO.read(new File("Resources" + File.separator + "VoidWaveEnd4.png"));
+            
+            FireBallEnd = new Image[8];
+            FireBallEnd[0] = ImageIO.read(new File("Resources" + File.separator + "FireBallEnd1.png"));
+            FireBallEnd[1] = ImageIO.read(new File("Resources" + File.separator + "FireBallEnd2.png"));
+            FireBallEnd[2] = ImageIO.read(new File("Resources" + File.separator + "FireBallEnd3.png"));
+            FireBallEnd[3] = ImageIO.read(new File("Resources" + File.separator + "FireBallEnd4.png"));
+            FireBallEnd[4] = ImageIO.read(new File("Resources" + File.separator + "FireBallEnd5.png"));
+            FireBallEnd[5] = ImageIO.read(new File("Resources" + File.separator + "FireBallEnd6.png"));
+            FireBallEnd[6] = ImageIO.read(new File("Resources" + File.separator + "FireBallEnd7.png"));
+            FireBallEnd[7] = ImageIO.read(new File("Resources" + File.separator + "FireBallEnd8.png"));
+            
         } catch (Exception e) {
             System.out.print(e.getStackTrace() + " Error loading resources \n");
         }
         
-        IceShards = new ProjectileSpell("Ice Shards", 5,10, 30, false, true, false, 30, IceShardsImg, IceShardsIcon, IceShardsShadow);
-        FireBall = new ProjectileSpell("Fire Ball", 5,10, 30, true, false, false, 30, FireBallImg, FireBallIcon, FireBallShadow);
-        VoidWave = new ProjectileSpell("Void Wave", 1,10, 59, false, false, true, 0, VoidWaveImg, VoidWaveIcon, VoidWaveShadow);
+        IceShards = new ProjectileSpell("Ice Shards", 5,10, 30, false, true, false, 30, IceShardsImg, IceShardsIcon, IceShardsShadow, IceShardsBreak);
+        FireBall = new ProjectileSpell("Fire Ball", 5,10, 30, true, false, false, 30, FireBallImg, FireBallIcon, FireBallShadow, FireBallEnd);
+        VoidWave = new ProjectileSpell("Void Wave", 1,10, 59, false, false, true, 0, VoidWaveImg, VoidWaveIcon, VoidWaveShadow, VoidWaveEnd);
         
         Walls = new Wall[8];
         Walls[0] = new Wall(0, 0, 579, 128 - ShadowHeight, TopWallLeftImg);
@@ -434,7 +466,7 @@ public class PlayGame extends JPanel implements KeyListener{
         this.Player.addNewSpell(IceShards);
         this.Player.addNewSpell(FireBall);
         this.Player.addNewSpell(VoidWave);
-        this.Player.addNewSpell(new ProjectileSpell("Test Spell", 5,10, 30, false, false, false, 0, TestSpellImg,this.NullSpellIcon,this.SmallProjectileShadow));
+        //this.Player.addNewSpell(new ProjectileSpell("Test Spell", 5,10, 30, false, false, false, 0, TestSpellImg,this.NullSpellIcon,this.SmallProjectileShadow, null));
         
         PlayerKeyEvent = new GameEvents();
         PlayerKeyEvent.addObserver(Player);
@@ -483,7 +515,8 @@ public class PlayGame extends JPanel implements KeyListener{
         DartGoblin gobo2 = new DartGoblin(900, 900, 0, this.GameWidth, 0, 
                 this.GameHeight, 1, this.DartGoblinLeft, this.DartGoblinRight,
                 this.DartGoblinLeftAttack, this.DartGoblinRightAttack, 
-                this.SmallProjectileGreen, this.SmallProjectileShadow);
+                this.SmallProjectileGreen, this.SmallProjectileShadow,
+                this.SmallGreenProjectileEnd);
         
         Rooms[RoomsI][RoomsJ].lockDoors();
         Rooms[RoomsI][RoomsJ].addEnemy(gobo);
@@ -1055,6 +1088,10 @@ public class PlayGame extends JPanel implements KeyListener{
                     
                     if(!Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).isVoid())
                     {
+                        if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getEndAnimation() != null)
+                        {
+                            Rooms[RoomsI][RoomsJ].addAnimation(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getEndAnimation());
+                        }
                         Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
                         i--;
                         generalCol = true;
@@ -1068,6 +1105,10 @@ public class PlayGame extends JPanel implements KeyListener{
                 {
                     if(col.normalCollision(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i), Walls[j]))
                     {
+                        if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getEndAnimation() != null)
+                        {
+                            Rooms[RoomsI][RoomsJ].addAnimation(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getEndAnimation());
+                        }
                         Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
                         i--;
                         generalCol = true;
@@ -1081,6 +1122,10 @@ public class PlayGame extends JPanel implements KeyListener{
                 {
                     if(col.normalCollision(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i), Rooms[RoomsI][RoomsJ].getDoor(j)))
                     {
+                        if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getEndAnimation() != null)
+                        {
+                            Rooms[RoomsI][RoomsJ].addAnimation(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getEndAnimation());
+                        }
                         Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
                         i--;
                         generalCol = true;
@@ -1094,6 +1139,10 @@ public class PlayGame extends JPanel implements KeyListener{
                 {
                     if(col.normalCollision(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i), Rooms[RoomsI][RoomsJ].getWall(j)))
                     {
+                        if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getEndAnimation() != null)
+                        {
+                            Rooms[RoomsI][RoomsJ].addAnimation(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getEndAnimation());
+                        }
                         Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
                         i--;
                         generalCol = true;
@@ -1111,6 +1160,10 @@ public class PlayGame extends JPanel implements KeyListener{
                         j--;
                         if(!Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).isVoid())
                         {
+                            if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getEndAnimation() != null)
+                            {
+                                Rooms[RoomsI][RoomsJ].addAnimation(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getEndAnimation());
+                            }
                             Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
                             i--;
                             generalCol = true;
@@ -1140,6 +1193,10 @@ public class PlayGame extends JPanel implements KeyListener{
             if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i), Player))
             {
                 Player.takeDamage(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getDamage());
+                if(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation() != null)
+                {
+                    Rooms[RoomsI][RoomsJ].addAnimation(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation());
+                }
                 Rooms[RoomsI][RoomsJ].removeEnemyProjectile(i);
                 i--;
                 generalCol = true;
@@ -1151,6 +1208,10 @@ public class PlayGame extends JPanel implements KeyListener{
                 {
                     if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i), Walls[j]))
                     {
+                        if(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation() != null)
+                        {
+                            Rooms[RoomsI][RoomsJ].addAnimation(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation());
+                        }
                         Rooms[RoomsI][RoomsJ].removeEnemyProjectile(i);
                         i--;
                         generalCol = true;
@@ -1164,6 +1225,10 @@ public class PlayGame extends JPanel implements KeyListener{
                 {
                     if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i), Rooms[RoomsI][RoomsJ].getDoor(j)))
                     {
+                        if(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation() != null)
+                        {
+                            Rooms[RoomsI][RoomsJ].addAnimation(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation());
+                        }
                         Rooms[RoomsI][RoomsJ].removeEnemyProjectile(i);
                         i--;
                         generalCol = true;
@@ -1177,6 +1242,10 @@ public class PlayGame extends JPanel implements KeyListener{
                 {
                     if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i), Rooms[RoomsI][RoomsJ].getWall(j)))
                     {
+                        if(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation() != null)
+                        {
+                            Rooms[RoomsI][RoomsJ].addAnimation(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation());
+                        }
                         Rooms[RoomsI][RoomsJ].removeEnemyProjectile(i);
                         i--;
                         generalCol = true;
@@ -1192,6 +1261,10 @@ public class PlayGame extends JPanel implements KeyListener{
                     {
                         Rooms[RoomsI][RoomsJ].removeBarrel(j);
                         j--;
+                        if(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation() != null)
+                        {
+                            Rooms[RoomsI][RoomsJ].addAnimation(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation());
+                        }
                         Rooms[RoomsI][RoomsJ].removeEnemyProjectile(i);
                         i--;
                         generalCol = true;
@@ -1452,6 +1525,14 @@ public class PlayGame extends JPanel implements KeyListener{
                    Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getAngle(),
                    Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getX(), 
                    Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getY());
+        }
+        
+        for(int i = 0; i < Rooms[RoomsI][RoomsJ].AnimationSize(); i++)
+        {
+            paintRotatedImg(Rooms[RoomsI][RoomsJ].getAnimation(i).getSprite(), 
+                   Rooms[RoomsI][RoomsJ].getAnimation(i).getAngle(),
+                   Rooms[RoomsI][RoomsJ].getAnimation(i).getX(), 
+                   Rooms[RoomsI][RoomsJ].getAnimation(i).getY());
         }
         
         

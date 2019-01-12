@@ -9,9 +9,9 @@ public class PlayerProjectile extends Projectile{
     
     public PlayerProjectile(int x, int y, int leftbound, int rightbound, int upbound, int downbound,
             int Speed, double Angle, int damage, boolean fire, boolean ice,
-            boolean Void, int elementChance, Image img, Image shadow)
+            boolean Void, int elementChance, Image img, Image shadow, Image[] endAnimation)
     {
-        super(x, y, leftbound, rightbound, upbound, downbound, Speed, Angle, damage, img, shadow);
+        super(x, y, leftbound, rightbound, upbound, downbound, Speed, Angle, damage, img, shadow, endAnimation);
         
         this.Fire = fire;
         this.Ice = ice;
