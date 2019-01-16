@@ -6,14 +6,16 @@ import java.awt.Image;
 
 public class DartGoblin extends MovingEnemy{
     private Image[] MoveLeftImages, MoveRightImages, AttackLeft, AttackRight;
-    private Image Dart;
-    private int ProjectileTimer, ImageTimer, CurrentFrame;
+    private Image[] EndProjectile;
+    private Image Dart, DartShadow;
+    private int ProjectileTimer, ImageTimer, CurrentFrame, ShotsInBurst;
     private boolean FacingRight, CloseToPlayer;
     private Image CurrentSprite;
     
     public DartGoblin(int x, int y, int leftbound, int rightbound, int upbound, 
             int downbound, int floor, Image[] moveLeft, Image[] moveRight, 
-            Image[] attackLeft, Image[] attackRight, Image dart)
+            Image[] attackLeft, Image[] attackRight, Image dart, Image dartShadow,
+            Image[] endProjectile)
     {
         super(x, y, moveLeft[0].getWidth(null), moveLeft[0].getHeight(null), 
                 leftbound, rightbound, upbound, downbound, 100 + 50 * floor, 3, 50 + 25 * floor,
@@ -23,7 +25,10 @@ public class DartGoblin extends MovingEnemy{
         this.AttackLeft = attackLeft;
         this.AttackRight = attackRight;
         this.Dart = dart;
+        this.DartShadow = dartShadow;
+        this.EndProjectile = endProjectile;
         this.ProjectileTimer = 120;
+        this.ShotsInBurst = 3;
         this.ImageTimer = 0;
         this.CurrentFrame = 0;
         this.FacingRight = true;
@@ -44,7 +49,17 @@ public class DartGoblin extends MovingEnemy{
     
     public Projectile fireProjectile()
     {
-        this.ProjectileTimer = 120;
+        if(this.ShotsInBurst > 0)
+        {
+            this.ProjectileTimer = 15;
+            this.ShotsInBurst--;
+            
+            if(this.ShotsInBurst <= 0)
+            {
+                this.ProjectileTimer = 120;
+                this.ShotsInBurst = 3;
+            }
+        }
         
         int dartX;
         
@@ -59,7 +74,8 @@ public class DartGoblin extends MovingEnemy{
         
         Projectile dart = new Projectile(this.getX() + dartX, this.getY() + 36, 
                 this.getLeftBound(), this.getRightBound(), this.getUpBound(), 
-                this.getDownBound(), 8, this.getAngle(), 50, this.Dart);
+                this.getDownBound(), 8, this.getAngle(), 50, this.Dart, this.DartShadow,
+                this.EndProjectile);
         
         return dart;
     }
@@ -142,7 +158,7 @@ public class DartGoblin extends MovingEnemy{
             
             if(this.FacingRight)
             {
-                if(this.ProjectileTimer < 30 || this.ProjectileTimer > 115)
+                if(this.ProjectileTimer < 30 || this.ProjectileTimer > 110)
                 {
                     this.CurrentSprite = this.AttackRight[1];
                 }
@@ -157,7 +173,7 @@ public class DartGoblin extends MovingEnemy{
             }
             else
             {
-                if(this.ProjectileTimer < 30 || this.ProjectileTimer > 115)
+                if(this.ProjectileTimer < 30 || this.ProjectileTimer > 110)
                 {
                     this.CurrentSprite = this.AttackLeft[1];
                 }
@@ -178,7 +194,7 @@ public class DartGoblin extends MovingEnemy{
     
     private void updatePosition(boolean generalCollision, boolean horizontalCollision, boolean verticalCollision) 
     {
-        if(this.CloseToPlayer || this.ProjectileTimer < 30 || this.ProjectileTimer > 115)
+        if(this.CloseToPlayer || this.ProjectileTimer < 30 || this.ProjectileTimer > 110)
         {
             return;
         }

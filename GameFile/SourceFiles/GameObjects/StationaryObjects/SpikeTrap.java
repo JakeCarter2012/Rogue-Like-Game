@@ -1,6 +1,5 @@
 package SourceFiles.GameObjects.StationaryObjects;
 
-
 import SourceFiles.GameObjects.GameObject;
 import java.awt.Image;
 

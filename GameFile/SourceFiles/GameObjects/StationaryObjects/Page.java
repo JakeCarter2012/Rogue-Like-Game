@@ -1,6 +1,5 @@
 package SourceFiles.GameObjects.StationaryObjects;
 
-import SourceFiles.GameObjects.StationaryObjects.StationaryObject;
 import SourceFiles.GameObjects.MovingObjects.Player.Spell;
 import java.awt.Image;
 

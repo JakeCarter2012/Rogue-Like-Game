@@ -1,6 +1,5 @@
 package SourceFiles.GameObjects.StationaryObjects;
 
-import SourceFiles.GameObjects.StationaryObjects.AreaOfEffect;
 import java.awt.Image;
 
 public class PlayerAoe extends AreaOfEffect{

@@ -9,6 +9,9 @@ import SourceFiles.GameObjects.MovingObjects.Enemies.MovingEnemy;
 import SourceFiles.GameObjects.MovingObjects.Enemies.SpearGoblin;
 import SourceFiles.GameObjects.MovingObjects.Enemies.DartGoblin;
 import SourceFiles.GameObjects.StationaryObjects.StationaryObject;
+import SourceFiles.GameObjects.StationaryObjects.Wall;
+import SourceFiles.GameObjects.StationaryObjects.Door;
+import SourceFiles.GameObjects.Animations.Animation;
 import SourceFiles.GameLogic.KeyControl;
 import SourceFiles.GameLogic.CollisionDetector;
 import java.awt.Color;
@@ -25,26 +28,49 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelListener;
+import java.awt.event.MouseWheelEvent;
 import java.awt.MouseInfo;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
+import javax.swing.*;
 
-public class PlayGame extends JPanel {
+public class PlayGame extends JPanel implements KeyListener{
     //private ArrayList<ArrayList<Room>> Rooms;
     private Room[][] Rooms;
     private int RoomsI, RoomsJ;
     private BufferedImage bufImg;
     private Graphics2D g2d;
-    private Image ForestFloor, tempchar, NullSpellIcon, CurrentSpellIcon, 
+    private Image ForestFloor, TempleFloor, tempchar, NullSpellIcon, CurrentSpellIcon, 
             IceShardsImg, IceShardsIcon, FireBallImg, FireBallIcon, VoidWaveImg,
-            VoidWaveIcon, TestSpellImg, testenemy;
+            VoidWaveIcon, TestSpellImg, ChilledImg, FrozenImg, IceShardsShadow,
+            FireBallShadow, SmallProjectileShadow, VoidWaveShadow, testenemy;
+    private Image[] IceShardsBreak, VoidWaveEnd, FireBallEnd, BurningImgs;
+    private Image TopWallLeftImg, TopWallRightImg, TopWallMidImg,
+            LeftWallTopImg, LeftWallBottomImg, LeftWallMidImg,
+            RightWallTopImg, RightWallBottomImg, RightWallMidImg,
+            BottomWallLeftImg, BottomWallRightImg, BottomWallMidImg;
+    //private final int ScreenWidth = 1024, ScreenHeight = 960;
+    //private final int ScreenWidth = 1280, ScreenHeight = 720;
     private final int ScreenWidth = 1280, ScreenHeight = 960;
+    private final int GameWidth = 1280, GameHeight = 1280;
     private final int FPS = 60;
+    private final int ShadowHeight = 60;
     private boolean levelFinished;
     private WizardPlayer Player;
     private int Money;
+    private boolean Paused, InGame;
     private JFrame GameWindow;
+    private JPanel PauseMenu, MainMenu;
     private GameEvents PlayerKeyEvent;
-        private Spell FireBall, IceShards, VoidWave, WildFire, Blizzard, BlackHole, Meteor, Comet, FrostFlame;//FrostFlame:: Blue Fire
+    private Spell FireBall, IceShards, VoidWave, WildFire, Blizzard, BlackHole, Meteor, Comet, FrostFlame;//FrostFlame:: Blue Fire
+    private Wall[] Walls;
+    private Door TopDoor, LeftDoor, BottomDoor, RightDoor;
+    private Wall TopWallMid, LeftWallMid, BottomWallMid, RightWallMid;
+    private Animation Burning;
     
     private Image[] WizRightForwardAttack, WizRightForward, WizRightBackAttack,
             WizRightAttack, WizRight, WizLeftForwardAttack, WizLeftForward,
@@ -53,6 +79,131 @@ public class PlayGame extends JPanel {
     
     private Image[] SpearGoblinRight, SpearGoblinLeft, DartGoblinLeft, DartGoblinRight,
             DartGoblinLeftAttack, DartGoblinRightAttack;
+    private Image[] TopDoorImgs, LeftDoorImgs, BottomDoorImgs, RightDoorImgs;
+    
+    private Image SmallProjectileGreen;
+    private Image[] SmallGreenProjectileEnd;
+    
+    private JButton testButton;
+    
+    public void startGame()
+    {
+        GameWindow = new JFrame();
+        GameWindow.addWindowListener(new WindowAdapter(){});
+        GameWindow.add(this);
+        GameWindow.setTitle("Rogue Game");
+        GameWindow.setSize(ScreenWidth + 6, ScreenHeight + 35);
+        GameWindow.setResizable(false);
+        GameWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        GameWindow.setVisible(true);
+        GameWindow.getContentPane().setFocusable(true);
+        GameWindow.getContentPane().addKeyListener(this);
+        this.Paused = false;
+        this.InGame = false;
+        
+        //GameWindow.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        //GameWindow.setUndecorated(true);
+        
+    }
+    
+    public void mainMenuInit()
+    {
+        
+    }
+    
+    public void pauseMenuInit()
+    {
+        PauseMenu = new JPanel();
+        PauseMenu.setVisible(false);
+        PauseMenu.setLayout(null);
+        
+        JButton testbut = new JButton(new ImageIcon(tempchar));
+        //testbut.setIcon(new ImageIcon(tempchar));
+        //testbut.setRolloverIcon(null);
+        //testbut.setDisabledIcon(null);
+        //testbut.setPressedIcon(icon);
+        //testbut.setRolloverSelectedIcon(icon);
+        testbut.setBorder(BorderFactory.createEmptyBorder());
+        testbut.setContentAreaFilled(false);
+        testbut.setBounds(100,100, this.tempchar.getWidth(null), tempchar.getHeight(null));
+        testbut.setToolTipText("test");
+        PauseMenu.add(testbut);
+        
+        JTextArea testtext = new JTextArea();
+        testtext.setBounds(300, 100, 200, 600);
+        testtext.setText("imma test! a really realy really really really really long test");
+        testtext.setLineWrap(true);
+        testtext.setFont(new Font("Serif", Font.ITALIC, 16));
+        testtext.setBorder(BorderFactory.createEmptyBorder());
+        testtext.setFocusable(false);
+        testtext.setOpaque(false);
+        PauseMenu.add(testtext);
+        
+        testbut.addMouseListener(new MouseAdapter() {
+        public void mouseEntered(MouseEvent evt) {
+                testtext.setText("we in");
+            }
+
+            public void mouseExited(MouseEvent evt) {
+                testtext.setText("we out");
+            }
+        });
+        
+        testbut.addActionListener(new ActionListener(){
+        public void actionPerformed(ActionEvent e){  
+            System.out.println("pushed the button");
+        }
+        });
+        
+        
+        JLabel testlab = new JLabel(new ImageIcon(this.ForestFloor));
+        testlab.setBounds(0, 0, ForestFloor.getWidth(null), ForestFloor.getHeight(null));
+        testlab.setVisible(true);
+        PauseMenu.add(testlab);
+        
+        PauseMenu.setBounds(200, 200, 200, 200);
+        
+        GameWindow.add(PauseMenu);
+        GameWindow.setVisible(true);
+    }
+    
+    public void pauseGame()
+    {
+        this.Paused = true;
+        this.setVisible(false);
+        this.PauseMenu.setVisible(true);
+    }
+    
+    public void unPauseGame()
+    {
+        this.Paused = false;
+        this.PauseMenu.setVisible(false);
+        this.setVisible(true);
+    }
+    
+    @Override
+    public void keyPressed(KeyEvent e) {}
+    
+    @Override
+    public void keyTyped(KeyEvent e) {}
+    
+    @Override
+    public void keyReleased(KeyEvent e) 
+    {
+        int key = e.getKeyCode();
+        
+        if(key == KeyEvent.VK_P || key == KeyEvent.VK_ESCAPE)
+        {
+            if(!Paused && InGame)
+            {
+                this.Paused = true;
+            }
+            else if (InGame)
+            {
+                unPauseGame();
+            }
+        }
+    }
     
     public void resourcesInit()
     {
@@ -72,6 +223,11 @@ public class PlayGame extends JPanel {
             this.FireBallIcon = ImageIO.read(new File("Resources" + File.separator + "FireBallIcon.png"));
             this.VoidWaveImg = ImageIO.read(new File("Resources" + File.separator + "VoidWaveImg.png"));
             this.VoidWaveIcon = ImageIO.read(new File("Resources" + File.separator + "VoidWaveIcon.png"));
+            
+            IceShardsShadow = ImageIO.read(new File("Resources" + File.separator + "IceShardsShadow.png"));
+            FireBallShadow = ImageIO.read(new File("Resources" + File.separator + "FireBallShadow.png"));
+            VoidWaveShadow = ImageIO.read(new File("Resources" + File.separator + "VoidWaveShadow.png"));
+            SmallProjectileShadow = ImageIO.read(new File("Resources" + File.separator + "SmallProjectileShadow.png"));
             
             WizRightForwardAttack = new Image[3];
             WizRightForwardAttack[0] = ImageIO.read(new File("Resources" + File.separator + "WizRightForwardAttack1.png"));
@@ -134,9 +290,9 @@ public class PlayGame extends JPanel {
             WizForward[2] = ImageIO.read(new File("Resources" + File.separator + "WizForward3.png"));
             
             WizBackAttack = new Image[3];
-            WizBackAttack[0] = ImageIO.read(new File("Resources/WizBackAttack1.png"));
-            WizBackAttack[1] = ImageIO.read(new File("Resources/WizBackAttack2.png"));
-            WizBackAttack[2] = ImageIO.read(new File("Resources/WizBackAttack3.png"));
+            WizBackAttack[0] = ImageIO.read(new File("Resources" + File.separator + "WizBackAttack1.png"));
+            WizBackAttack[1] = ImageIO.read(new File("Resources" + File.separator + "WizBackAttack2.png"));
+            WizBackAttack[2] = ImageIO.read(new File("Resources" + File.separator + "WizBackAttack3.png"));
             
             WizBack = new Image[3];           
             WizBack[0] = ImageIO.read(new File("Resources" + File.separator + "WizBack1.png"));
@@ -182,30 +338,131 @@ public class PlayGame extends JPanel {
             DartGoblinRightAttack = new Image[2];           
             DartGoblinRightAttack[0] = ImageIO.read(new File("Resources" + File.separator + "DartGoblinRightAttack1.png"));
             DartGoblinRightAttack[1] = ImageIO.read(new File("Resources" + File.separator + "DartGoblinRightAttack2.png"));
+            
+            SmallProjectileGreen = ImageIO.read(new File("Resources" + File.separator + "SmallProjectileGreen.png"));
+            
+            ChilledImg = ImageIO.read(new File("Resources" + File.separator + "chilled.png"));
+            FrozenImg = ImageIO.read(new File("Resources" + File.separator + "frozen.png"));
+            
+            TopWallRightImg = ImageIO.read(new File("Resources" + File.separator + "TopWallRight.png"));
+            TopWallMidImg = ImageIO.read(new File("Resources" + File.separator + "TopWallMiddle.png"));
+            TopWallLeftImg = ImageIO.read(new File("Resources" + File.separator + "TopWallLeft.png"));
+            BottomWallRightImg = ImageIO.read(new File("Resources" + File.separator + "BottomWallRight.png"));
+            BottomWallMidImg = ImageIO.read(new File("Resources" + File.separator + "BottomWallMiddle.png"));
+            BottomWallLeftImg = ImageIO.read(new File("Resources" + File.separator + "BottomWallLeft.png"));
+            LeftWallTopImg = ImageIO.read(new File("Resources" + File.separator + "LeftWallTop.png"));
+            LeftWallMidImg = ImageIO.read(new File("Resources" + File.separator + "LeftWallMiddle.png"));
+            LeftWallBottomImg = ImageIO.read(new File("Resources" + File.separator + "LeftWallBottom.png"));
+            RightWallTopImg = ImageIO.read(new File("Resources" + File.separator + "RightWallTop.png"));
+            RightWallMidImg = ImageIO.read(new File("Resources" + File.separator + "RightWallMiddle.png"));
+            RightWallBottomImg = ImageIO.read(new File("Resources" + File.separator + "RightWallBottom.png"));
+            
+            TopDoorImgs = new Image[7];
+            TopDoorImgs[0] = ImageIO.read(new File("Resources" + File.separator + "TopDoorOpen.png"));
+            TopDoorImgs[1] = ImageIO.read(new File("Resources" + File.separator + "TopDoorClosing1.png"));
+            TopDoorImgs[2] = ImageIO.read(new File("Resources" + File.separator + "TopDoorClosing2.png"));
+            TopDoorImgs[3] = ImageIO.read(new File("Resources" + File.separator + "TopDoorClosing3.png"));
+            TopDoorImgs[4] = ImageIO.read(new File("Resources" + File.separator + "TopDoorClosing4.png"));
+            TopDoorImgs[5] = ImageIO.read(new File("Resources" + File.separator + "TopDoorClosing5.png"));
+            TopDoorImgs[6] = ImageIO.read(new File("Resources" + File.separator + "TopDoorClosed.png"));
+            
+            LeftDoorImgs = new Image[7];
+            LeftDoorImgs[0] = ImageIO.read(new File("Resources" + File.separator + "LeftDoorOpen.png"));
+            LeftDoorImgs[1] = ImageIO.read(new File("Resources" + File.separator + "LeftDoorClosing1.png"));
+            LeftDoorImgs[2] = ImageIO.read(new File("Resources" + File.separator + "LeftDoorClosing2.png"));
+            LeftDoorImgs[3] = ImageIO.read(new File("Resources" + File.separator + "LeftDoorClosing3.png"));
+            LeftDoorImgs[4] = ImageIO.read(new File("Resources" + File.separator + "LeftDoorClosing4.png"));
+            LeftDoorImgs[5] = ImageIO.read(new File("Resources" + File.separator + "LeftDoorClosing5.png"));
+            LeftDoorImgs[6] = ImageIO.read(new File("Resources" + File.separator + "LeftDoorClosed.png"));
+            
+            RightDoorImgs = new Image[7];
+            RightDoorImgs[0] = ImageIO.read(new File("Resources" + File.separator + "RightDoorOpen.png"));
+            RightDoorImgs[1] = ImageIO.read(new File("Resources" + File.separator + "RightDoorClosing1.png"));
+            RightDoorImgs[2] = ImageIO.read(new File("Resources" + File.separator + "RightDoorClosing2.png"));
+            RightDoorImgs[3] = ImageIO.read(new File("Resources" + File.separator + "RightDoorClosing3.png"));
+            RightDoorImgs[4] = ImageIO.read(new File("Resources" + File.separator + "RightDoorClosing4.png"));
+            RightDoorImgs[5] = ImageIO.read(new File("Resources" + File.separator + "RightDoorClosing5.png"));
+            RightDoorImgs[6] = ImageIO.read(new File("Resources" + File.separator + "RightDoorClosed.png"));
+            
+            BottomDoorImgs = new Image[7];
+            BottomDoorImgs[0] = ImageIO.read(new File("Resources" + File.separator + "BottomDoorOpen.png"));
+            BottomDoorImgs[1] = ImageIO.read(new File("Resources" + File.separator + "BottomDoorClosing1.png"));
+            BottomDoorImgs[2] = ImageIO.read(new File("Resources" + File.separator + "BottomDoorClosing2.png"));
+            BottomDoorImgs[3] = ImageIO.read(new File("Resources" + File.separator + "BottomDoorClosing3.png"));
+            BottomDoorImgs[4] = ImageIO.read(new File("Resources" + File.separator + "BottomDoorClosing4.png"));
+            BottomDoorImgs[5] = ImageIO.read(new File("Resources" + File.separator + "BottomDoorClosing5.png"));
+            BottomDoorImgs[6] = ImageIO.read(new File("Resources" + File.separator + "BottomDoorClosed.png"));
+            
+            TempleFloor = ImageIO.read(new File("Resources" + File.separator + "Floor.png"));
+            
+            SmallGreenProjectileEnd = new Image[4];
+            SmallGreenProjectileEnd[0] = ImageIO.read(new File("Resources" + File.separator + "SmallProjectileGreenEnd1.png"));
+            SmallGreenProjectileEnd[1] = ImageIO.read(new File("Resources" + File.separator + "SmallProjectileGreenEnd2.png"));
+            SmallGreenProjectileEnd[2] = ImageIO.read(new File("Resources" + File.separator + "SmallProjectileGreenEnd3.png"));
+            SmallGreenProjectileEnd[3] = ImageIO.read(new File("Resources" + File.separator + "SmallProjectileGreenEnd4.png"));
+            
+            IceShardsBreak = new Image[4];
+            IceShardsBreak[0] = ImageIO.read(new File("Resources" + File.separator + "IceShardsBreak1.png"));
+            IceShardsBreak[1] = ImageIO.read(new File("Resources" + File.separator + "IceShardsBreak2.png"));
+            IceShardsBreak[2] = ImageIO.read(new File("Resources" + File.separator + "IceShardsBreak3.png"));
+            IceShardsBreak[3] = ImageIO.read(new File("Resources" + File.separator + "IceShardsBreak4.png"));
+            
+            VoidWaveEnd = new Image[4];
+            VoidWaveEnd[0] = ImageIO.read(new File("Resources" + File.separator + "VoidWaveEnd1.png"));
+            VoidWaveEnd[1] = ImageIO.read(new File("Resources" + File.separator + "VoidWaveEnd2.png"));
+            VoidWaveEnd[2] = ImageIO.read(new File("Resources" + File.separator + "VoidWaveEnd3.png"));
+            VoidWaveEnd[3] = ImageIO.read(new File("Resources" + File.separator + "VoidWaveEnd4.png"));
+            
+            FireBallEnd = new Image[6];
+            FireBallEnd[0] = ImageIO.read(new File("Resources" + File.separator + "FireBallEnd1.png"));
+            FireBallEnd[1] = ImageIO.read(new File("Resources" + File.separator + "FireBallEnd2.png"));
+            FireBallEnd[2] = ImageIO.read(new File("Resources" + File.separator + "FireBallEnd3.png"));
+            FireBallEnd[3] = ImageIO.read(new File("Resources" + File.separator + "FireBallEnd4.png"));
+            FireBallEnd[4] = ImageIO.read(new File("Resources" + File.separator + "FireBallEnd5.png"));
+            FireBallEnd[5] = ImageIO.read(new File("Resources" + File.separator + "FireBallEnd6.png"));
+            
+            BurningImgs = new Image[4];
+            BurningImgs[0] = ImageIO.read(new File("Resources" + File.separator + "Burning1.png"));
+            BurningImgs[1] = ImageIO.read(new File("Resources" + File.separator + "Burning2.png"));
+            BurningImgs[2] = ImageIO.read(new File("Resources" + File.separator + "Burning3.png"));
+            BurningImgs[3] = ImageIO.read(new File("Resources" + File.separator + "Burning4.png"));
         } catch (Exception e) {
             System.out.print(e.getStackTrace() + " Error loading resources \n");
         }
         
-        IceShards = new ProjectileSpell("Ice Shards", 5,10, 30, false, true, false, 30, IceShardsImg, IceShardsIcon);
-        FireBall = new ProjectileSpell("Fire Ball", 5,10, 30, true, false, false, 30, FireBallImg, FireBallIcon);
-        VoidWave = new ProjectileSpell("Void Wave", 1,10, 59, false, false, true, 0, VoidWaveImg, VoidWaveIcon);
+        IceShards = new ProjectileSpell("Ice Shards", 5,10, 30, false, true, false, 30, IceShardsImg, IceShardsIcon, IceShardsShadow, IceShardsBreak);
+        FireBall = new ProjectileSpell("Fire Ball", 5,10, 30, true, false, false, 30, FireBallImg, FireBallIcon, FireBallShadow, FireBallEnd);
+        VoidWave = new ProjectileSpell("Void Wave", 1,10, 59, false, false, true, 0, VoidWaveImg, VoidWaveIcon, VoidWaveShadow, VoidWaveEnd);
         
-        //create the window we use
-        GameWindow = new JFrame();
-        GameWindow.addWindowListener(new WindowAdapter(){});
-        GameWindow.add(this);
-        GameWindow.setTitle("Rogue Game");
-        GameWindow.setSize(ScreenWidth + 6, ScreenHeight + 35);
-        GameWindow.setResizable(false);
-        GameWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        GameWindow.setVisible(true);
-        GameWindow.getContentPane().setFocusable(true);
+        Burning = new Animation(0, 0, 0, BurningImgs, 3, true);
+        
+        Walls = new Wall[8];
+        Walls[0] = new Wall(0, 0, 579, 128 - ShadowHeight, TopWallLeftImg);
+        Walls[1] = new Wall(700, 0, 580, 128 - ShadowHeight, TopWallRightImg);
+        Walls[2] = new Wall(0, 0, 128, 580, LeftWallTopImg);
+        Walls[3] = new Wall(0, 701, 128, 579, LeftWallBottomImg);
+        Walls[4] = new Wall(0, 1152, 580, 128, BottomWallLeftImg);
+        Walls[5] = new Wall(701, 1152, 579, 128, BottomWallRightImg);
+        Walls[6] = new Wall(1152, 0, 128, 579, RightWallTopImg);
+        Walls[7] = new Wall(1152, 700, 128, 580, RightWallBottomImg);
+        
+        TopDoor = new Door(579, 0, 121, 60, TopDoorImgs);
+        LeftDoor = new Door(0, 580, 128,121, LeftDoorImgs);
+        BottomDoor = new Door(580, 1152, 121, 128, BottomDoorImgs);
+        RightDoor = new Door(1152, 579, 128, 121, RightDoorImgs);
+        
+        TopWallMid = new Wall(579, 0, 121, 60, TopWallMidImg);
+        LeftWallMid = new Wall(0, 580, 128,121, LeftWallMidImg);
+        BottomWallMid = new Wall(580, 1152, 121, 128, BottomWallMidImg);
+        RightWallMid = new Wall(1152, 579, 128, 121, RightWallMidImg);
     }
     
     public void newGameInit()
     {
+        this.Paused = false;
+        this.InGame = true;
         this.Money = 0;
-        this.Player = new WizardPlayer(0, 0, 0, this.ScreenWidth, 0, this.ScreenHeight, 
+        this.Player = new WizardPlayer(200, 200, 0, this.GameWidth, 0, this.GameHeight, 
                 WizRightForwardAttack, WizRightForward, WizRightBackAttack,
                 WizRightAttack, WizRight, WizLeftForwardAttack, WizLeftForward,
                 WizLeftBackwardAttack, WizLeftAttack, WizLeft, WizForwardAttack, 
@@ -215,8 +472,7 @@ public class PlayGame extends JPanel {
         this.Player.addNewSpell(IceShards);
         this.Player.addNewSpell(FireBall);
         this.Player.addNewSpell(VoidWave);
-        this.Player.addNewSpell(new ProjectileSpell("Test Spell", 5,10, 30, false, false, false, 0, TestSpellImg,this.NullSpellIcon));
-        
+        //this.Player.addNewSpell(new ProjectileSpell("Test Spell", 5,10, 30, false, false, false, 0, TestSpellImg,this.NullSpellIcon,this.SmallProjectileShadow, null));
         
         PlayerKeyEvent = new GameEvents();
         PlayerKeyEvent.addObserver(Player);
@@ -234,6 +490,18 @@ public class PlayGame extends JPanel {
                   Player.stopFire();
             } 
         }); 
+        GameWindow.addMouseWheelListener(new MouseWheelListener() {
+            public void mouseWheelMoved(MouseWheelEvent e){
+                if(e.getWheelRotation() < 0)
+                {
+                    Player.scrollUp();
+                }
+                else if(e.getWheelRotation() > 0)
+                {
+                    Player.scrollDown();
+                }
+            }
+        });
     }
     
     public void testLevelInit()
@@ -243,16 +511,21 @@ public class PlayGame extends JPanel {
         this.RoomsJ = 0;
         this.Rooms[RoomsI][RoomsJ] = new Room();
         
-        Rooms[RoomsI][RoomsJ].addWall(new StationaryObject(200, 200, this.tempchar));
-        
-       // SpearGoblin gobo = new SpearGoblin(400, 400, 0, this.ScreenWidth, 0, 
-                //this.ScreenHeight, 1, this.SpearGoblinLeft, this.SpearGoblinRight);
-        DartGoblin gobo2 = new DartGoblin(600, 600, 0, this.ScreenWidth, 0, 
-                this.ScreenHeight, 1, this.DartGoblinLeft, this.DartGoblinRight,
+        this.Rooms[RoomsI][RoomsJ].addDoor(TopDoor);
+        this.Rooms[RoomsI][RoomsJ].addDoor(LeftDoor);
+        this.Rooms[RoomsI][RoomsJ].addWall(RightWallMid);
+        this.Rooms[RoomsI][RoomsJ].addWall(BottomWallMid);
+       
+        SpearGoblin gobo = new SpearGoblin(700, 700, 0, this.GameWidth, 0, 
+                this.GameHeight, 1, this.SpearGoblinLeft, this.SpearGoblinRight);
+        DartGoblin gobo2 = new DartGoblin(900, 900, 0, this.GameWidth, 0, 
+                this.GameHeight, 1, this.DartGoblinLeft, this.DartGoblinRight,
                 this.DartGoblinLeftAttack, this.DartGoblinRightAttack, 
-                this.tempchar);
+                this.SmallProjectileGreen, this.SmallProjectileShadow,
+                this.SmallGreenProjectileEnd);
         
-        //Rooms[RoomsI][RoomsJ].addEnemy(gobo);
+        Rooms[RoomsI][RoomsJ].lockDoors();
+        Rooms[RoomsI][RoomsJ].addEnemy(gobo);
         Rooms[RoomsI][RoomsJ].addEnemy(gobo2);
     }
     
@@ -262,15 +535,28 @@ public class PlayGame extends JPanel {
         long currTime;
         //target time hoping to aim for each loop
         long targetTime = 1000000000 / FPS;
+        
 
         while ((Player.isAlive()) && !levelFinished) {
             currTime = System.nanoTime();
 
             updateGame();
             repaint();
-
+            
+            if(this.Paused)
+            {
+                pauseGame();
+                while(Paused)
+                {
+                    try{
+                        Thread.sleep(100);
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            }
+            
             //sleep for any remaining time
-            //if statement for potential negative time, then don't sleep
             if ((currTime - System.nanoTime() + targetTime) > 0) {
                 try {
                     Thread.sleep((currTime - System.nanoTime() + targetTime) / 1000000);
@@ -288,6 +574,86 @@ public class PlayGame extends JPanel {
         boolean generalCol = false;
         boolean verticalCol = false;
         boolean horizontalCol = false;
+        
+        for(int i = 0; i < Walls.length; i++)
+        {
+            if(verticalCol && horizontalCol)
+            {
+                break;
+            }
+            
+            if(col.normalCollision(Player, Walls[i]))
+            {
+                generalCol = true;
+                
+                if(col.horizontalCollision(Player, Walls[i]))
+                {
+                    horizontalCol = true;
+                }
+                
+                if(col.verticalCollision(Player, Walls[i]))
+                {
+                    verticalCol = true;
+                }
+            }
+        }
+        
+        for(int i = 0; i < Rooms[RoomsI][RoomsJ].DoorSize(); i++)
+        {
+            if(verticalCol && horizontalCol)
+            {
+                break;
+            }
+            
+            if(col.normalCollision(Player, Rooms[RoomsI][RoomsJ].getDoor(i)))
+            {
+                generalCol = true;
+                
+                if(Rooms[RoomsI][RoomsJ].getDoor(i).isLocked())
+                {
+                    if(col.horizontalCollision(Player, Rooms[RoomsI][RoomsJ].getDoor(i)))
+                    {
+                        horizontalCol = true;
+                    }
+
+                    if(col.verticalCollision(Player, Rooms[RoomsI][RoomsJ].getDoor(i)))
+                    {
+                        verticalCol = true;
+                    }
+                }
+                else
+                {
+                    if(Rooms[RoomsI][RoomsJ].getDoor(i).getY() == 0)
+                    {
+                        if(RoomsI == 0 || Rooms[RoomsI][RoomsJ] == null)
+                        {
+                            //handle next level creation
+                        }
+                        else
+                        {
+                            //RoomsI--;
+                        }
+                    }
+                    else if(Rooms[RoomsI][RoomsJ].getDoor(i).getX() == 0)
+                    {
+                        //RoomsJ--;
+                    }
+                    else if(Rooms[RoomsI][RoomsJ].getDoor(i).getY() == 1152)
+                    {
+                        //RoomsI++;
+                    }
+                    else if(Rooms[RoomsI][RoomsJ].getDoor(i).getX() == 1152)
+                    {
+                        //RoomsJ++;
+                    }
+                    
+                    if(Rooms[RoomsI][RoomsJ].EnemySize() > 0)
+                    {
+                        Rooms[RoomsI][RoomsJ].lockDoors();
+                    }
+                }
+            }
+        }
         
         //first test moving collisions for the player first
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].WallSize(); i++)
@@ -358,10 +724,27 @@ public class PlayGame extends JPanel {
             }
         }
         
+        double scale;
+        
+        if(ScreenHeight < ScreenWidth)
+        {
+            scale = (double)ScreenWidth/GameWidth;
+        }
+        else if(ScreenHeight > ScreenWidth)
+        {
+            scale = (double)ScreenHeight/GameHeight;
+        }
+        else
+        {
+            scale = 1;
+        }
+        
+        
+        double mouseX = (MouseInfo.getPointerInfo().getLocation().x - (int)GameWindow.getLocation().getX() - 4) / scale + screenShiftX();
+        double mouseY = (MouseInfo.getPointerInfo().getLocation().y - (int)GameWindow.getLocation().getY() - 32) / scale + screenShiftY();
+        
         //now update the player's position
-        Player.updatePlayer(MouseInfo.getPointerInfo().getLocation().x - (int)GameWindow.getLocation().getX() - 4, 
-                MouseInfo.getPointerInfo().getLocation().y - (int)GameWindow.getLocation().getY() - 32, 
-                generalCol, horizontalCol, verticalCol);
+        Player.updatePlayer((int)mouseX, (int)mouseY, generalCol, horizontalCol, verticalCol);
         
         //now test for remaining collisions based on where the player ends up standing
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].CoinSize(); i++)
@@ -412,6 +795,16 @@ public class PlayGame extends JPanel {
         if(Player.isAoeReady())
         {
             Rooms[RoomsI][RoomsJ].addPlayerAoe(Player.fireAoe());
+            
+            for(int i = 0; i < Rooms[RoomsI][RoomsJ].BarrelSize(); i++)
+            {
+                if(col.standingCollision(Rooms[RoomsI][RoomsJ].getBarrel(i), 
+                       Rooms[RoomsI][RoomsJ].getPlayerAoe(Rooms[RoomsI][RoomsJ].PlayerAoeSize() - 1)))
+                {
+                    Rooms[RoomsI][RoomsJ].removeBarrel(i);
+                    i--;
+                }
+            }
         }
     }
     
@@ -431,8 +824,64 @@ public class PlayGame extends JPanel {
             if(Rooms[RoomsI][RoomsJ].getEnemy(i).isDead())
             {
                 Rooms[RoomsI][RoomsJ].removeEnemy(i);
+                if(Rooms[RoomsI][RoomsJ].EnemySize() == 0)
+                {
+                    Rooms[RoomsI][RoomsJ].unlockDoors();
+                }
                 i--;
                 continue;
+            }
+            
+            for(int j = 0; j < Walls.length; j++)
+            {
+                if(verticalCol && horizontalCol)
+                {
+                    break;
+                }
+
+                if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
+                        Walls[j]))
+                {
+                    generalCol = true;
+
+                    if(col.horizontalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
+                            Walls[j]))
+                    {
+                        horizontalCol = true;
+                    }
+
+                    if(col.verticalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
+                            Walls[j]))
+                    {
+                        verticalCol = true;
+                    }
+                }
+            }
+            
+            for(int j = 0; j < Rooms[RoomsI][RoomsJ].DoorSize(); j++)
+            {
+                if(verticalCol && horizontalCol)
+                {
+                    break;
+                }
+
+                if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
+                        Rooms[RoomsI][RoomsJ].getDoor(j)))
+                {
+                    generalCol = true;
+
+                    if(col.horizontalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
+                            Rooms[RoomsI][RoomsJ].getDoor(j)))
+                    {
+                        horizontalCol = true;
+                    }
+
+                    if(col.verticalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
+                            Rooms[RoomsI][RoomsJ].getDoor(j)))
+                    {
+                        verticalCol = true;
+                    }
+                }
             }
             
             for(int j = 0; j < Rooms[RoomsI][RoomsJ].WallSize(); j++)
@@ -645,6 +1094,44 @@ public class PlayGame extends JPanel {
                     
                     if(!Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).isVoid())
                     {
+                        if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getEndAnimation() != null)
+                        {
+                            Rooms[RoomsI][RoomsJ].addAnimation(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getEndAnimation());
+                        }
+                        Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
+                        i--;
+                        generalCol = true;
+                        break;
+                    }
+                }
+            }
+            if(!generalCol)
+            {
+                for(int j = 0; j < Walls.length; j++)
+                {
+                    if(col.normalCollision(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i), Walls[j]))
+                    {
+                        if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getEndAnimation() != null)
+                        {
+                            Rooms[RoomsI][RoomsJ].addAnimation(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getEndAnimation());
+                        }
+                        Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
+                        i--;
+                        generalCol = true;
+                        break;
+                    }
+                }
+            }
+            if(!generalCol)
+            {
+                for(int j = 0; j < Rooms[RoomsI][RoomsJ].DoorSize(); j++)
+                {
+                    if(col.normalCollision(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i), Rooms[RoomsI][RoomsJ].getDoor(j)))
+                    {
+                        if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getEndAnimation() != null)
+                        {
+                            Rooms[RoomsI][RoomsJ].addAnimation(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getEndAnimation());
+                        }
                         Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
                         i--;
                         generalCol = true;
@@ -658,6 +1145,10 @@ public class PlayGame extends JPanel {
                 {
                     if(col.normalCollision(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i), Rooms[RoomsI][RoomsJ].getWall(j)))
                     {
+                        if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getEndAnimation() != null)
+                        {
+                            Rooms[RoomsI][RoomsJ].addAnimation(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getEndAnimation());
+                        }
                         Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
                         i--;
                         generalCol = true;
@@ -675,6 +1166,10 @@ public class PlayGame extends JPanel {
                         j--;
                         if(!Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).isVoid())
                         {
+                            if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getEndAnimation() != null)
+                            {
+                                Rooms[RoomsI][RoomsJ].addAnimation(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getEndAnimation());
+                            }
                             Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
                             i--;
                             generalCol = true;
@@ -704,6 +1199,10 @@ public class PlayGame extends JPanel {
             if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i), Player))
             {
                 Player.takeDamage(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getDamage());
+                if(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation() != null)
+                {
+                    Rooms[RoomsI][RoomsJ].addAnimation(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation());
+                }
                 Rooms[RoomsI][RoomsJ].removeEnemyProjectile(i);
                 i--;
                 generalCol = true;
@@ -711,10 +1210,48 @@ public class PlayGame extends JPanel {
             }
             if(!generalCol)
             {
+                for(int j = 0; j < Walls.length; j++)
+                {
+                    if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i), Walls[j]))
+                    {
+                        if(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation() != null)
+                        {
+                            Rooms[RoomsI][RoomsJ].addAnimation(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation());
+                        }
+                        Rooms[RoomsI][RoomsJ].removeEnemyProjectile(i);
+                        i--;
+                        generalCol = true;
+                        break;
+                    }
+                }
+            }
+            if(!generalCol)
+            {
+                for(int j = 0; j < Rooms[RoomsI][RoomsJ].DoorSize(); j++)
+                {
+                    if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i), Rooms[RoomsI][RoomsJ].getDoor(j)))
+                    {
+                        if(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation() != null)
+                        {
+                            Rooms[RoomsI][RoomsJ].addAnimation(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation());
+                        }
+                        Rooms[RoomsI][RoomsJ].removeEnemyProjectile(i);
+                        i--;
+                        generalCol = true;
+                        break;
+                    }
+                }
+            }
+            if(!generalCol)
+            {
                 for(int j = 0; j < Rooms[RoomsI][RoomsJ].WallSize(); j++)
                 {
                     if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i), Rooms[RoomsI][RoomsJ].getWall(j)))
                     {
+                        if(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation() != null)
+                        {
+                            Rooms[RoomsI][RoomsJ].addAnimation(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation());
+                        }
                         Rooms[RoomsI][RoomsJ].removeEnemyProjectile(i);
                         i--;
                         generalCol = true;
@@ -730,6 +1267,10 @@ public class PlayGame extends JPanel {
                     {
                         Rooms[RoomsI][RoomsJ].removeBarrel(j);
                         j--;
+                        if(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation() != null)
+                        {
+                            Rooms[RoomsI][RoomsJ].addAnimation(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation());
+                        }
                         Rooms[RoomsI][RoomsJ].removeEnemyProjectile(i);
                         i--;
                         generalCol = true;
@@ -746,50 +1287,15 @@ public class PlayGame extends JPanel {
         }
     }
     
-    public void updatePlayerAoe()
-    {
-         
-        for(int i = 0; i < Rooms[RoomsI][RoomsJ].PlayerAoeSize(); i++)
-        {
-            Rooms[RoomsI][RoomsJ].getPlayerAoe(i).updateObject();
-            if(Rooms[RoomsI][RoomsJ].getPlayerAoe(i).isDone())
-            {
-                Rooms[RoomsI][RoomsJ].removePlayerAoe(i);
-                i--;
-            }
-        }
-    }
-    
-    public void updateEnemyAoe()
-    {
-        for(int i = 0; i < Rooms[RoomsI][RoomsJ].EnemyAoeSize(); i++)
-        {
-            Rooms[RoomsI][RoomsJ].getEnemyAoe(i).updateObject();
-            if(Rooms[RoomsI][RoomsJ].getEnemyAoe(i).isDone())
-            {
-                Rooms[RoomsI][RoomsJ].removeEnemyAoe(i);
-                i--;
-            }
-        }
-    }
-    
-    public void updateTraps()
-    {
-        for(int i = 0; i < Rooms[RoomsI][RoomsJ].SpikeTrapSize(); i++)
-        {
-            Rooms[RoomsI][RoomsJ].getSpikeTrap(i).updateObject();
-        }
-    }
-    
     public void updateGame()
     {
         updatePlayer();
         updateEnemies();
         updatePlayerProjectiles();
         updateEnemyProjectiles();
-        updatePlayerAoe();
-        updateEnemyAoe();
-        updateTraps();
+        
+        Rooms[RoomsI][RoomsJ].updateRoom();
+        Burning.updateAnimation();
         
         ////HAVE AOE COLLISIONS WITH BARRELS CHECK WHEN THEY'RE CREATED
     }
@@ -799,22 +1305,99 @@ public class PlayGame extends JPanel {
         
     }
     
+    public int screenShiftY()
+    {
+        if(ScreenHeight >= ScreenWidth)
+        {
+            return 0;
+        }
+        
+        int yShift;
+        
+        double scale = (double)ScreenWidth/GameWidth;
+        double scaledHeight = ScreenHeight / scale;
+        
+        if(Player.getCenterY() < scaledHeight/2)
+        {
+            yShift = 0;
+        }
+        else if(Player.getCenterY() > GameHeight - scaledHeight/2)
+        {
+            yShift = GameHeight - (int)scaledHeight;            
+        }
+        else
+        {
+            yShift = Player.getCenterY() - (int)scaledHeight/2;
+        }
+        
+        return yShift;
+    }
+    
+    public int screenShiftX()
+    {
+        if(ScreenWidth >= ScreenHeight)
+        {
+            return 0;
+        }
+        
+        int xShift;
+        
+        double scale = (double)ScreenHeight/GameHeight;
+        double scaledWidth = ScreenWidth / scale;
+        
+        if(Player.getCenterX() < scaledWidth/2)
+        {
+            xShift = 0;
+        }
+        else if(Player.getCenterX() > GameWidth - scaledWidth/2)
+        {
+            xShift = GameWidth - (int)scaledWidth;            
+        }
+        else
+        {
+            xShift = Player.getCenterX() - (int)scaledWidth/2;
+        }
+        
+        return xShift;
+    }
+    
     @Override
     public void paintComponent(Graphics g) {
+        //DONT USE PAINT UNTIL IN GAME<^>
+        if(!InGame)
+            return;
+        
         if (bufImg == null) {
-            bufImg = (BufferedImage) createImage(ScreenWidth, ScreenHeight);
+            bufImg = (BufferedImage) createImage(GameWidth, GameHeight);
         }
         Graphics2D gtemp = (Graphics2D) g;
         g2d = bufImg.createGraphics();
         super.paintComponent(gtemp);
         
-        for(int i = 0; i < 5; i++)
+        for(int i = 0; i < 8; i++)
         {
-            for(int j = 0; j < 4; j++)
+            for(int j = 0; j < 8; j++)
             {
-                g2d.drawImage(ForestFloor, i * ForestFloor.getWidth(null), j * ForestFloor.getHeight(null), this);
+                g2d.drawImage(TempleFloor, i * TempleFloor.getWidth(null) + 128, j * TempleFloor.getHeight(null) + 128, this);
             }
         }
+        
+        for(int i = 0; i < Rooms[RoomsI][RoomsJ].PlayerProjectileSize(); i++)
+        {
+            paintRotatedImg(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getShadow(), 
+                   Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getAngle(),
+                   Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getX(), 
+                   Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getY() + ShadowHeight);
+        }
+        
+        for(int i = 0; i < Rooms[RoomsI][RoomsJ].EnemyProjectileSize(); i++)
+        {
+            paintRotatedImg(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getShadow(), 
+                   Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getAngle(),
+                   Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getX(), 
+                   Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getY() + ShadowHeight);
+        }
+        
         //paint order: player > enemy> projectile > itmes > wall
         //lowest prio is first
         
@@ -845,6 +1428,19 @@ public class PlayGame extends JPanel {
                     Rooms[RoomsI][RoomsJ].getPlayerAoe(i).getX(), 
                     Rooms[RoomsI][RoomsJ].getPlayerAoe(i).getY(), this);
         }
+        
+        for(int i = 0; i < Walls.length; i++)
+        {
+            g2d.drawImage(Walls[i].getSprite(), Walls[i].getX(), Walls[i].getY(), this);
+        }
+        
+        for(int i = 0; i < Rooms[RoomsI][RoomsJ].DoorSize(); i++)
+        {
+           g2d.drawImage(Rooms[RoomsI][RoomsJ].getDoor(i).getSprite(), 
+                   Rooms[RoomsI][RoomsJ].getDoor(i).getX(), 
+                   Rooms[RoomsI][RoomsJ].getDoor(i).getY(), this);
+        }
+        
         
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].WallSize(); i++)
         {
@@ -893,6 +1489,27 @@ public class PlayGame extends JPanel {
            g2d.drawImage(Rooms[RoomsI][RoomsJ].getEnemy(i).getSprite(), 
                    Rooms[RoomsI][RoomsJ].getEnemy(i).getX(), 
                    Rooms[RoomsI][RoomsJ].getEnemy(i).getY(), this);
+           if(Rooms[RoomsI][RoomsJ].getEnemy(i).isChilled())
+           {
+               g2d.drawImage(this.ChilledImg, 
+                       Rooms[RoomsI][RoomsJ].getEnemy(i).getCenterX() - this.ChilledImg.getWidth(null)/2,
+                       Rooms[RoomsI][RoomsJ].getEnemy(i).getCenterY() - this.ChilledImg.getHeight(null)/2,
+                       this);
+           }
+           if(Rooms[RoomsI][RoomsJ].getEnemy(i).isBurning())
+           {
+               g2d.drawImage(this.Burning.getSprite(), 
+                       Rooms[RoomsI][RoomsJ].getEnemy(i).getCenterX() - this.Burning.getSprite().getWidth(null)/2,
+                       Rooms[RoomsI][RoomsJ].getEnemy(i).getCenterY() - this.Burning.getSprite().getHeight(null)/2,
+                       this);
+           }
+           if(Rooms[RoomsI][RoomsJ].getEnemy(i).isFrozen())
+           {
+               g2d.drawImage(this.FrozenImg, 
+                       Rooms[RoomsI][RoomsJ].getEnemy(i).getCenterX() - this.FrozenImg.getWidth(null)/2,
+                       Rooms[RoomsI][RoomsJ].getEnemy(i).getCenterY() - this.FrozenImg.getHeight(null)/2 - 6,
+                       this);
+           }
         }
         
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].PlayerProjectileSize(); i++)
@@ -924,26 +1541,54 @@ public class PlayGame extends JPanel {
                    Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getY());
         }
         
+        for(int i = 0; i < Rooms[RoomsI][RoomsJ].AnimationSize(); i++)
+        {
+            paintRotatedImg(Rooms[RoomsI][RoomsJ].getAnimation(i).getSprite(), 
+                   Rooms[RoomsI][RoomsJ].getAnimation(i).getAngle(),
+                   Rooms[RoomsI][RoomsJ].getAnimation(i).getX(), 
+                   Rooms[RoomsI][RoomsJ].getAnimation(i).getY());
+        }
+        
+        
         //draw overlay now
+        int yShift = screenShiftY();
+        int xShift = screenShiftX();
+        double scale;
+        if(ScreenHeight < ScreenWidth)
+        {
+            scale = (double)ScreenWidth/GameWidth;
+        }
+        else if(ScreenHeight > ScreenWidth)
+        {
+            scale = (double)ScreenHeight/GameHeight;
+        }
+        else
+        {
+            scale = 1;
+        }
+        double scaledHeight = ScreenHeight / scale;
+        double scaledWidth = ScreenWidth / scale;
         
         for(int i = 0; i < 4; i ++)
         {
             if(Player.getSpell(i) == null)
             {
-                g2d.drawImage(this.NullSpellIcon, 54 + 100 * i, 850, this);
+                g2d.drawImage(this.NullSpellIcon, 54 + (int)xShift + 100 * i, (int)scaledHeight - 110 + yShift, this);
             }
             else
             {
-                g2d.drawImage(Player.getSpell(i).getIcon(), 54 + 100 * i, 850, this);
+                g2d.drawImage(Player.getSpell(i).getIcon(), 54 + (int)xShift + 100 * i, (int)scaledHeight - 110 + yShift, this);
                 if(i == Player.getCurrentSpellNumber())
                 {
-                    g2d.drawImage(this.CurrentSpellIcon, 52 + 100 * i, 848, this);
+                    g2d.drawImage(this.CurrentSpellIcon, 52 + (int)xShift + 100 * i, (int)scaledHeight - 112 + yShift, this);
                 }
             }
         }
         
-        gtemp.drawImage(bufImg, 0, 0, this);
-        
+        BufferedImage shiftImg = bufImg.getSubimage(xShift, yShift, (int)scaledWidth, (int)scaledHeight);
+        //if player.centerY > ScreenHeight/2 Or player.cbterY < GameHeight - ScreenHeight/2 SCALED
+        gtemp.scale(scale, scale);
+        gtemp.drawImage(shiftImg, 0, 0, this);
         
         //Text for items
         gtemp.setColor(Color.WHITE);
@@ -958,19 +1603,19 @@ public class PlayGame extends JPanel {
                 gtemp.setFont(spellNameFont);
                 metrics = gtemp.getFontMetrics(spellNameFont);
                 gtemp.drawString(Player.getSpell(i).getSpellName(), 
-                        88 + 100 * i - (metrics.stringWidth(Player.getSpell(i).getSpellName()))/2, 840);
+                        88 + 100 * i - (metrics.stringWidth(Player.getSpell(i).getSpellName()))/2, (int)scaledHeight - 120);
                 if(Player.getSpell(i).getCoolDown(FPS) > 0)
                 {
                     gtemp.setFont(spellCoolDownFont);
                     metrics = gtemp.getFontMetrics(spellCoolDownFont);
                     gtemp.drawString(Integer.toString(Player.getSpell(i).getCoolDown(FPS)), 
-                            88 + 100 * i - metrics.stringWidth(Integer.toString(Player.getSpell(i).getCoolDown(FPS)))/2, 895);
+                            88 + 100 * i - metrics.stringWidth(Integer.toString(Player.getSpell(i).getCoolDown(FPS)))/2, (int)scaledHeight - 65);
                 }
             }
             gtemp.setFont(spellNameFont);
             metrics = gtemp.getFontMetrics(spellNameFont);
             gtemp.drawString(Integer.toString(i+1), 
-                    88 + 100 * i - (metrics.stringWidth(Integer.toString(i+1)))/2, 940);
+                    88 + 100 * i - (metrics.stringWidth(Integer.toString(i+1)))/2, (int)scaledHeight - 20);
         }
         
         Font itemNameFont = (new Font("Arial Black", Font.PLAIN, 14));
@@ -981,16 +1626,16 @@ public class PlayGame extends JPanel {
         {
             gtemp.drawString(this.Rooms[RoomsI][RoomsJ].getRune(i).getRuneName(), 
                         this.Rooms[RoomsI][RoomsJ].getRune(i).getCenterX() - 
-                                metrics.stringWidth(this.Rooms[RoomsI][RoomsJ].getRune(i).getRuneName())/2, 
-                        this.Rooms[RoomsI][RoomsJ].getRune(i).getY() - 10);
+                                metrics.stringWidth(this.Rooms[RoomsI][RoomsJ].getRune(i).getRuneName())/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getRune(i).getY() - 10 - yShift);
         }
         
         for(int i = 0; i < this.Rooms[RoomsI][RoomsJ].PageSize(); i++)
         {
             gtemp.drawString(this.Rooms[RoomsI][RoomsJ].getPage(i).getSpellName(), 
                         this.Rooms[RoomsI][RoomsJ].getPage(i).getCenterX() - 
-                                metrics.stringWidth(this.Rooms[RoomsI][RoomsJ].getPage(i).getSpellName())/2, 
-                        this.Rooms[RoomsI][RoomsJ].getPage(i).getY() - 10);
+                                metrics.stringWidth(this.Rooms[RoomsI][RoomsJ].getPage(i).getSpellName())/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getPage(i).getY() - 10 - yShift);
         }
         
         gtemp.dispose();
@@ -1022,7 +1667,11 @@ public class PlayGame extends JPanel {
     
     public static void main(String[] args) {
         PlayGame game = new PlayGame();
+        //game.startGame();//start game heres throughs null pointers; painting before intialized?
         game.resourcesInit();
+        game.startGame();
+        game.pauseMenuInit();
+        game.mainMenuInit();
         game.newGameInit();
         game.testLevelInit();
         //game.musicThreadLoop();

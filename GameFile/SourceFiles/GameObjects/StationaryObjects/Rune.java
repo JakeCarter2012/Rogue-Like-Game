@@ -1,6 +1,5 @@
 package SourceFiles.GameObjects.StationaryObjects;
 
-import SourceFiles.GameObjects.StationaryObjects.StationaryObject;
 import java.awt.Image;
 
 public class Rune extends StationaryObject{

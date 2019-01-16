@@ -27,9 +27,9 @@ public class WizardPlayer extends MovingObject implements Observer{
     private int MouseX, MouseY;
     private int FireX, FireY;
     private int BaseSpeed;
-    private boolean Up, Down, Left, Right, Fire;
+    private boolean Up, Down, Left, Right, Fire, SwapDown, SwapUp;
     private int UpKey, DownKey, LeftKey, RightKey, UpKey2, DownKey2, LeftKey2, RightKey2,
-            FireKey, SpellOneKey, SpellTwoKey, SpellThreeKey, SpellFourKey;
+            FireKey, SpellOneKey, SpellTwoKey, SpellThreeKey, SpellFourKey, PauseKey;
     private int CurrentSpellPage;
     //placeholder
     private boolean RuneOne;
@@ -81,7 +81,9 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.SpellTwoKey = KeyEvent.VK_2;
         this.SpellThreeKey = KeyEvent.VK_3;
         this.SpellFourKey = KeyEvent.VK_4;
-        this.Up = this.Down = this.Left = this.Right = this.Fire = false;
+        this.PauseKey = KeyEvent.VK_P;
+        this.Up = this.Down = this.Left = this.Right = this.Fire = this.SwapUp = 
+                this.SwapDown = false;
         this.SpellBook = new ArrayList<Spell>();
         this.CurrentSpellPage = 0;
         this.AimAngle = 90;
@@ -100,7 +102,7 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.Frost = 0;  
         this.Void = 0;
         this.BurnTime = 120;  
-        this.BurnDamage = 5;  
+        this.BurnDamage = 1;  
         this.FreezeTime = 120;  
         this.BonusBurnChance = 0;  
         this.BonusFreezeChance = 0;  
@@ -197,6 +199,11 @@ public class WizardPlayer extends MovingObject implements Observer{
         return this.BurnDamage + this.Flame;
     }
     
+    public int getCurrentHealth()
+    {
+        return this.Currenthealth;
+    }
+    
     public boolean isAoeReady()
     {
         if(Fire && this.SpellBook.get(CurrentSpellPage).offCooldown() && 
@@ -217,6 +224,18 @@ public class WizardPlayer extends MovingObject implements Observer{
     public void stopFire()
     {
         this.Fire = false;
+    }
+    
+    public void scrollDown()
+    {
+        this.SwapDown = true;
+        this.SwapUp = false;
+    }
+    
+    public void scrollUp()
+    {
+        this.SwapDown = false;
+        this.SwapUp = true;
     }
     
     public PlayerProjectile fireProjectile()
@@ -252,7 +271,9 @@ public class WizardPlayer extends MovingObject implements Observer{
                     this.SpellBook.get(CurrentSpellPage).isIce(),
                     this.SpellBook.get(CurrentSpellPage).isVoid(),
                     ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getElementChance() + eleChance,
-                    ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getSprite()));
+                    ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getSprite(),
+                    ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getShadow(),
+                    ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getEndAnimation()));
         }
         else
             return null;
@@ -295,6 +316,8 @@ public class WizardPlayer extends MovingObject implements Observer{
         
         this.updateAngle();
         
+        this.swapSpells();
+        
         for(int i = 0; i < this.SpellBook.size(); i++)
         {
             SpellBook.get(i).updateSpell();
@@ -311,6 +334,34 @@ public class WizardPlayer extends MovingObject implements Observer{
             this.LevitateCounter++;
         else
             this.LevitateCounter = 0;
+    }
+    
+    private void swapSpells()
+    {
+        if(SwapUp)
+        {
+            if(this.SpellBook.size() - 1 == this.CurrentSpellPage)
+            {
+                this.CurrentSpellPage = 0;
+            }
+            else
+            {
+                this.CurrentSpellPage++;
+            }
+            this.SwapUp = false;
+        }
+        else if(SwapDown)
+        {
+            if(this.CurrentSpellPage == 0)
+            {
+                this.CurrentSpellPage = this.SpellBook.size() - 1;
+            }
+            else
+            {
+                this.CurrentSpellPage--;
+            }
+        }
+        this.SwapDown = false;
     }
 
     private void updateAngle() {

@@ -11,6 +11,9 @@ import SourceFiles.GameObjects.StationaryObjects.Coin;
 import SourceFiles.GameObjects.StationaryObjects.StationaryObject;
 import SourceFiles.GameObjects.StationaryObjects.SpikeTrap;
 import SourceFiles.GameObjects.StationaryObjects.Potion;
+import SourceFiles.GameObjects.StationaryObjects.Door;
+import SourceFiles.GameObjects.StationaryObjects.Wall;
+import SourceFiles.GameObjects.Animations.Animation;
 import java.util.ArrayList;
 
 public class Room {
@@ -24,10 +27,10 @@ public class Room {
     private ArrayList<PlayerProjectile> PlayerProjectiles;
     private ArrayList<Projectile> EnemyProjectiles;
     private ArrayList<SpikeTrap> SpikeTraps;
-    private ArrayList<StationaryObject> Walls;
+    private ArrayList<Wall> Walls;
     private ArrayList<StationaryObject> Barrels;
-    private ArrayList<StationaryObject> Portals;
-    private int NorthDoor, SouthDoor, LeftDoor, RightDoor;
+    private ArrayList<Door> Doors;
+    private ArrayList<Animation> Animations;
     private boolean Shop, RuneRoom, BossRoom;
     
     
@@ -51,11 +54,10 @@ public class Room {
         this.PlayerProjectiles = new ArrayList<PlayerProjectile>();
         this.EnemyProjectiles = new ArrayList<Projectile>();
         this.SpikeTraps = new ArrayList<SpikeTrap>();
-        this.Walls = new ArrayList<StationaryObject>();
+        this.Walls = new ArrayList<Wall>();
         this.Barrels = new ArrayList<StationaryObject>();
-        this.Portals = new ArrayList<StationaryObject>();//doors?
-        
-        this.NorthDoor = this.SouthDoor = this.LeftDoor = this.RightDoor = -1;
+        this.Doors = new ArrayList<Door>();
+        this.Animations = new ArrayList<Animation>();
         
         this.Shop = false;
         this.RuneRoom = false;
@@ -77,46 +79,15 @@ public class Room {
         this.RuneRoom = true;
     }
     
-    public void addNorthDoor(int i)
+    public void addDoor(Door door)
     {
-        this.NorthDoor = i;
+        this.Doors.add(door);
     }
     
-    public void addSouthDoor(int i)
+    public Door getDoor(int i)
     {
-        this.SouthDoor = i;
+        return this.Doors.get(i);
     }
-    
-    public void addLeftDoor(int i)
-    {
-        this.LeftDoor = i;
-    }
-    
-    public void addRightDoor(int i)
-    {
-        this.RightDoor = i;
-    }
-    
-    public int getNorthDoor()
-    {
-        return this.NorthDoor;
-    }
-    
-    public int getSouthDoor()
-    {
-        return this.SouthDoor;
-    }
-    
-    public int getLeftDoor()
-    {
-        return this.LeftDoor;
-    }
-    
-    public int getRightDoor()
-    {
-        return this.RightDoor;
-    }
-    
     public boolean isShop()
     {
         return this.Shop;
@@ -182,7 +153,7 @@ public class Room {
         this.SpikeTraps.add(trap);
     }
     
-    public void addWall(StationaryObject wall)
+    public void addWall(Wall wall)
     {
         this.Walls.add(wall);
     }
@@ -190,6 +161,11 @@ public class Room {
     public void addBarrel(StationaryObject barrel)
     {
         this.Barrels.add(barrel);
+    }
+    
+    public void addAnimation(Animation animate)
+    {
+        this.Animations.add(animate);
     }
     
     public void removePlayerAoe(int i)
@@ -252,6 +228,11 @@ public class Room {
         this.Barrels.remove(i);
     }
     
+    public void removeAnimation(int i)
+    {
+        this.Animations.remove(i);
+    }
+    
     public PlayerAoe getPlayerAoe(int i)
     {
         return this.PlayerAoes.get(i);
@@ -302,7 +283,7 @@ public class Room {
         return this.SpikeTraps.get(i);
     }
     
-    public StationaryObject getWall(int i)
+    public Wall getWall(int i)
     {
         return this.Walls.get(i);
     }
@@ -310,6 +291,11 @@ public class Room {
     public StationaryObject getBarrel(int i)
     {
         return this.Barrels.get(i);
+    }
+    
+    public Animation getAnimation(int i)
+    {
+        return this.Animations.get(i);
     }
     
     public int PlayerAoeSize()
@@ -370,5 +356,92 @@ public class Room {
     public int BarrelSize()
     {
         return this.Barrels.size();
+    }
+    
+    public int AnimationSize()
+    {
+        return this.Animations.size();
+    }
+    
+    public int DoorSize()
+    {
+        return this.Doors.size();
+    }
+    
+    public void unlockDoors()
+    {
+        for(int i = 0; i < Doors.size(); i++)
+        {
+            Doors.get(i).unlockDoor();
+        }
+    }
+    
+    public void lockDoors()
+    {
+        for(int i = 0; i < Doors.size(); i++)
+        {
+            Doors.get(i).lockDoor();
+        }
+    }
+    
+    public void updateRoom()
+    {
+        updatePlayerAoe();
+        updateEnemyAoe();
+        updateTraps();
+        updateAnimations();
+    }
+    
+    private void updatePlayerAoe()
+    {
+         
+        for(int i = 0; i < PlayerAoeSize(); i++)
+        {
+            getPlayerAoe(i).updateObject();
+            if(getPlayerAoe(i).isDone())
+            {
+                removePlayerAoe(i);
+                i--;
+            }
+        }
+    }
+    
+    private void updateEnemyAoe()
+    {
+        for(int i = 0; i < EnemyAoeSize(); i++)
+        {
+            getEnemyAoe(i).updateObject();
+            if(getEnemyAoe(i).isDone())
+            {
+                removeEnemyAoe(i);
+                i--;
+            }
+        }
+    }
+    
+    private void updateTraps()
+    {
+        for(int i = 0; i < SpikeTrapSize(); i++)
+        {
+            getSpikeTrap(i).updateObject();
+        }
+        
+        for(int i = 0; i < DoorSize(); i++)
+        {
+            getDoor(i).updateDoor();
+        }
+    }
+    
+    private void updateAnimations()
+    {
+        for(int i = 0; i < AnimationSize(); i++)
+        {
+            getAnimation(i).updateAnimation();
+            if(getAnimation(i).isDone())
+            {
+                removeAnimation(i);
+                i--;
+            }
+        }
     }
 }
