@@ -102,7 +102,7 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.Frost = 0;  
         this.Void = 0;
         this.BurnTime = 120;  
-        this.BurnDamage = 5;  
+        this.BurnDamage = 1;  
         this.FreezeTime = 120;  
         this.BonusBurnChance = 0;  
         this.BonusFreezeChance = 0;  

@@ -48,7 +48,7 @@ public class PlayGame extends JPanel implements KeyListener{
             IceShardsImg, IceShardsIcon, FireBallImg, FireBallIcon, VoidWaveImg,
             VoidWaveIcon, TestSpellImg, ChilledImg, FrozenImg, IceShardsShadow,
             FireBallShadow, SmallProjectileShadow, VoidWaveShadow, testenemy;
-    private Image[] IceShardsBreak, VoidWaveEnd, FireBallEnd;
+    private Image[] IceShardsBreak, VoidWaveEnd, FireBallEnd, BurningImgs;
     private Image TopWallLeftImg, TopWallRightImg, TopWallMidImg,
             LeftWallTopImg, LeftWallBottomImg, LeftWallMidImg,
             RightWallTopImg, RightWallBottomImg, RightWallMidImg,
@@ -70,6 +70,7 @@ public class PlayGame extends JPanel implements KeyListener{
     private Wall[] Walls;
     private Door TopDoor, LeftDoor, BottomDoor, RightDoor;
     private Wall TopWallMid, LeftWallMid, BottomWallMid, RightWallMid;
+    private Animation Burning;
     
     private Image[] WizRightForwardAttack, WizRightForward, WizRightBackAttack,
             WizRightAttack, WizRight, WizLeftForwardAttack, WizLeftForward,
@@ -412,16 +413,19 @@ public class PlayGame extends JPanel implements KeyListener{
             VoidWaveEnd[2] = ImageIO.read(new File("Resources" + File.separator + "VoidWaveEnd3.png"));
             VoidWaveEnd[3] = ImageIO.read(new File("Resources" + File.separator + "VoidWaveEnd4.png"));
             
-            FireBallEnd = new Image[8];
+            FireBallEnd = new Image[6];
             FireBallEnd[0] = ImageIO.read(new File("Resources" + File.separator + "FireBallEnd1.png"));
             FireBallEnd[1] = ImageIO.read(new File("Resources" + File.separator + "FireBallEnd2.png"));
             FireBallEnd[2] = ImageIO.read(new File("Resources" + File.separator + "FireBallEnd3.png"));
             FireBallEnd[3] = ImageIO.read(new File("Resources" + File.separator + "FireBallEnd4.png"));
             FireBallEnd[4] = ImageIO.read(new File("Resources" + File.separator + "FireBallEnd5.png"));
             FireBallEnd[5] = ImageIO.read(new File("Resources" + File.separator + "FireBallEnd6.png"));
-            FireBallEnd[6] = ImageIO.read(new File("Resources" + File.separator + "FireBallEnd7.png"));
-            FireBallEnd[7] = ImageIO.read(new File("Resources" + File.separator + "FireBallEnd8.png"));
             
+            BurningImgs = new Image[4];
+            BurningImgs[0] = ImageIO.read(new File("Resources" + File.separator + "Burning1.png"));
+            BurningImgs[1] = ImageIO.read(new File("Resources" + File.separator + "Burning2.png"));
+            BurningImgs[2] = ImageIO.read(new File("Resources" + File.separator + "Burning3.png"));
+            BurningImgs[3] = ImageIO.read(new File("Resources" + File.separator + "Burning4.png"));
         } catch (Exception e) {
             System.out.print(e.getStackTrace() + " Error loading resources \n");
         }
@@ -429,6 +433,8 @@ public class PlayGame extends JPanel implements KeyListener{
         IceShards = new ProjectileSpell("Ice Shards", 5,10, 30, false, true, false, 30, IceShardsImg, IceShardsIcon, IceShardsShadow, IceShardsBreak);
         FireBall = new ProjectileSpell("Fire Ball", 5,10, 30, true, false, false, 30, FireBallImg, FireBallIcon, FireBallShadow, FireBallEnd);
         VoidWave = new ProjectileSpell("Void Wave", 1,10, 59, false, false, true, 0, VoidWaveImg, VoidWaveIcon, VoidWaveShadow, VoidWaveEnd);
+        
+        Burning = new Animation(0, 0, 0, BurningImgs, 3, true);
         
         Walls = new Wall[8];
         Walls[0] = new Wall(0, 0, 579, 128 - ShadowHeight, TopWallLeftImg);
@@ -1289,6 +1295,7 @@ public class PlayGame extends JPanel implements KeyListener{
         updateEnemyProjectiles();
         
         Rooms[RoomsI][RoomsJ].updateRoom();
+        Burning.updateAnimation();
         
         ////HAVE AOE COLLISIONS WITH BARRELS CHECK WHEN THEY'RE CREATED
     }
@@ -1489,11 +1496,18 @@ public class PlayGame extends JPanel implements KeyListener{
                        Rooms[RoomsI][RoomsJ].getEnemy(i).getCenterY() - this.ChilledImg.getHeight(null)/2,
                        this);
            }
+           if(Rooms[RoomsI][RoomsJ].getEnemy(i).isBurning())
+           {
+               g2d.drawImage(this.Burning.getSprite(), 
+                       Rooms[RoomsI][RoomsJ].getEnemy(i).getCenterX() - this.Burning.getSprite().getWidth(null)/2,
+                       Rooms[RoomsI][RoomsJ].getEnemy(i).getCenterY() - this.Burning.getSprite().getHeight(null)/2,
+                       this);
+           }
            if(Rooms[RoomsI][RoomsJ].getEnemy(i).isFrozen())
            {
                g2d.drawImage(this.FrozenImg, 
                        Rooms[RoomsI][RoomsJ].getEnemy(i).getCenterX() - this.FrozenImg.getWidth(null)/2,
-                       Rooms[RoomsI][RoomsJ].getEnemy(i).getCenterY() - this.FrozenImg.getHeight(null)/2,
+                       Rooms[RoomsI][RoomsJ].getEnemy(i).getCenterY() - this.FrozenImg.getHeight(null)/2 - 6,
                        this);
            }
         }
