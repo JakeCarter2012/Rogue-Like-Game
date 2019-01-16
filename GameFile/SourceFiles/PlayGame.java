@@ -600,7 +600,7 @@ public class PlayGame extends JPanel implements KeyListener{
         
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].DoorSize(); i++)
         {
-            if(generalCol)
+            if(verticalCol && horizontalCol)
             {
                 break;
             }
@@ -631,20 +631,20 @@ public class PlayGame extends JPanel implements KeyListener{
                         }
                         else
                         {
-                            RoomsI--;
+                            //RoomsI--;
                         }
                     }
                     else if(Rooms[RoomsI][RoomsJ].getDoor(i).getX() == 0)
                     {
-                        RoomsJ--;
+                        //RoomsJ--;
                     }
                     else if(Rooms[RoomsI][RoomsJ].getDoor(i).getY() == 1152)
                     {
-                        RoomsI++;
+                        //RoomsI++;
                     }
                     else if(Rooms[RoomsI][RoomsJ].getDoor(i).getX() == 1152)
                     {
-                        RoomsJ++;
+                        //RoomsJ++;
                     }
                     
                     if(Rooms[RoomsI][RoomsJ].EnemySize() > 0)
