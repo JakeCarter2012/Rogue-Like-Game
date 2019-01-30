@@ -4,6 +4,10 @@ import SourceFiles.GameObjects.MovingObjects.Projectiles.Projectile;
 import java.awt.Image;
 
 public class PlayerProjectile extends Projectile{
+    /*
+    Child of Projectile class; conatins additional info unique to the player's
+    projectiles - elements/element chance
+    */
     private Boolean Fire, Ice, Void;
     private int ElementChance;
     

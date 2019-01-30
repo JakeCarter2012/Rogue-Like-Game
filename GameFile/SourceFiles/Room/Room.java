@@ -17,6 +17,11 @@ import SourceFiles.GameObjects.Animations.Animation;
 import java.util.ArrayList;
 
 public class Room {
+    /*
+    Room class is used to store all information about all objects stored in each
+    room. It has accesors/setters for each object array, and an update function 
+    to call updates for aoe's/traps/animations
+    */
     private ArrayList<PlayerAoe> PlayerAoes;
     private ArrayList<AreaOfEffect> EnemyAoes;
     private ArrayList<Coin> Coins;

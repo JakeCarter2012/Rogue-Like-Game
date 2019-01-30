@@ -3,6 +3,11 @@ package SourceFiles.GameObjects.MovingObjects.Player;
 import java.awt.Image;
 
 public class AoeSpell extends Spell{
+    /*
+    Child class for AoeSpells, contains info about current aoe spell;
+    this class is not the aoe itself, but the details about the aoe
+    this spell creates.
+    */
     private Image[] Sprites;
     private int Damage;
     private int Duration;

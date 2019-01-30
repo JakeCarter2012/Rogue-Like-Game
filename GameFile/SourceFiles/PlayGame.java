@@ -39,7 +39,13 @@ import java.awt.geom.AffineTransform;
 import javax.swing.*;
 
 public class PlayGame extends JPanel implements KeyListener{
-    //private ArrayList<ArrayList<Room>> Rooms;
+    /*
+    PlayGame is the main controller for the game. Loads and initializes all 
+    images/objects used, creates the window used for the game, and controls the 
+    main game loop.
+    */
+    
+    //Array of arrays used to store Rooms on a grid
     private Room[][] Rooms;
     private int RoomsI, RoomsJ;
     private BufferedImage bufImg;
@@ -88,6 +94,9 @@ public class PlayGame extends JPanel implements KeyListener{
     
     public void startGame()
     {
+        /*
+        startGame is called when game first opens, it creates the GameWindow used
+        */
         GameWindow = new JFrame();
         GameWindow.addWindowListener(new WindowAdapter(){});
         GameWindow.add(this);
@@ -113,6 +122,10 @@ public class PlayGame extends JPanel implements KeyListener{
     
     public void pauseMenuInit()
     {
+        /*
+        PauseMenu is used whenever the pause game button is pressed. Currently
+        being worked on, will display a map, equipped gear, and talent tree
+        */
         PauseMenu = new JPanel();
         PauseMenu.setVisible(false);
         PauseMenu.setLayout(null);
@@ -181,6 +194,7 @@ public class PlayGame extends JPanel implements KeyListener{
         this.setVisible(true);
     }
     
+    //ovverides used for pause game key
     @Override
     public void keyPressed(KeyEvent e) {}
     
@@ -207,7 +221,12 @@ public class PlayGame extends JPanel implements KeyListener{
     
     public void resourcesInit()
     {
-        
+        /*
+        Initializes all images/ constants, such as walls, used in the game.
+        Images are initialized in the beginning and declared globally;
+        instead of reading an image every time an object is created, images are 
+        loaded only once to increase performance.
+        */
         try{
             this.ForestFloor = ImageIO.read(new File("Resources" + File.separator + "ForestBackground.png"));
             this.tempchar = ImageIO.read(new File("Resources" + File.separator + "char.png"));
@@ -430,6 +449,7 @@ public class PlayGame extends JPanel implements KeyListener{
             System.out.print(e.getStackTrace() + " Error loading resources \n");
         }
         
+        //Now constant spells/objects that never change are created
         IceShards = new ProjectileSpell("Ice Shards", 5,10, 30, false, true, false, 30, IceShardsImg, IceShardsIcon, IceShardsShadow, IceShardsBreak);
         FireBall = new ProjectileSpell("Fire Ball", 5,10, 30, true, false, false, 30, FireBallImg, FireBallIcon, FireBallShadow, FireBallEnd);
         VoidWave = new ProjectileSpell("Void Wave", 1,10, 59, false, false, true, 0, VoidWaveImg, VoidWaveIcon, VoidWaveShadow, VoidWaveEnd);
@@ -446,7 +466,7 @@ public class PlayGame extends JPanel implements KeyListener{
         Walls[6] = new Wall(1152, 0, 128, 579, RightWallTopImg);
         Walls[7] = new Wall(1152, 700, 128, 580, RightWallBottomImg);
         
-        TopDoor = new Door(579, 0, 121, 60, TopDoorImgs);
+        TopDoor = new Door(579, 0, 121, 128 - ShadowHeight, TopDoorImgs);
         LeftDoor = new Door(0, 580, 128,121, LeftDoorImgs);
         BottomDoor = new Door(580, 1152, 121, 128, BottomDoorImgs);
         RightDoor = new Door(1152, 579, 128, 121, RightDoorImgs);
@@ -459,6 +479,10 @@ public class PlayGame extends JPanel implements KeyListener{
     
     public void newGameInit()
     {
+        /*
+        newGameInit is used for whenevr a new game is started. It resets all
+        game values to their starting values and creates the player's character.
+        */
         this.Paused = false;
         this.InGame = true;
         this.Money = 0;
@@ -506,6 +530,7 @@ public class PlayGame extends JPanel implements KeyListener{
     
     public void testLevelInit()
     {
+        //Temporary test level to test new objects as they are created
         Rooms = new Room[5][5];
         this.RoomsI = 0;
         this.RoomsJ = 0;
@@ -531,7 +556,12 @@ public class PlayGame extends JPanel implements KeyListener{
     
     public void timerLoop()
     {
-        //previous time previous loop started
+        /*
+        timerLoop is the main game loop that repeats to update the game. It aims 
+        to update all objects in 1/60 second and tells the thread to sleep for
+        any remaining time aftre all updates are complete.
+        */
+        
         long currTime;
         //target time hoping to aim for each loop
         long targetTime = 1000000000 / FPS;
@@ -543,6 +573,8 @@ public class PlayGame extends JPanel implements KeyListener{
             updateGame();
             repaint();
             
+            //While the game is paused, leave the game loop in loop that sleeps
+            //and continously checks if the game is puased until the game resumes.
             if(this.Paused)
             {
                 pauseGame();
@@ -569,6 +601,11 @@ public class PlayGame extends JPanel implements KeyListener{
     
     public void updatePlayer()
     {
+        /*
+        updatePlayer is used to check for collisions with GameObjects. Then it 
+        calls the player's update function, and checks if the player has any 
+        projectiles or aoe's ready to be created, and adds the to the current Room.
+        */
         CollisionDetector col = new CollisionDetector();
         
         boolean generalCol = false;
@@ -655,7 +692,6 @@ public class PlayGame extends JPanel implements KeyListener{
             }
         }
         
-        //first test moving collisions for the player first
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].WallSize(); i++)
         {
             //if both collisions are already true, no need to waste resources and
@@ -724,6 +760,7 @@ public class PlayGame extends JPanel implements KeyListener{
             }
         }
         
+        //scale ammount is used to adjust the mouse angle for scaled window sizes
         double scale;
         
         if(ScreenHeight < ScreenWidth)
@@ -810,6 +847,11 @@ public class PlayGame extends JPanel implements KeyListener{
     
     public void updateEnemies()
     {
+        /*
+        updateEnemies is used to check for collisions with GameObjects. Then it 
+        calls the enemy's update function, and checks if the enemy has any 
+        projectiles or aoe's ready to be created, and adds the to the current Room.
+        */
         CollisionDetector col = new CollisionDetector();
         
         boolean generalCol = false;
@@ -1064,6 +1106,9 @@ public class PlayGame extends JPanel implements KeyListener{
     
     public void updatePlayerProjectiles()
     {
+        /*
+        updatePlayerProjectiles is used to check for collisions with GameObjects
+        */
         CollisionDetector col = new CollisionDetector();
         boolean generalCol = false;
         
@@ -1296,17 +1341,22 @@ public class PlayGame extends JPanel implements KeyListener{
         
         Rooms[RoomsI][RoomsJ].updateRoom();
         Burning.updateAnimation();
-        
-        ////HAVE AOE COLLISIONS WITH BARRELS CHECK WHEN THEY'RE CREATED
     }
     
     public void mainMenu()
     {
-        
+        /*
+        Initializes the main game menu. Still needs implementation
+        */
     }
     
     public int screenShiftY()
     {
+        /*
+        screenShift determines the amount the camera needs to be shifted for
+        painting/updating based on the size and scale of the game's window;
+        if the height is larger than the width, then the y value won't be shifted.
+        */
         if(ScreenHeight >= ScreenWidth)
         {
             return 0;
@@ -1335,6 +1385,11 @@ public class PlayGame extends JPanel implements KeyListener{
     
     public int screenShiftX()
     {
+        /*
+        screenShift determines the amount the camera needs to be shifted for
+        painting/updating based on the size and scale of the game's window;
+        if the width is larger than the height, then the x value won't be shifted.
+        */
         if(ScreenWidth >= ScreenHeight)
         {
             return 0;
@@ -1363,7 +1418,11 @@ public class PlayGame extends JPanel implements KeyListener{
     
     @Override
     public void paintComponent(Graphics g) {
-        //DONT USE PAINT UNTIL IN GAME<^>
+        /*
+        The paintComponent override paints all of the game objects onto the game
+        window. Since they are painted ontop of previous objects, they are printed
+        in a specific order to achieve the correct layering.
+        */
         if(!InGame)
             return;
         
@@ -1586,7 +1645,6 @@ public class PlayGame extends JPanel implements KeyListener{
         }
         
         BufferedImage shiftImg = bufImg.getSubimage(xShift, yShift, (int)scaledWidth, (int)scaledHeight);
-        //if player.centerY > ScreenHeight/2 Or player.cbterY < GameHeight - ScreenHeight/2 SCALED
         gtemp.scale(scale, scale);
         gtemp.drawImage(shiftImg, 0, 0, this);
         
@@ -1642,6 +1700,9 @@ public class PlayGame extends JPanel implements KeyListener{
     }
     
     public BufferedImage bufferedImageConverter(Image img) {
+        /*
+        used to convert images into buffered images
+        */
         BufferedImage bimg = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = bimg.createGraphics();
         g.drawImage(img, 0, 0, null);
@@ -1667,7 +1728,7 @@ public class PlayGame extends JPanel implements KeyListener{
     
     public static void main(String[] args) {
         PlayGame game = new PlayGame();
-        //game.startGame();//start game heres throughs null pointers; painting before intialized?
+        //game.startGame();
         game.resourcesInit();
         game.startGame();
         game.pauseMenuInit();

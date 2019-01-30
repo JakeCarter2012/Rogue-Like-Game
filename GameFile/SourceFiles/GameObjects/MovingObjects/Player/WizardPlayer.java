@@ -11,6 +11,9 @@ import java.util.Observer;
 import java.util.Observable;
 
 public class WizardPlayer extends MovingObject implements Observer{
+    /*
+    Class for the player's character
+    */
     private Image[] WizRightForwardAttack, WizRightForward, WizRightBackAttack,
             WizRightAttack, WizRight, WizLeftForwardAttack, WizLeftForward,
             WizLeftBackwardAttack, WizLeftAttack, WizLeft, WizForwardAttack, 
@@ -35,7 +38,6 @@ public class WizardPlayer extends MovingObject implements Observer{
     private boolean RuneOne;
     private ArrayList<Spell> SpellBook;
     private int DamageTimer, InternalCoolDownTimer;
-    
     
     public WizardPlayer(int x, int y, int leftbound, int rightbound, int upbound, 
             int downbound, Image[] WizRightForwardAttack, Image[] WizRightForward, 
@@ -115,6 +117,7 @@ public class WizardPlayer extends MovingObject implements Observer{
     
     public Spell addNewSpell(Spell spell)
     {
+        //If spellbook is not full, add the spell; otherwise, swap it with the current spell
         if(this.SpellBook.size() <= 3)
         {
             this.SpellBook.add(spell);
@@ -136,6 +139,8 @@ public class WizardPlayer extends MovingObject implements Observer{
     
     public Image getSprite()
     {
+        //Returns the current sprite; if during the damage timer window, return
+        //null for "blinking" immune effect
         if(this.DamageTimer >110 || (this.DamageTimer < 100 && this.DamageTimer > 90) 
                 || (this.DamageTimer < 80 && this.DamageTimer > 70) || (this.DamageTimer < 60 && this.DamageTimer > 50)
                 || (this.DamageTimer < 40 && this.DamageTimer > 30) || (this.DamageTimer < 20 && this.DamageTimer > 10))
@@ -156,6 +161,7 @@ public class WizardPlayer extends MovingObject implements Observer{
     
     public void takeDamage(int dmg)
     {
+        //if damage is over 50, start immune damage window for 2 seconds
         if(this.DamageTimer <= 0)
         {
             this.Currenthealth -= dmg;
@@ -216,6 +222,7 @@ public class WizardPlayer extends MovingObject implements Observer{
             return false;
     }
     
+    //fire/stopFire are used to signal the firing button is being pressed or not
     public void fire()
     {
         this.Fire = true;
@@ -226,6 +233,7 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.Fire = false;
     }
     
+    //scroll up/down are used to signal the scroll wheel has moved for spell swapping
     public void scrollDown()
     {
         this.SwapDown = true;
@@ -240,10 +248,15 @@ public class WizardPlayer extends MovingObject implements Observer{
     
     public PlayerProjectile fireProjectile()
     {
-        //adjust x and y's later based on position facing
-        //also need to edit speeds
+        /*
+        fireProjectile creates a projectile from the currently selected projectile
+        spell and creates it on the players location using the player's elemntal
+        chance and damage
+        */
         if(this.SpellBook.get(CurrentSpellPage) instanceof ProjectileSpell)
         {
+            //internal cooldown is set to 30 to prevent swapping to another spell 
+            //and immediately firing it
             this.InternalCoolDownTimer = 30;
             
             int spellDamage = 0, eleChance = 0;
@@ -281,10 +294,14 @@ public class WizardPlayer extends MovingObject implements Observer{
     
     public PlayerAoe fireAoe()
     {
-        //adjust x and y's later based on position facing
-        //also need to edit speeds
+        /*
+        fireAoe creates an aoe from the currently selected aoe spell and creates 
+        it on the players location using the player's elemntal chance and damage
+        */
         if(this.SpellBook.get(CurrentSpellPage) instanceof AoeSpell)
         {
+            //internal cooldown is set to 30 to prevent swapping to another spell 
+            //and immediately firing it
             this.InternalCoolDownTimer = 30;
             
             return(new PlayerAoe(this.MouseX, this.MouseY, 
@@ -308,10 +325,10 @@ public class WizardPlayer extends MovingObject implements Observer{
         return this.SpellBook.get(index);
     }
             
-    //need take damage timer;
     public void updatePlayer(int mouseX, int mouseY, boolean generalCollision, 
             boolean horizontalCollision, boolean verticalCollision)
     {
+        //updatePlayer is used to call all update functions
         this.updatePosition(generalCollision, horizontalCollision, verticalCollision);
         
         this.updateAngle();
@@ -338,6 +355,10 @@ public class WizardPlayer extends MovingObject implements Observer{
     
     private void swapSpells()
     {
+        /*
+        If the mouse wheel was scrolled, then the current spell is changed in the
+        appropriate direction
+        */
         if(SwapUp)
         {
             if(this.SpellBook.size() - 1 == this.CurrentSpellPage)
@@ -365,6 +386,13 @@ public class WizardPlayer extends MovingObject implements Observer{
     }
 
     private void updateAngle() {
+        /*
+        updateAngle is used to decide both the directional angle the player is 
+        moving, and which image array needs to be used to match it. it uses 
+        player key inputs to determine which direction the player is moving and 
+        facing. If the fire key is pressed, the player faces the direction of the
+        aiming angle instead.
+        */
         if(Right && !Left)
         {
             this.setSpeed(BaseSpeed);
@@ -733,6 +761,11 @@ public class WizardPlayer extends MovingObject implements Observer{
 
     private void updatePosition(boolean generalCollision, boolean horizontalCollision, boolean verticalCollision) 
     {
+        /*
+        If there is no general collision, move the player to the new location;
+        otherwise "slide" the character vertically/horizontally based on which 
+        collisions are not false.
+        */
         if(!generalCollision)
         {
             this.setX(this.getX() + (int)Math.round(this.getSpeed()*Math.cos(Math.toRadians(this.getAngle()))));
@@ -747,6 +780,7 @@ public class WizardPlayer extends MovingObject implements Observer{
             this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
         }
         
+        //Move the player back into the game's bounds if they are outside the boundaries
         if(this.getX() < this.getLeftBound())
             this.setX(this.getLeftBound());
         if(this.getX() + this.getWidth() > this.getRightBound())
@@ -759,6 +793,9 @@ public class WizardPlayer extends MovingObject implements Observer{
     
     @Override
     public void update(Observable obj, Object arg){
+        /*
+        GameEvent handler for keys being pressed to move the player
+        */
         GameEvents ge = (GameEvents) arg;
         KeyEvent e = (KeyEvent) ge.event;
         //Left
