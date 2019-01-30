@@ -23,6 +23,7 @@ public class SpearGoblin extends MovingEnemy{
         this.FacingRight = true;
     }
     
+    //SpearGoblin returns no projectiles/aoe's/summons
     public boolean isProjectileReady()
     {
         return false;
@@ -75,6 +76,10 @@ public class SpearGoblin extends MovingEnemy{
     
     private void updateImage(int playerX)
     {
+        /*
+        Image controller for SpearGoblin, uses a timer to move through image 
+        array to determine which image needs to currently be used
+        */
         if(this.ImageTimer == 7)
         {
             if(this.CurrentFrame == 5)
@@ -125,6 +130,7 @@ public class SpearGoblin extends MovingEnemy{
             this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
         }
         
+        //If outside of game's bounds, move back into the game's boundss
         if(this.getX() < this.getLeftBound())
             this.setX(this.getLeftBound());
         if(this.getX() + this.getWidth() > this.getRightBound())

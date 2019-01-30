@@ -49,20 +49,22 @@ public class DartGoblin extends MovingEnemy{
     
     public Projectile fireProjectile()
     {
-        if(this.ShotsInBurst > 0)
+        /*
+        DartGoblins shoot three round bursts; when firing, reduce shots remaining,
+        then either reset the timer if no shots are left or set it to 1/4 a second.
+        */
+        this.ShotsInBurst--;
+        if(this.ShotsInBurst <= 0)
+        {
+            this.ProjectileTimer = 120;
+            this.ShotsInBurst = 3;
+        }
+        else
         {
             this.ProjectileTimer = 15;
-            this.ShotsInBurst--;
-            
-            if(this.ShotsInBurst <= 0)
-            {
-                this.ProjectileTimer = 120;
-                this.ShotsInBurst = 3;
-            }
         }
         
         int dartX;
-        
         if(this.FacingRight)
         {
             dartX = 40;
@@ -80,6 +82,7 @@ public class DartGoblin extends MovingEnemy{
         return dart;
     }
     
+    //DartGoblin has no aoe's/summons
     public boolean isAoeReady()
     {
         return false;
@@ -110,12 +113,14 @@ public class DartGoblin extends MovingEnemy{
     {
         this.updateStatus();
         
+        //Don't update further if frozen
         if(this.Frozen)
             return;
         
         double yDiff = Math.abs(playerY - this.getCenterY());
-        double xDiff = Math.abs(playerX -this.getCenterX());
+        double xDiff = Math.abs(playerX - this.getCenterX());
         
+        //If within 300 distance of player, don't move closer
         if(Math.hypot(yDiff, xDiff) < 300)
         {
             this.CloseToPlayer = true;
@@ -136,6 +141,11 @@ public class DartGoblin extends MovingEnemy{
     
     private void updateImage(int playerX)
     {
+        /*
+        CurrentSprite controller for dart goblin; uses image timer to move through
+        images, and determines wich image array should be used (left/right/attack)
+        based on state of the object
+        */
         if(this.ImageTimer == 9)
         {
             if(this.CurrentFrame == 5)
@@ -194,6 +204,7 @@ public class DartGoblin extends MovingEnemy{
     
     private void updatePosition(boolean generalCollision, boolean horizontalCollision, boolean verticalCollision) 
     {
+        //if attacking or close to the player, don't need to move closer
         if(this.CloseToPlayer || this.ProjectileTimer < 30 || this.ProjectileTimer > 110)
         {
             return;
@@ -213,6 +224,7 @@ public class DartGoblin extends MovingEnemy{
             this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
         }
         
+        //If outside of game's bounds, move back into the game's boundss
         if(this.getX() < this.getLeftBound())
             this.setX(this.getLeftBound());
         if(this.getX() + this.getWidth() > this.getRightBound())

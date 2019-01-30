@@ -5,6 +5,11 @@ import SourceFiles.GameObjects.MovingObjects.MovingObject;
 import java.awt.Rectangle;
 
 public class CollisionDetector {
+    /*
+    CollisionDetector is used to test for collisions of GameObjects; it creates 
+    two rectangless for the two objects being tested, and returns true if there 
+    will be a collision, or false if there is no collision.
+    */
     public boolean normalCollision(MovingObject mover, GameObject obj)
     {
         Rectangle moverRec = new Rectangle(mover.getX() + (int)Math.round(mover.getSpeed()*Math.cos(Math.toRadians(mover.getAngle()))), 

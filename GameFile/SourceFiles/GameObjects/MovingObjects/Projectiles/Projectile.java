@@ -5,6 +5,9 @@ import SourceFiles.GameObjects.Animations.Animation;
 import java.awt.Image;
 
 public class Projectile extends MovingObject{
+    /*
+    Parent class for projectiles, holds projectile end animation/shadow/damage
+    */
     private Image Sprite, Shadow;
     private Image[] EndAnimationImage;
     private double AccurateX, AccurateY;
@@ -49,6 +52,7 @@ public class Projectile extends MovingObject{
     
     public boolean outOfBounds()
     {
+        //If projectile moves out of bounds, return true so it can be removed
         if(this.getX() < this.getLeftBound() || this.getX() + this.getWidth() > this.getRightBound() ||
                 this.getY() < this.getUpBound() || this.getY() + this.getHeight() > this.getDownBound())
             return true;
@@ -62,6 +66,10 @@ public class Projectile extends MovingObject{
         this.AccurateY = this.AccurateY + this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()));
     }
     
+    /*
+    Get X/Y are overwritten for projectiles- x and y are stored as doubles to be
+    more precise, so that they can be updated correctly and not "jump"
+    */
     @Override
     public int getX()
     {

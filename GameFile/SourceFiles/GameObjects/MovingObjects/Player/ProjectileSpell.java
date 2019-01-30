@@ -3,6 +3,11 @@ package SourceFiles.GameObjects.MovingObjects.Player;
 import java.awt.Image;
 
 public class ProjectileSpell extends Spell{
+    /*
+    Child class for ProjectileSpells, contains info about currentprojectile spell;
+    this class is not the projectile itself, but the details about the projectile
+    this spell creates.
+    */
     private int Damage;
     private int Speed;
     private Image Sprite, Shadow;

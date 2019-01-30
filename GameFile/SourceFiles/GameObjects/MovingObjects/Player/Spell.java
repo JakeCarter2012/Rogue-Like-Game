@@ -3,6 +3,9 @@ package SourceFiles.GameObjects.MovingObjects.Player;
 import java.awt.Image;
 
 public abstract class Spell {
+    /*
+    Parent class for all spells; used for all spell cooldaowns/elements
+    */
     private int CoolDownTime, Timer;
     private boolean Fire, Ice, Void;
     private Image Icon;

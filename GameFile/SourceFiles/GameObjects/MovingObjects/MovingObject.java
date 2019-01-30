@@ -3,10 +3,13 @@ package SourceFiles.GameObjects.MovingObjects;
 import SourceFiles.GameObjects.GameObject;
 
 abstract public class MovingObject extends GameObject{
-    
-    //private int VerticalSpeed, HorizontalSpeed;
+    /*
+    MovingObject is the parent class for moving objects, ie characters/projectiles.
+    It uses speed/angle compenets to determine the direction the object is moving
+    */
     private int Speed;
     private double Angle;
+    //the "Bounds" are used incase an object moves outside of the game's boundaries;
     private int LeftBound, RightBound, UpBound, DownBound;
     
     public MovingObject(int x, int y, int leftbound, int rightbound, int upbound, 

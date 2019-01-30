@@ -1,6 +1,10 @@
 package SourceFiles.GameObjects;
 
 abstract public class GameObject{
+    /*
+    GameObject is the parent object of all objects in the game; it contains
+    the accesors/setters that all objects have in common
+    */
     private int x, y;
     private int width, height;
     

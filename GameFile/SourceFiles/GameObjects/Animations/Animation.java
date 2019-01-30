@@ -4,6 +4,11 @@ import SourceFiles.GameObjects.GameObject;
 import java.awt.Image;
 
 public class Animation extends GameObject{
+    /*
+    Animations are game objects that cycle through an array of images of time.
+    They use a timer that is incremented eaach update to specificy the duration/
+    time an image should change.
+    */
     private boolean Repeat, Finished;
     private Image[] Sprites;
     private int Timer, CurrentTime, CurrentSprite;
@@ -44,6 +49,7 @@ public class Animation extends GameObject{
             
             if((this.CurrentSprite == this.Sprites.length - 1) && this.Repeat)
             {
+                //If the Animation is set to repeat, restart from beginning
                 this.CurrentSprite = 0;
             }
             else if((this.CurrentSprite == this.Sprites.length - 1) && !this.Repeat)
