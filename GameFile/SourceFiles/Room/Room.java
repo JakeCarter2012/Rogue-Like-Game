@@ -13,6 +13,10 @@ import SourceFiles.GameObjects.StationaryObjects.SpikeTrap;
 import SourceFiles.GameObjects.StationaryObjects.Potion;
 import SourceFiles.GameObjects.StationaryObjects.Door;
 import SourceFiles.GameObjects.StationaryObjects.Wall;
+import SourceFiles.GameObjects.StationaryObjects.GearObjects.Boots;
+import SourceFiles.GameObjects.StationaryObjects.GearObjects.Ring;
+import SourceFiles.GameObjects.StationaryObjects.GearObjects.Neck;
+import SourceFiles.GameObjects.StationaryObjects.GearObjects.Tome;
 import SourceFiles.GameObjects.Animations.Animation;
 import java.util.ArrayList;
 
@@ -36,6 +40,11 @@ public class Room {
     private ArrayList<StationaryObject> Barrels;
     private ArrayList<Door> Doors;
     private ArrayList<Animation> Animations;
+    private ArrayList<Ring> Rings;
+    private ArrayList<Neck> Necks;
+    private ArrayList<Boots> Boots;
+    private ArrayList<Tome> Tomes;
+    
     private boolean Shop, RuneRoom, BossRoom;
     
     
@@ -63,6 +72,10 @@ public class Room {
         this.Barrels = new ArrayList<StationaryObject>();
         this.Doors = new ArrayList<Door>();
         this.Animations = new ArrayList<Animation>();
+        this.Rings = new ArrayList<Ring>();
+        this.Necks = new ArrayList<Neck>();
+        this.Tomes = new ArrayList<Tome>();
+        this.Boots = new ArrayList<Boots>();
         
         this.Shop = false;
         this.RuneRoom = false;
@@ -105,7 +118,7 @@ public class Room {
     
     public boolean isBossRoom()
     {
-        return this.isBossRoom();
+        return this.BossRoom;
     }
     
     public void addPlayerAoe(PlayerAoe aoe)
@@ -173,6 +186,26 @@ public class Room {
         this.Animations.add(animate);
     }
     
+    public void addRing(Ring ring)
+    {
+        this.Rings.add(ring);
+    }
+    
+    public void addNeck(Neck neck)
+    {
+        this.Necks.add(neck);
+    }
+    
+    public void addBoots(Boots boots)
+    {
+        this.Boots.add(boots);
+    }
+    
+    public void addTome(Tome tome)
+    {
+        this.Tomes.add(tome);
+    }
+    
     public void removePlayerAoe(int i)
     {
         this.PlayerAoes.remove(i);
@@ -238,6 +271,26 @@ public class Room {
         this.Animations.remove(i);
     }
     
+    public void removeRing(int i)
+    {
+        this.Rings.remove(i);
+    }
+    
+    public void removeNeck(int i)
+    {
+        this.Necks.remove(i);
+    }
+    
+    public void removeBoots(int i)
+    {
+        this.Boots.remove(i);
+    }
+    
+    public void removeTome(int i)
+    {
+        this.Tomes.remove(i);
+    }
+    
     public PlayerAoe getPlayerAoe(int i)
     {
         return this.PlayerAoes.get(i);
@@ -301,6 +354,26 @@ public class Room {
     public Animation getAnimation(int i)
     {
         return this.Animations.get(i);
+    }
+    
+    public Ring getRing(int i)
+    {
+        return this.Rings.get(i);
+    }
+    
+    public Neck getNeck(int i)
+    {
+        return this.Necks.get(i);
+    }
+    
+    public Tome getTome(int i)
+    {
+        return this.Tomes.get(i);
+    }
+    
+    public Boots getBoots(int i)
+    {
+        return this.Boots.get(i);
     }
     
     public int PlayerAoeSize()
@@ -371,6 +444,26 @@ public class Room {
     public int DoorSize()
     {
         return this.Doors.size();
+    }
+    
+    public int RingSize()
+    {
+        return this.Rings.size();
+    }
+    
+    public int NeckSize()
+    {
+        return this.Necks.size();
+    }
+    
+    public int TomeSize()
+    {
+        return this.Tomes.size();
+    }
+    
+    public int BootsSize()
+    {
+        return this.Boots.size();
     }
     
     public void unlockDoors()
