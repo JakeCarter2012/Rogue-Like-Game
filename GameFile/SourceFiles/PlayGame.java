@@ -12,6 +12,10 @@ import SourceFiles.GameObjects.StationaryObjects.StationaryObject;
 import SourceFiles.GameObjects.StationaryObjects.Wall;
 import SourceFiles.GameObjects.StationaryObjects.Door;
 import SourceFiles.GameObjects.Animations.Animation;
+import SourceFiles.GameObjects.StationaryObjects.GearObjects.Boots;
+import SourceFiles.GameObjects.StationaryObjects.GearObjects.Ring;
+import SourceFiles.GameObjects.StationaryObjects.GearObjects.Neck;
+import SourceFiles.GameObjects.StationaryObjects.GearObjects.Tome;
 import SourceFiles.GameLogic.KeyControl;
 import SourceFiles.GameLogic.CollisionDetector;
 import java.awt.Color;
@@ -36,6 +40,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
+import java.util.Random;
 import javax.swing.*;
 
 public class PlayGame extends JPanel implements KeyListener{
@@ -89,6 +94,9 @@ public class PlayGame extends JPanel implements KeyListener{
     
     private Image SmallProjectileGreen;
     private Image[] SmallGreenProjectileEnd;
+    private Image[] RubyRing, AmethystRing, SaphireRing, EmeraldRing, RubyNeck, 
+            SaphireNeck, EmeraldNeck, AmethystNeck;
+    private Image FlameTome, FrostTome, VoidTome, FlameBoots, FrostBoots, VoidBoots;
     
     private JButton testButton;
     
@@ -445,6 +453,46 @@ public class PlayGame extends JPanel implements KeyListener{
             BurningImgs[1] = ImageIO.read(new File("Resources" + File.separator + "Burning2.png"));
             BurningImgs[2] = ImageIO.read(new File("Resources" + File.separator + "Burning3.png"));
             BurningImgs[3] = ImageIO.read(new File("Resources" + File.separator + "Burning4.png"));
+            
+            RubyRing = new Image[2];
+            RubyRing[0] = ImageIO.read(new File("Resources" + File.separator + "RubyRing1.png"));
+            RubyRing[1] = ImageIO.read(new File("Resources" + File.separator + "RubyRing2.png"));
+            
+            RubyNeck = new Image[2];
+            RubyNeck[0] = ImageIO.read(new File("Resources" + File.separator + "RubyNeck1.png"));
+            RubyNeck[1] = ImageIO.read(new File("Resources" + File.separator + "RubyNeck2.png"));
+            
+            SaphireRing = new Image[2];
+            SaphireRing[0] = ImageIO.read(new File("Resources" + File.separator + "SaphireRing1.png"));
+            SaphireRing[1] = ImageIO.read(new File("Resources" + File.separator + "SaphireRing2.png"));
+            
+            SaphireNeck = new Image[2];
+            SaphireNeck[0] = ImageIO.read(new File("Resources" + File.separator + "SaphireNeck1.png"));
+            SaphireNeck[1] = ImageIO.read(new File("Resources" + File.separator + "SaphireNeck2.png"));
+            
+            EmeraldRing = new Image[2];
+            EmeraldRing[0] = ImageIO.read(new File("Resources" + File.separator + "EmeraldRing1.png"));
+            EmeraldRing[1] = ImageIO.read(new File("Resources" + File.separator + "EmeraldRing2.png"));
+            
+            EmeraldNeck = new Image[2];
+            EmeraldNeck[0] = ImageIO.read(new File("Resources" + File.separator + "EmeraldNeck1.png"));
+            EmeraldNeck[1] = ImageIO.read(new File("Resources" + File.separator + "EmeraldNeck2.png"));
+            
+            AmethystRing = new Image[2];
+            AmethystRing[0] = ImageIO.read(new File("Resources" + File.separator + "AmethystRing1.png"));
+            AmethystRing[1] = ImageIO.read(new File("Resources" + File.separator + "AmethystRing2.png"));
+            
+            AmethystNeck = new Image[2];
+            AmethystNeck[0] = ImageIO.read(new File("Resources" + File.separator + "AmethystNeck1.png"));
+            AmethystNeck[1] = ImageIO.read(new File("Resources" + File.separator + "AmethystNeck2.png"));
+            
+            FlameTome = ImageIO.read(new File("Resources" + File.separator + "FlameTome.png"));
+            FrostTome = ImageIO.read(new File("Resources" + File.separator + "FrostTome.png"));
+            VoidTome = ImageIO.read(new File("Resources" + File.separator + "VoidTome.png"));
+
+            FlameBoots = ImageIO.read(new File("Resources" + File.separator + "FlameBoots.png"));
+            FrostBoots = ImageIO.read(new File("Resources" + File.separator + "FrostBoots.png"));
+            VoidBoots = ImageIO.read(new File("Resources" + File.separator + "VoidBoots.png"));
         } catch (Exception e) {
             System.out.print(e.getStackTrace() + " Error loading resources \n");
         }
@@ -552,6 +600,10 @@ public class PlayGame extends JPanel implements KeyListener{
         Rooms[RoomsI][RoomsJ].lockDoors();
         Rooms[RoomsI][RoomsJ].addEnemy(gobo);
         Rooms[RoomsI][RoomsJ].addEnemy(gobo2);
+        
+        addRandomGear(400, 200);
+        addRandomGear(600, 200);
+        addRandomGear(800, 200);
     }
     
     public void timerLoop()
@@ -592,9 +644,7 @@ public class PlayGame extends JPanel implements KeyListener{
             if ((currTime - System.nanoTime() + targetTime) > 0) {
                 try {
                     Thread.sleep((currTime - System.nanoTime() + targetTime) / 1000000);
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                }
+                } catch (InterruptedException ex) {}
             }
         }
     }
@@ -760,6 +810,115 @@ public class PlayGame extends JPanel implements KeyListener{
             }
         }
         
+        //now test for collisions with gear
+        for(int i = 0; i < Rooms[RoomsI][RoomsJ].RingSize(); i++)
+        {
+            if(col.normalCollision(Player, Rooms[RoomsI][RoomsJ].getRing(i)))
+            {
+                if(!Rooms[RoomsI][RoomsJ].getRing(i).wasDropped())
+                {
+                    if(Player.getRing() == null)
+                    {
+                        Player.equipRing(Rooms[RoomsI][RoomsJ].getRing(i));
+                    }
+                    else
+                    {
+                        Player.getRing().setX(Rooms[RoomsI][RoomsJ].getRing(i).getX());
+                        Player.getRing().setY(Rooms[RoomsI][RoomsJ].getRing(i).getY());
+                        Player.getRing().setDropped(true);
+                        Rooms[RoomsI][RoomsJ].addRing(Player.getRing());
+                        Player.equipRing(Rooms[RoomsI][RoomsJ].getRing(i));
+                    }
+                    Rooms[RoomsI][RoomsJ].removeRing(i);
+                }
+            }
+            else
+            {
+                Rooms[RoomsI][RoomsJ].getRing(i).setDropped(false);
+            }
+        }
+        
+        for(int i = 0; i < Rooms[RoomsI][RoomsJ].NeckSize(); i++)
+        {
+            if(col.normalCollision(Player, Rooms[RoomsI][RoomsJ].getNeck(i)))
+            {
+                if(!Rooms[RoomsI][RoomsJ].getNeck(i).wasDropped())
+                {
+                    if(Player.getNeck() == null)
+                    {
+                        Player.equipNeck(Rooms[RoomsI][RoomsJ].getNeck(i));
+                    }
+                    else
+                    {
+                        Player.getNeck().setX(Rooms[RoomsI][RoomsJ].getNeck(i).getX());
+                        Player.getNeck().setY(Rooms[RoomsI][RoomsJ].getNeck(i).getY());
+                        Player.getNeck().setDropped(true);
+                        Rooms[RoomsI][RoomsJ].addNeck(Player.getNeck());
+                        Player.equipNeck(Rooms[RoomsI][RoomsJ].getNeck(i));
+                    }
+                    Rooms[RoomsI][RoomsJ].removeNeck(i);
+                }
+            }
+            else
+            {
+                Rooms[RoomsI][RoomsJ].getNeck(i).setDropped(false);
+            }
+        }
+        
+        for(int i = 0; i < Rooms[RoomsI][RoomsJ].BootsSize(); i++)
+        {
+            if(col.normalCollision(Player, Rooms[RoomsI][RoomsJ].getBoots(i)))
+            {
+                if(!Rooms[RoomsI][RoomsJ].getBoots(i).wasDropped())
+                {
+                    if(Player.getBoots() == null)
+                    {
+                        Player.equipBoots(Rooms[RoomsI][RoomsJ].getBoots(i));
+                    }
+                    else
+                    {
+                        Player.getBoots().setX(Rooms[RoomsI][RoomsJ].getBoots(i).getX());
+                        Player.getBoots().setY(Rooms[RoomsI][RoomsJ].getBoots(i).getY());
+                        Player.getBoots().setDropped(true);
+                        Rooms[RoomsI][RoomsJ].addBoots(Player.getBoots());
+                        Player.equipBoots(Rooms[RoomsI][RoomsJ].getBoots(i));
+                    }
+                    Rooms[RoomsI][RoomsJ].removeBoots(i);
+                }
+            }
+            else
+            {
+                Rooms[RoomsI][RoomsJ].getBoots(i).setDropped(false);
+            }
+        }
+        
+        for(int i = 0; i < Rooms[RoomsI][RoomsJ].TomeSize(); i++)
+        {
+            if(col.normalCollision(Player, Rooms[RoomsI][RoomsJ].getTome(i)))
+            {
+                if(!Rooms[RoomsI][RoomsJ].getTome(i).wasDropped())
+                {
+                    if(Player.getTome() == null)
+                    {
+                        Player.equipTome(Rooms[RoomsI][RoomsJ].getTome(i));
+                    }
+                    else
+                    {
+                        Player.getTome().setX(Rooms[RoomsI][RoomsJ].getTome(i).getX());
+                        Player.getTome().setY(Rooms[RoomsI][RoomsJ].getTome(i).getY());
+                        Player.getTome().setDropped(true);
+                        Rooms[RoomsI][RoomsJ].addTome(Player.getTome());
+                        Player.equipTome(Rooms[RoomsI][RoomsJ].getTome(i));
+                    }
+                    Rooms[RoomsI][RoomsJ].removeTome(i);
+                }
+            }
+            else
+            {
+                Rooms[RoomsI][RoomsJ].getTome(i).setDropped(false);
+            }
+        }
+        
         //scale ammount is used to adjust the mouse angle for scaled window sizes
         double scale;
         
@@ -775,7 +934,6 @@ public class PlayGame extends JPanel implements KeyListener{
         {
             scale = 1;
         }
-        
         
         double mouseX = (MouseInfo.getPointerInfo().getLocation().x - (int)GameWindow.getLocation().getX() - 4) / scale + screenShiftX();
         double mouseY = (MouseInfo.getPointerInfo().getLocation().y - (int)GameWindow.getLocation().getY() - 32) / scale + screenShiftY();
@@ -1332,6 +1490,132 @@ public class PlayGame extends JPanel implements KeyListener{
         }
     }
     
+    public void addRandomGear(int x, int y)
+    {
+        Random rnd = new Random();
+        
+        int gearType = rnd.nextInt(4);
+        
+        if(gearType == 0)
+        {
+            addRandomRing(x, y);
+        }
+        else if(gearType == 1)
+        {
+            addRandomNeck(x, y);
+        }
+        else if(gearType == 2)
+        {
+            addRandomBoot(x, y);
+        }
+        else
+        {
+            addRandomTome(x, y);
+        }
+    }
+    
+    public void addRandomRing(int x, int y)
+    {
+        Random rnd = new Random();
+        
+        int statType = rnd.nextInt(4);
+        
+        if(statType == 0)
+        {
+            Rooms[RoomsI][RoomsJ].addRing(new Ring(x, y, this.EmeraldRing[rnd.nextInt(2)],
+                    Player.getLevel(), true, false, false, false));
+        }
+        else if(statType == 1)
+        {
+            Rooms[RoomsI][RoomsJ].addRing(new Ring(x, y, this.RubyRing[rnd.nextInt(2)],
+                    Player.getLevel(), false, true, false, false));
+        }
+        else if(statType == 2)
+        {
+            Rooms[RoomsI][RoomsJ].addRing(new Ring(x, y, this.SaphireRing[rnd.nextInt(2)],
+                    Player.getLevel(), false, false, true, false));
+        }
+        else
+        {
+            Rooms[RoomsI][RoomsJ].addRing(new Ring(x, y, this.AmethystRing[rnd.nextInt(2)],
+                    Player.getLevel(), false, false, false, true));
+        }
+    }
+    
+    public void addRandomNeck(int x, int y)
+    {
+        Random rnd = new Random();
+        
+        int statType = rnd.nextInt(4);
+        
+        if(statType == 0)
+        {
+            Rooms[RoomsI][RoomsJ].addNeck(new Neck(x, y, this.EmeraldNeck[rnd.nextInt(2)],
+                    Player.getLevel(), true, false, false, false));
+        }
+        else if(statType == 1)
+        {
+            Rooms[RoomsI][RoomsJ].addNeck(new Neck(x, y, this.RubyNeck[rnd.nextInt(2)],
+                    Player.getLevel(), false, true, false, false));
+        }
+        else if(statType == 2)
+        {
+            Rooms[RoomsI][RoomsJ].addNeck(new Neck(x, y, this.SaphireNeck[rnd.nextInt(2)],
+                    Player.getLevel(), false, false, true, false));
+        }
+        else
+        {
+            Rooms[RoomsI][RoomsJ].addNeck(new Neck(x, y, this.AmethystNeck[rnd.nextInt(2)],
+                    Player.getLevel(), false, false, false, true));
+        }
+    }
+    
+    public void addRandomBoot(int x, int y)
+    {
+        Random rnd = new Random();
+        
+        int statType = rnd.nextInt(3);
+        
+        if(statType == 0)
+        {
+            Rooms[RoomsI][RoomsJ].addBoots(new Boots(x, y, VoidBoots,
+                    Player.getLevel(), false, false, true));
+        }
+        else if(statType == 1)
+        {
+            Rooms[RoomsI][RoomsJ].addBoots(new Boots(x, y, FlameBoots,
+                    Player.getLevel(), true, false, false));
+        }
+        else
+        {
+            Rooms[RoomsI][RoomsJ].addBoots(new Boots(x, y, FrostBoots,
+                    Player.getLevel(), false, true, false));
+        }
+    }
+    
+    public void addRandomTome(int x, int y)
+    {
+        Random rnd = new Random();
+        
+        int statType = rnd.nextInt(3);
+        
+        if(statType == 0)
+        {
+            Rooms[RoomsI][RoomsJ].addTome(new Tome(x, y, VoidTome,
+                    Player.getLevel(), false, false, true));
+        }
+        else if(statType == 1)
+        {
+            Rooms[RoomsI][RoomsJ].addTome(new Tome(x, y, FlameTome,
+                    Player.getLevel(), true, false, false));
+        }
+        else
+        {
+            Rooms[RoomsI][RoomsJ].addTome(new Tome(x, y, FrostTome,
+                    Player.getLevel(), false, true, false));
+        }
+    }
+    
     public void updateGame()
     {
         updatePlayer();
@@ -1543,6 +1827,34 @@ public class PlayGame extends JPanel implements KeyListener{
                    Rooms[RoomsI][RoomsJ].getRune(i).getY(), this);
         }
         
+        for(int i = 0; i < Rooms[RoomsI][RoomsJ].RingSize(); i++)
+        {
+           g2d.drawImage(Rooms[RoomsI][RoomsJ].getRing(i).getSprite(), 
+                   Rooms[RoomsI][RoomsJ].getRing(i).getX(), 
+                   Rooms[RoomsI][RoomsJ].getRing(i).getY(), this);
+        }
+        
+        for(int i = 0; i < Rooms[RoomsI][RoomsJ].NeckSize(); i++)
+        {
+           g2d.drawImage(Rooms[RoomsI][RoomsJ].getNeck(i).getSprite(), 
+                   Rooms[RoomsI][RoomsJ].getNeck(i).getX(), 
+                   Rooms[RoomsI][RoomsJ].getNeck(i).getY(), this);
+        }
+        
+        for(int i = 0; i < Rooms[RoomsI][RoomsJ].TomeSize(); i++)
+        {
+           g2d.drawImage(Rooms[RoomsI][RoomsJ].getTome(i).getSprite(), 
+                   Rooms[RoomsI][RoomsJ].getTome(i).getX(), 
+                   Rooms[RoomsI][RoomsJ].getTome(i).getY(), this);
+        }
+        
+        for(int i = 0; i < Rooms[RoomsI][RoomsJ].BootsSize(); i++)
+        {
+           g2d.drawImage(Rooms[RoomsI][RoomsJ].getBoots(i).getSprite(), 
+                   Rooms[RoomsI][RoomsJ].getBoots(i).getX(), 
+                   Rooms[RoomsI][RoomsJ].getBoots(i).getY(), this);
+        }
+        
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].EnemySize(); i++)
         {
            g2d.drawImage(Rooms[RoomsI][RoomsJ].getEnemy(i).getSprite(), 
@@ -1696,6 +2008,621 @@ public class PlayGame extends JPanel implements KeyListener{
                         this.Rooms[RoomsI][RoomsJ].getPage(i).getY() - 10 - yShift);
         }
         
+        Color purple = new Color(100, 0, 150);
+        Color blue = new Color(0, 0, 250);
+        Color green =  new Color(0, 255, 50);
+        Color red = new Color(200, 0, 0);
+        Color orange = new Color(255, 100, 0);
+        Color trash = new Color(200, 200, 255);
+                
+        for(int i = 0; i < this.Rooms[RoomsI][RoomsJ].RingSize(); i++)
+        {
+            itemNameFont = (new Font("Arial Black", Font.PLAIN, 12));
+            gtemp.setFont(itemNameFont);
+            metrics = gtemp.getFontMetrics(itemNameFont);
+        
+            int rarityDisplacement = 10;
+            String statValue;
+            
+            int darkVal, flameVal, frostVal, vitVal, intVal;
+            
+            if(Player.getRing() == null)
+            {
+                darkVal = this.Rooms[RoomsI][RoomsJ].getRing(i).getDark();
+                flameVal = this.Rooms[RoomsI][RoomsJ].getRing(i).getFlame();
+                frostVal = this.Rooms[RoomsI][RoomsJ].getRing(i).getFrost();
+                vitVal = this.Rooms[RoomsI][RoomsJ].getRing(i).getVitality();
+                intVal = this.Rooms[RoomsI][RoomsJ].getRing(i).getIntellect();
+            }
+            else
+            {
+                darkVal = this.Rooms[RoomsI][RoomsJ].getRing(i).getDark() -
+                        Player.getRing().getDark();
+                flameVal = this.Rooms[RoomsI][RoomsJ].getRing(i).getFlame() -
+                        Player.getRing().getFlame();
+                frostVal = this.Rooms[RoomsI][RoomsJ].getRing(i).getFrost() -
+                        Player.getRing().getFrost();
+                vitVal = this.Rooms[RoomsI][RoomsJ].getRing(i).getVitality() -
+                        Player.getRing().getVitality();
+                intVal = this.Rooms[RoomsI][RoomsJ].getRing(i).getIntellect() -
+                        Player.getRing().getIntellect();
+            }
+            
+            if(darkVal != 0)
+            {
+                if(darkVal > 0)
+                {
+                    gtemp.setColor(green);
+                    statValue = "+";
+                }
+                else
+                {
+                    gtemp.setColor(red);
+                    statValue = "-";
+                }
+                
+                statValue += Integer.toString(Math.abs(darkVal)) + " Void";
+                gtemp.drawString(statValue, this.Rooms[RoomsI][RoomsJ].getRing(i).getCenterX() - 
+                                metrics.stringWidth(statValue)/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getRing(i).getY() - rarityDisplacement - yShift);
+                rarityDisplacement += 15;
+            }
+            if(frostVal != 0)
+            {
+                if(frostVal > 0)
+                {
+                    gtemp.setColor(green);
+                    statValue = "+";
+                }
+                else
+                {
+                    gtemp.setColor(red);
+                    statValue = "-";
+                }
+                
+                statValue += Integer.toString(Math.abs(frostVal)) + " Frost";
+                gtemp.drawString(statValue, this.Rooms[RoomsI][RoomsJ].getRing(i).getCenterX() - 
+                                metrics.stringWidth(statValue)/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getRing(i).getY() - rarityDisplacement - yShift);
+                rarityDisplacement += 15;
+            }
+            if(flameVal != 0)
+            {
+                if(flameVal > 0)
+                {
+                    gtemp.setColor(green);
+                    statValue = "+";
+                }
+                else
+                {
+                    gtemp.setColor(red);
+                    statValue = "-";
+                }
+                
+                statValue += Integer.toString(Math.abs(flameVal)) + " Flame";
+                gtemp.drawString(statValue, this.Rooms[RoomsI][RoomsJ].getRing(i).getCenterX() - 
+                                metrics.stringWidth(statValue)/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getRing(i).getY() - rarityDisplacement - yShift);
+                rarityDisplacement += 15;
+            }
+            if(vitVal != 0)
+            {
+                if(vitVal > 0)
+                {
+                    gtemp.setColor(green);
+                    statValue = "+";
+                }
+                else
+                {
+                    gtemp.setColor(red);
+                    statValue = "-";
+                }
+                
+                statValue += Integer.toString(Math.abs(vitVal)) + " Vitality";
+                gtemp.drawString(statValue, this.Rooms[RoomsI][RoomsJ].getRing(i).getCenterX() - 
+                                metrics.stringWidth(statValue)/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getRing(i).getY() - rarityDisplacement - yShift);
+                rarityDisplacement += 15;
+            }
+            if(intVal != 0)
+            {
+                if(intVal > 0)
+                {
+                    gtemp.setColor(green);
+                    statValue = "+";
+                }
+                else
+                {
+                    gtemp.setColor(red);
+                    statValue = "-";
+                }
+                
+                statValue += Integer.toString(Math.abs(intVal)) + " Intellect";
+                gtemp.drawString(statValue, this.Rooms[RoomsI][RoomsJ].getRing(i).getCenterX() - 
+                                metrics.stringWidth(statValue)/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getRing(i).getY() - rarityDisplacement - yShift);
+                rarityDisplacement += 15;
+            }
+            
+            if(this.Rooms[RoomsI][RoomsJ].getRing(i).getRarity() == 2)
+            {
+                gtemp.setColor(blue);
+            }
+            else if(this.Rooms[RoomsI][RoomsJ].getRing(i).getRarity() == 3)
+            {
+                gtemp.setColor(purple);
+            }
+            else
+            {
+                gtemp.setColor(trash);
+            }
+            
+            itemNameFont = (new Font("Arial Black", Font.PLAIN, 14));
+            gtemp.setFont(itemNameFont);
+            metrics = gtemp.getFontMetrics(itemNameFont);
+            
+            gtemp.drawString(this.Rooms[RoomsI][RoomsJ].getRing(i).getItemName(), 
+                        this.Rooms[RoomsI][RoomsJ].getRing(i).getCenterX() - 
+                                metrics.stringWidth(this.Rooms[RoomsI][RoomsJ].getRing(i).getItemName())/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getRing(i).getY() - rarityDisplacement - yShift);
+        }
+        
+        for(int i = 0; i < this.Rooms[RoomsI][RoomsJ].NeckSize(); i++)
+        {
+            itemNameFont = (new Font("Arial Black", Font.PLAIN, 12));
+            gtemp.setFont(itemNameFont);
+            metrics = gtemp.getFontMetrics(itemNameFont);
+        
+            int rarityDisplacement = 10;
+            String statValue;
+            
+            int darkVal, flameVal, frostVal, vitVal, intVal;
+            
+            if(Player.getNeck() == null)
+            {
+                darkVal = this.Rooms[RoomsI][RoomsJ].getNeck(i).getDark();
+                flameVal = this.Rooms[RoomsI][RoomsJ].getNeck(i).getFlame();
+                frostVal = this.Rooms[RoomsI][RoomsJ].getNeck(i).getFrost();
+                vitVal = this.Rooms[RoomsI][RoomsJ].getNeck(i).getVitality();
+                intVal = this.Rooms[RoomsI][RoomsJ].getNeck(i).getIntellect();
+            }
+            else
+            {
+                darkVal = this.Rooms[RoomsI][RoomsJ].getNeck(i).getDark() -
+                        Player.getNeck().getDark();
+                flameVal = this.Rooms[RoomsI][RoomsJ].getNeck(i).getFlame() -
+                        Player.getNeck().getFlame();
+                frostVal = this.Rooms[RoomsI][RoomsJ].getNeck(i).getFrost() -
+                        Player.getNeck().getFrost();
+                vitVal = this.Rooms[RoomsI][RoomsJ].getNeck(i).getVitality() -
+                        Player.getNeck().getVitality();
+                intVal = this.Rooms[RoomsI][RoomsJ].getNeck(i).getIntellect() -
+                        Player.getNeck().getIntellect();
+            }
+            
+            if(darkVal != 0)
+            {
+                if(darkVal > 0)
+                {
+                    gtemp.setColor(green);
+                    statValue = "+";
+                }
+                else
+                {
+                    gtemp.setColor(red);
+                    statValue = "-";
+                }
+                
+                statValue += Integer.toString(Math.abs(darkVal)) + " Void";
+                gtemp.drawString(statValue, this.Rooms[RoomsI][RoomsJ].getNeck(i).getCenterX() - 
+                                metrics.stringWidth(statValue)/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getNeck(i).getY() - rarityDisplacement - yShift);
+                rarityDisplacement += 15;
+            }
+            if(frostVal != 0)
+            {
+                if(frostVal > 0)
+                {
+                    gtemp.setColor(green);
+                    statValue = "+";
+                }
+                else
+                {
+                    gtemp.setColor(red);
+                    statValue = "-";
+                }
+                
+                statValue += Integer.toString(Math.abs(frostVal)) + " Frost";
+                gtemp.drawString(statValue, this.Rooms[RoomsI][RoomsJ].getNeck(i).getCenterX() - 
+                                metrics.stringWidth(statValue)/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getNeck(i).getY() - rarityDisplacement - yShift);
+                rarityDisplacement += 15;
+            }
+            if(flameVal != 0)
+            {
+                if(flameVal > 0)
+                {
+                    gtemp.setColor(green);
+                    statValue = "+";
+                }
+                else
+                {
+                    gtemp.setColor(red);
+                    statValue = "-";
+                }
+                
+                statValue += Integer.toString(Math.abs(flameVal)) + " Flame";
+                gtemp.drawString(statValue, this.Rooms[RoomsI][RoomsJ].getNeck(i).getCenterX() - 
+                                metrics.stringWidth(statValue)/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getNeck(i).getY() - rarityDisplacement - yShift);
+                rarityDisplacement += 15;
+            }
+            if(vitVal != 0)
+            {
+                if(vitVal > 0)
+                {
+                    gtemp.setColor(green);
+                    statValue = "+";
+                }
+                else
+                {
+                    gtemp.setColor(red);
+                    statValue = "-";
+                }
+                
+                statValue += Integer.toString(Math.abs(vitVal)) + " Vitality";
+                gtemp.drawString(statValue, this.Rooms[RoomsI][RoomsJ].getNeck(i).getCenterX() - 
+                                metrics.stringWidth(statValue)/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getNeck(i).getY() - rarityDisplacement - yShift);
+                rarityDisplacement += 15;
+            }
+            if(intVal != 0)
+            {
+                if(intVal > 0)
+                {
+                    gtemp.setColor(green);
+                    statValue = "+";
+                }
+                else
+                {
+                    gtemp.setColor(red);
+                    statValue = "-";
+                }
+                
+                statValue += Integer.toString(Math.abs(intVal)) + " Intellect";
+                gtemp.drawString(statValue, this.Rooms[RoomsI][RoomsJ].getNeck(i).getCenterX() - 
+                                metrics.stringWidth(statValue)/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getNeck(i).getY() - rarityDisplacement - yShift);
+                rarityDisplacement += 15;
+            }
+            
+            if(this.Rooms[RoomsI][RoomsJ].getNeck(i).getRarity() == 2)
+            {
+                gtemp.setColor(blue);
+            }
+            else if(this.Rooms[RoomsI][RoomsJ].getNeck(i).getRarity() == 3)
+            {
+                gtemp.setColor(purple);
+            }
+            else
+            {
+                gtemp.setColor(trash);
+            }
+            
+            itemNameFont = (new Font("Arial Black", Font.PLAIN, 14));
+            gtemp.setFont(itemNameFont);
+            metrics = gtemp.getFontMetrics(itemNameFont);
+            
+            gtemp.drawString(this.Rooms[RoomsI][RoomsJ].getNeck(i).getItemName(), 
+                        this.Rooms[RoomsI][RoomsJ].getNeck(i).getCenterX() - 
+                                metrics.stringWidth(this.Rooms[RoomsI][RoomsJ].getNeck(i).getItemName())/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getNeck(i).getY() - rarityDisplacement - yShift);
+        }
+        
+        for(int i = 0; i < this.Rooms[RoomsI][RoomsJ].BootsSize(); i++)
+        {
+            itemNameFont = (new Font("Arial Black", Font.PLAIN, 12));
+            gtemp.setFont(itemNameFont);
+            metrics = gtemp.getFontMetrics(itemNameFont);
+        
+            int rarityDisplacement = 10;
+            String statValue;
+            
+            int darkVal, flameVal, frostVal, vitVal, intVal;
+            
+            if(Player.getBoots() == null)
+            {
+                darkVal = this.Rooms[RoomsI][RoomsJ].getBoots(i).getDark();
+                flameVal = this.Rooms[RoomsI][RoomsJ].getBoots(i).getFlame();
+                frostVal = this.Rooms[RoomsI][RoomsJ].getBoots(i).getFrost();
+                vitVal = this.Rooms[RoomsI][RoomsJ].getBoots(i).getVitality();
+                intVal = this.Rooms[RoomsI][RoomsJ].getBoots(i).getIntellect();
+            }
+            else
+            {
+                darkVal = this.Rooms[RoomsI][RoomsJ].getBoots(i).getDark() -
+                        Player.getBoots().getDark();
+                flameVal = this.Rooms[RoomsI][RoomsJ].getBoots(i).getFlame() -
+                        Player.getBoots().getFlame();
+                frostVal = this.Rooms[RoomsI][RoomsJ].getBoots(i).getFrost() -
+                        Player.getBoots().getFrost();
+                vitVal = this.Rooms[RoomsI][RoomsJ].getBoots(i).getVitality() -
+                        Player.getBoots().getVitality();
+                intVal = this.Rooms[RoomsI][RoomsJ].getBoots(i).getIntellect() -
+                        Player.getBoots().getIntellect();
+            }
+            
+            if(darkVal != 0)
+            {
+                if(darkVal > 0)
+                {
+                    gtemp.setColor(green);
+                    statValue = "+";
+                }
+                else
+                {
+                    gtemp.setColor(red);
+                    statValue = "-";
+                }
+                
+                statValue += Integer.toString(Math.abs(darkVal)) + " Void";
+                gtemp.drawString(statValue, this.Rooms[RoomsI][RoomsJ].getBoots(i).getCenterX() - 
+                                metrics.stringWidth(statValue)/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getBoots(i).getY() - rarityDisplacement - yShift);
+                rarityDisplacement += 15;
+            }
+            if(frostVal != 0)
+            {
+                if(frostVal > 0)
+                {
+                    gtemp.setColor(green);
+                    statValue = "+";
+                }
+                else
+                {
+                    gtemp.setColor(red);
+                    statValue = "-";
+                }
+                
+                statValue += Integer.toString(Math.abs(frostVal)) + " Frost";
+                gtemp.drawString(statValue, this.Rooms[RoomsI][RoomsJ].getBoots(i).getCenterX() - 
+                                metrics.stringWidth(statValue)/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getBoots(i).getY() - rarityDisplacement - yShift);
+                rarityDisplacement += 15;
+            }
+            if(flameVal != 0)
+            {
+                if(flameVal > 0)
+                {
+                    gtemp.setColor(green);
+                    statValue = "+";
+                }
+                else
+                {
+                    gtemp.setColor(red);
+                    statValue = "-";
+                }
+                
+                statValue += Integer.toString(Math.abs(flameVal)) + " Flame";
+                gtemp.drawString(statValue, this.Rooms[RoomsI][RoomsJ].getBoots(i).getCenterX() - 
+                                metrics.stringWidth(statValue)/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getBoots(i).getY() - rarityDisplacement - yShift);
+                rarityDisplacement += 15;
+            }
+            if(vitVal != 0)
+            {
+                if(vitVal > 0)
+                {
+                    gtemp.setColor(green);
+                    statValue = "+";
+                }
+                else
+                {
+                    gtemp.setColor(red);
+                    statValue = "-";
+                }
+                
+                statValue += Integer.toString(Math.abs(vitVal)) + " Vitality";
+                gtemp.drawString(statValue, this.Rooms[RoomsI][RoomsJ].getBoots(i).getCenterX() - 
+                                metrics.stringWidth(statValue)/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getBoots(i).getY() - rarityDisplacement - yShift);
+                rarityDisplacement += 15;
+            }
+            if(intVal != 0)
+            {
+                if(intVal > 0)
+                {
+                    gtemp.setColor(green);
+                    statValue = "+";
+                }
+                else
+                {
+                    gtemp.setColor(red);
+                    statValue = "-";
+                }
+                
+                statValue += Integer.toString(Math.abs(intVal)) + " Intellect";
+                gtemp.drawString(statValue, this.Rooms[RoomsI][RoomsJ].getBoots(i).getCenterX() - 
+                                metrics.stringWidth(statValue)/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getBoots(i).getY() - rarityDisplacement - yShift);
+                rarityDisplacement += 15;
+            }
+            
+            if(this.Rooms[RoomsI][RoomsJ].getBoots(i).getRarity() == 2)
+            {
+                gtemp.setColor(blue);
+            }
+            else if(this.Rooms[RoomsI][RoomsJ].getBoots(i).getRarity() == 3)
+            {
+                gtemp.setColor(orange);
+            }
+            else
+            {
+                gtemp.setColor(trash);
+            }
+            
+            itemNameFont = (new Font("Arial Black", Font.PLAIN, 14));
+            gtemp.setFont(itemNameFont);
+            metrics = gtemp.getFontMetrics(itemNameFont);
+            
+            gtemp.drawString(this.Rooms[RoomsI][RoomsJ].getBoots(i).getItemName(), 
+                        this.Rooms[RoomsI][RoomsJ].getBoots(i).getCenterX() - 
+                                metrics.stringWidth(this.Rooms[RoomsI][RoomsJ].getBoots(i).getItemName())/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getBoots(i).getY() - rarityDisplacement - yShift);
+        }
+        
+        for(int i = 0; i < this.Rooms[RoomsI][RoomsJ].TomeSize(); i++)
+        {
+            itemNameFont = (new Font("Arial Black", Font.PLAIN, 12));
+            gtemp.setFont(itemNameFont);
+            metrics = gtemp.getFontMetrics(itemNameFont);
+        
+            int rarityDisplacement = 10;
+            String statValue;
+            
+            int darkVal, flameVal, frostVal, vitVal, intVal;
+            
+            if(Player.getTome() == null)
+            {
+                darkVal = this.Rooms[RoomsI][RoomsJ].getTome(i).getDark();
+                flameVal = this.Rooms[RoomsI][RoomsJ].getTome(i).getFlame();
+                frostVal = this.Rooms[RoomsI][RoomsJ].getTome(i).getFrost();
+                vitVal = this.Rooms[RoomsI][RoomsJ].getTome(i).getVitality();
+                intVal = this.Rooms[RoomsI][RoomsJ].getTome(i).getIntellect();
+            }
+            else
+            {
+                darkVal = this.Rooms[RoomsI][RoomsJ].getTome(i).getDark() -
+                        Player.getTome().getDark();
+                flameVal = this.Rooms[RoomsI][RoomsJ].getTome(i).getFlame() -
+                        Player.getTome().getFlame();
+                frostVal = this.Rooms[RoomsI][RoomsJ].getTome(i).getFrost() -
+                        Player.getTome().getFrost();
+                vitVal = this.Rooms[RoomsI][RoomsJ].getTome(i).getVitality() -
+                        Player.getTome().getVitality();
+                intVal = this.Rooms[RoomsI][RoomsJ].getTome(i).getIntellect() -
+                        Player.getTome().getIntellect();
+            }
+            
+            if(darkVal != 0)
+            {
+                if(darkVal > 0)
+                {
+                    gtemp.setColor(green);
+                    statValue = "+";
+                }
+                else
+                {
+                    gtemp.setColor(red);
+                    statValue = "-";
+                }
+                
+                statValue += Integer.toString(Math.abs(darkVal)) + " Void";
+                gtemp.drawString(statValue, this.Rooms[RoomsI][RoomsJ].getTome(i).getCenterX() - 
+                                metrics.stringWidth(statValue)/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getTome(i).getY() - rarityDisplacement - yShift);
+                rarityDisplacement += 15;
+            }
+            if(frostVal != 0)
+            {
+                if(frostVal > 0)
+                {
+                    gtemp.setColor(green);
+                    statValue = "+";
+                }
+                else
+                {
+                    gtemp.setColor(red);
+                    statValue = "-";
+                }
+                
+                statValue += Integer.toString(Math.abs(frostVal)) + " Frost";
+                gtemp.drawString(statValue, this.Rooms[RoomsI][RoomsJ].getTome(i).getCenterX() - 
+                                metrics.stringWidth(statValue)/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getTome(i).getY() - rarityDisplacement - yShift);
+                rarityDisplacement += 15;
+            }
+            if(flameVal != 0)
+            {
+                if(flameVal > 0)
+                {
+                    gtemp.setColor(green);
+                    statValue = "+";
+                }
+                else
+                {
+                    gtemp.setColor(red);
+                    statValue = "-";
+                }
+                
+                statValue += Integer.toString(Math.abs(flameVal)) + " Flame";
+                gtemp.drawString(statValue, this.Rooms[RoomsI][RoomsJ].getTome(i).getCenterX() - 
+                                metrics.stringWidth(statValue)/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getTome(i).getY() - rarityDisplacement - yShift);
+                rarityDisplacement += 15;
+            }
+            if(vitVal != 0)
+            {
+                if(vitVal > 0)
+                {
+                    gtemp.setColor(green);
+                    statValue = "+";
+                }
+                else
+                {
+                    gtemp.setColor(red);
+                    statValue = "-";
+                }
+                
+                statValue += Integer.toString(Math.abs(vitVal)) + " Vitality";
+                gtemp.drawString(statValue, this.Rooms[RoomsI][RoomsJ].getTome(i).getCenterX() - 
+                                metrics.stringWidth(statValue)/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getTome(i).getY() - rarityDisplacement - yShift);
+                rarityDisplacement += 15;
+            }
+            if(intVal != 0)
+            {
+                if(intVal > 0)
+                {
+                    gtemp.setColor(green);
+                    statValue = "+";
+                }
+                else
+                {
+                    gtemp.setColor(red);
+                    statValue = "-";
+                }
+                
+                statValue += Integer.toString(Math.abs(intVal)) + " Intellect";
+                gtemp.drawString(statValue, this.Rooms[RoomsI][RoomsJ].getTome(i).getCenterX() - 
+                                metrics.stringWidth(statValue)/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getTome(i).getY() - rarityDisplacement - yShift);
+                rarityDisplacement += 15;
+            }
+            
+            if(this.Rooms[RoomsI][RoomsJ].getTome(i).getRarity() == 2)
+            {
+                gtemp.setColor(blue);
+            }
+            else if(this.Rooms[RoomsI][RoomsJ].getTome(i).getRarity() == 3)
+            {
+                gtemp.setColor(purple);
+            }
+            else
+            {
+                gtemp.setColor(trash);
+            }
+            
+            itemNameFont = (new Font("Arial Black", Font.PLAIN, 14));
+            gtemp.setFont(itemNameFont);
+            metrics = gtemp.getFontMetrics(itemNameFont);
+            
+            gtemp.drawString(this.Rooms[RoomsI][RoomsJ].getTome(i).getItemName(), 
+                        this.Rooms[RoomsI][RoomsJ].getTome(i).getCenterX() - 
+                                metrics.stringWidth(this.Rooms[RoomsI][RoomsJ].getTome(i).getItemName())/2 + xShift, 
+                        this.Rooms[RoomsI][RoomsJ].getTome(i).getY() - rarityDisplacement - yShift);
+        }
+        
         gtemp.dispose();
     }
     
@@ -1725,6 +2652,8 @@ public class PlayGame extends JPanel implements KeyListener{
         g2d.drawImage(bimgTemp, x, y, null);
         g2d.setTransform(old);
     }
+    
+    
     
     public static void main(String[] args) {
         PlayGame game = new PlayGame();

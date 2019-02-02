@@ -4,6 +4,10 @@ import SourceFiles.GameLogic.GameEvents;
 import SourceFiles.GameObjects.MovingObjects.MovingObject;
 import SourceFiles.GameObjects.StationaryObjects.PlayerAoe;
 import SourceFiles.GameObjects.MovingObjects.Projectiles.PlayerProjectile;
+import SourceFiles.GameObjects.StationaryObjects.GearObjects.Boots;
+import SourceFiles.GameObjects.StationaryObjects.GearObjects.Ring;
+import SourceFiles.GameObjects.StationaryObjects.GearObjects.Neck;
+import SourceFiles.GameObjects.StationaryObjects.GearObjects.Tome;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -23,7 +27,8 @@ public class WizardPlayer extends MovingObject implements Observer{
     private int LevitateCounter;
     private int BaseDamage, BonusDamage;
     private int MaxHealth, Currenthealth;
-    private int Vitality, Intellect, Flame, Frost, Void;
+    private int Level, SkillPoints, CurrentExperience, NextLevelExperience;
+    private int Vitality, Intellect, Flame, Frost, Dark;
     private int BurnTime, BurnDamage, FreezeTime, BonusBurnChance, BonusFreezeChance,
             BonusFireDamage, BonusFrostDamage, BonusVoidDamage;
     private double AimAngle;
@@ -37,6 +42,10 @@ public class WizardPlayer extends MovingObject implements Observer{
     //placeholder
     private boolean RuneOne;
     private ArrayList<Spell> SpellBook;
+    private Ring PlayerRing;
+    private Neck PlayerNeck;
+    private Boots PlayerBoots;
+    private Tome PlayerTome;
     private int DamageTimer, InternalCoolDownTimer;
     
     public WizardPlayer(int x, int y, int leftbound, int rightbound, int upbound, 
@@ -102,7 +111,7 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.Intellect = 0;  
         this.Flame = 0;  
         this.Frost = 0;  
-        this.Void = 0;
+        this.Dark = 0;
         this.BurnTime = 120;  
         this.BurnDamage = 1;  
         this.FreezeTime = 120;  
@@ -111,6 +120,10 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.BonusFireDamage = 0;  
         this.BonusFrostDamage = 0;  
         this.BonusVoidDamage = 0;
+        this.Level = 1;
+        this.CurrentExperience = 0;
+        this.NextLevelExperience = 50;
+        this.SkillPoints = 0;
         
         this.RuneOne= false;
     }
@@ -129,6 +142,141 @@ public class WizardPlayer extends MovingObject implements Observer{
             Spell tempSpell = SpellBook.get(this.CurrentSpellPage + 1);
             this.SpellBook.remove(this.CurrentSpellPage + 1);
             return tempSpell;
+        }
+    }
+    
+    public Ring getRing()
+    {
+        return this.PlayerRing;
+    }
+    
+    public Neck getNeck()
+    {
+        return this.PlayerNeck;
+    }
+    
+    public Boots getBoots()
+    {
+        return this.PlayerBoots;
+    }
+    
+    public Tome getTome()
+    {
+        return this.PlayerTome;
+    }
+    
+    public void equipRing(Ring ring)
+    {
+        int dark = ring.getDark(), flame = ring.getFlame(), frost = ring.getFrost(),
+                vitality = ring.getVitality(), intellect = ring.getIntellect();
+        if(PlayerRing != null)
+        {
+            dark -= this.PlayerRing.getDark();
+            flame -= this.PlayerRing.getFlame();
+            frost -= this.PlayerRing.getFrost();
+            vitality -= this.PlayerRing.getVitality();
+            intellect -= this.PlayerRing.getIntellect();
+        }
+        changeDark(dark);
+        changeFrost(frost);
+        changeFlame(flame);
+        changeVitality(vitality);
+        changeIntellect(intellect);
+        
+        this.PlayerRing = ring;
+    }
+    
+    public void equipNeck(Neck neck)
+    {
+        int dark = neck.getDark(), flame = neck.getFlame(), frost = neck.getFrost(),
+                vitality = neck.getVitality(), intellect = neck.getIntellect();
+        if(PlayerNeck != null)
+        {
+            dark -= this.PlayerNeck.getDark();
+            flame -= this.PlayerNeck.getFlame();
+            frost -= this.PlayerNeck.getFrost();
+            vitality -= this.PlayerNeck.getVitality();
+            intellect -= this.PlayerNeck.getIntellect();
+        }
+        changeDark(dark);
+        changeFrost(frost);
+        changeFlame(flame);
+        changeVitality(vitality);
+        changeIntellect(intellect);
+        
+        this.PlayerNeck = neck;
+    }
+    
+    public void equipBoots(Boots boots)
+    {
+        int dark = boots.getDark(), flame = boots.getFlame(), frost = boots.getFrost(),
+                vitality = boots.getVitality(), intellect = boots.getIntellect();
+        if(PlayerBoots != null)
+        {
+            dark -= this.PlayerBoots.getDark();
+            flame -= this.PlayerBoots.getFlame();
+            frost -= this.PlayerBoots.getFrost();
+            vitality -= this.PlayerBoots.getVitality();
+            intellect -= this.PlayerBoots.getIntellect();
+        }
+        changeDark(dark);
+        changeFrost(frost);
+        changeFlame(flame);
+        changeVitality(vitality);
+        changeIntellect(intellect);
+        
+        this.PlayerBoots = boots;
+    }
+    
+    public void equipTome(Tome tome)
+    {
+        int dark = tome.getDark(), flame = tome.getFlame(), frost = tome.getFrost(),
+                vitality = tome.getVitality(), intellect = tome.getIntellect();
+        if(PlayerTome != null)
+        {
+            dark -= this.PlayerTome.getDark();
+            flame -= this.PlayerTome.getFlame();
+            frost -= this.PlayerTome.getFrost();
+            vitality -= this.PlayerTome.getVitality();
+            intellect -= this.PlayerTome.getIntellect();
+        }
+        changeDark(dark);
+        changeFrost(frost);
+        changeFlame(flame);
+        changeVitality(vitality);
+        changeIntellect(intellect);
+        
+        this.PlayerTome = tome;
+    }
+    
+    private void changeDark(int dark)
+    {
+        this.Dark += dark;
+    }
+    
+    private void changeFrost(int frost)
+    {
+        this.Frost += frost;
+    }
+    
+    private void changeFlame(int flame)
+    {
+        this.Flame += flame;
+    }
+    
+    private void changeIntellect(int intellect)
+    {
+        this.Intellect += intellect;
+    }
+    
+    private void changeVitality(int vitality)
+    {
+        this.Vitality += vitality;
+        this.MaxHealth += vitality * 10;
+        this.Currenthealth += vitality * 10;
+        if(this.Currenthealth <= 0)
+        {
+            this.Currenthealth = 1;
         }
     }
     
@@ -210,6 +358,39 @@ public class WizardPlayer extends MovingObject implements Observer{
         return this.Currenthealth;
     }
     
+    public int getLevel()
+    {
+        return this.Level;
+    }
+    
+    public int getExperience()
+    {
+        return this.CurrentExperience;
+    }
+    
+    public int getNextLevel()
+    {
+        return this.NextLevelExperience;
+    }
+    
+    public int getSkillPoints()
+    {
+        return this.SkillPoints;
+    }
+    
+    public void addExperience(int exp)
+    {
+        this.CurrentExperience += exp;
+        
+        if(this.CurrentExperience >= this.NextLevelExperience)
+        {
+            this.CurrentExperience = this.CurrentExperience - this.NextLevelExperience;
+            this.Level++;
+            this.SkillPoints++;
+            this.NextLevelExperience = this.Level * 50;
+        }
+    }
+    
     public boolean isAoeReady()
     {
         if(Fire && this.SpellBook.get(CurrentSpellPage).offCooldown() && 
@@ -236,14 +417,14 @@ public class WizardPlayer extends MovingObject implements Observer{
     //scroll up/down are used to signal the scroll wheel has moved for spell swapping
     public void scrollDown()
     {
-        this.SwapDown = true;
-        this.SwapUp = false;
+        this.SwapDown = false;
+        this.SwapUp = true;
     }
     
     public void scrollUp()
     {
-        this.SwapDown = false;
-        this.SwapUp = true;
+        this.SwapDown = true;
+        this.SwapUp = false;
     }
     
     public PlayerProjectile fireProjectile()
@@ -272,7 +453,7 @@ public class WizardPlayer extends MovingObject implements Observer{
             }
             if(this.SpellBook.get(CurrentSpellPage).isVoid())
             {
-                spellDamage = spellDamage + this.BonusVoidDamage + this.Void;
+                spellDamage = spellDamage + this.BonusVoidDamage + this.Dark;
             }
             
             this.SpellBook.get(CurrentSpellPage).resetCoolDown();
