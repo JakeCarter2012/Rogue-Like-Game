@@ -96,6 +96,7 @@ public class PlayGame extends JPanel implements KeyListener{
     private Image[] SmallGreenProjectileEnd;
     private Image[] RubyRing, AmethystRing, SaphireRing, EmeraldRing, RubyNeck, 
             SaphireNeck, EmeraldNeck, AmethystNeck;
+    private Image FlameTome, FrostTome, VoidTome, FlameBoots, FrostBoots, VoidBoots;
     
     private JButton testButton;
     
@@ -484,6 +485,14 @@ public class PlayGame extends JPanel implements KeyListener{
             AmethystNeck = new Image[2];
             AmethystNeck[0] = ImageIO.read(new File("Resources" + File.separator + "AmethystNeck1.png"));
             AmethystNeck[1] = ImageIO.read(new File("Resources" + File.separator + "AmethystNeck2.png"));
+            
+            FlameTome = ImageIO.read(new File("Resources" + File.separator + "FlameTome.png"));
+            FrostTome = ImageIO.read(new File("Resources" + File.separator + "FrostTome.png"));
+            VoidTome = ImageIO.read(new File("Resources" + File.separator + "VoidTome.png"));
+
+            FlameBoots = ImageIO.read(new File("Resources" + File.separator + "FlameBoots.png"));
+            FrostBoots = ImageIO.read(new File("Resources" + File.separator + "FrostBoots.png"));
+            VoidBoots = ImageIO.read(new File("Resources" + File.separator + "VoidBoots.png"));
         } catch (Exception e) {
             System.out.print(e.getStackTrace() + " Error loading resources \n");
         }
@@ -635,9 +644,7 @@ public class PlayGame extends JPanel implements KeyListener{
             if ((currTime - System.nanoTime() + targetTime) > 0) {
                 try {
                     Thread.sleep((currTime - System.nanoTime() + targetTime) / 1000000);
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                }
+                } catch (InterruptedException ex) {}
             }
         }
     }
@@ -1565,12 +1572,48 @@ public class PlayGame extends JPanel implements KeyListener{
     
     public void addRandomBoot(int x, int y)
     {
+        Random rnd = new Random();
         
+        int statType = rnd.nextInt(3);
+        
+        if(statType == 0)
+        {
+            Rooms[RoomsI][RoomsJ].addBoots(new Boots(x, y, VoidBoots,
+                    Player.getLevel(), false, false, true));
+        }
+        else if(statType == 1)
+        {
+            Rooms[RoomsI][RoomsJ].addBoots(new Boots(x, y, FlameBoots,
+                    Player.getLevel(), true, false, false));
+        }
+        else
+        {
+            Rooms[RoomsI][RoomsJ].addBoots(new Boots(x, y, FrostBoots,
+                    Player.getLevel(), false, true, false));
+        }
     }
     
     public void addRandomTome(int x, int y)
     {
+        Random rnd = new Random();
         
+        int statType = rnd.nextInt(3);
+        
+        if(statType == 0)
+        {
+            Rooms[RoomsI][RoomsJ].addTome(new Tome(x, y, VoidTome,
+                    Player.getLevel(), false, false, true));
+        }
+        else if(statType == 1)
+        {
+            Rooms[RoomsI][RoomsJ].addTome(new Tome(x, y, FlameTome,
+                    Player.getLevel(), true, false, false));
+        }
+        else
+        {
+            Rooms[RoomsI][RoomsJ].addTome(new Tome(x, y, FrostTome,
+                    Player.getLevel(), false, true, false));
+        }
     }
     
     public void updateGame()

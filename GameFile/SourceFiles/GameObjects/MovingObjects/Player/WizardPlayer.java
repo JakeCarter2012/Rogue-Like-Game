@@ -417,14 +417,14 @@ public class WizardPlayer extends MovingObject implements Observer{
     //scroll up/down are used to signal the scroll wheel has moved for spell swapping
     public void scrollDown()
     {
-        this.SwapDown = true;
-        this.SwapUp = false;
+        this.SwapDown = false;
+        this.SwapUp = true;
     }
     
     public void scrollUp()
     {
-        this.SwapDown = false;
-        this.SwapUp = true;
+        this.SwapDown = true;
+        this.SwapUp = false;
     }
     
     public PlayerProjectile fireProjectile()

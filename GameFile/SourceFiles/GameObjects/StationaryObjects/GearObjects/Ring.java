@@ -53,11 +53,11 @@ public class Ring extends Gear{
                 
                 if(this.Rarity == 2)
                 {
-                    this.ItemName = "Emerald Band";
+                    this.ItemName = "Pristine Emerald Band";
                 }
                 else
                 {
-                    this.ItemName = "Pristine Emerald Band";
+                    this.ItemName = "Emerald Band of Regeneration";
                 }
             }
             else
@@ -74,12 +74,12 @@ public class Ring extends Gear{
             }
             else if(this.Rarity == 2)
             {
-                this.ItemName = "Ruby Band";
+                this.ItemName = "Pristine Ruby Band";
                 this.Vitality = secondaryStat;
             }
             else
             {
-                this.ItemName = "Pristine Ruby Band";
+                this.ItemName = "Ruby Band of Regeneration";
                 this.Vitality = secondaryStat;
             }
         }
@@ -92,12 +92,12 @@ public class Ring extends Gear{
             }
             else if(this.Rarity == 2)
             {
-                this.ItemName = "Saphire Band";
+                this.ItemName = "Pristine Saphire Band";
                 this.Vitality = secondaryStat;
             }
             else
             {
-                this.ItemName = "Pristine Saphire Band";
+                this.ItemName = "Saphire Band of Regeneration";
                 this.Vitality = secondaryStat;
             }
         }
@@ -110,12 +110,12 @@ public class Ring extends Gear{
             }
             else if(this.Rarity == 2)
             {
-                this.ItemName = "Amethyst Band";
+                this.ItemName = "Pristine Amethyst Band";
                 this.Vitality = secondaryStat;
             }
             else
             {
-                this.ItemName = "Pristine Amethyst Band";
+                this.ItemName = "Amethyst Band of Regeneration";
                 this.Vitality = secondaryStat;
             }
         }
