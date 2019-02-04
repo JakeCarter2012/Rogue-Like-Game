@@ -8,6 +8,7 @@ import SourceFiles.GameObjects.StationaryObjects.GearObjects.Boots;
 import SourceFiles.GameObjects.StationaryObjects.GearObjects.Ring;
 import SourceFiles.GameObjects.StationaryObjects.GearObjects.Neck;
 import SourceFiles.GameObjects.StationaryObjects.GearObjects.Tome;
+import SourceFiles.GameObjects.StationaryObjects.GearObjects.Gear;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -48,16 +49,14 @@ public class WizardPlayer extends MovingObject implements Observer{
     private Tome PlayerTome;
     private int DamageTimer, InternalCoolDownTimer;
     
-    public WizardPlayer(int x, int y, int leftbound, int rightbound, int upbound, 
-            int downbound, Image[] WizRightForwardAttack, Image[] WizRightForward, 
-            Image[] WizRightBackAttack, Image[] WizRightAttack, Image[] WizRight, 
-            Image[] WizLeftForwardAttack, Image[] WizLeftForward,
+    public WizardPlayer(int x, int y,  Image[] WizRightForwardAttack, 
+            Image[] WizRightForward, Image[] WizRightBackAttack, Image[] WizRightAttack, 
+            Image[] WizRight, Image[] WizLeftForwardAttack, Image[] WizLeftForward,
             Image[] WizLeftBackwardAttack, Image[] WizLeftAttack, Image[] WizLeft, 
             Image[] WizForwardAttack, Image[] WizForward, Image[] WizBackAttack, 
             Image[] WizBack)
     {
-        super(x, y, leftbound,rightbound, upbound, downbound, WizForward[0].getWidth(null), 
-                WizForward[0].getHeight(null), 0, 90);
+        super(x, y, WizForward[0].getWidth(null), WizForward[0].getHeight(null), 0, 90);
         
         this.WizRightForwardAttack = WizRightForwardAttack;
         this.WizRightForward = WizRightForward;
@@ -100,7 +99,7 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.AimAngle = 90;
         this.MouseX = 0;
         this.MouseY = 0;
-        this.BaseSpeed = 6;
+        this.BaseSpeed = 5;
         this.LevitateCounter = 0;
         this.FireX = 0;
         this.FireY = 0;
@@ -167,106 +166,48 @@ public class WizardPlayer extends MovingObject implements Observer{
     
     public void equipRing(Ring ring)
     {
-        int dark = ring.getDark(), flame = ring.getFlame(), frost = ring.getFrost(),
-                vitality = ring.getVitality(), intellect = ring.getIntellect();
-        if(PlayerRing != null)
-        {
-            dark -= this.PlayerRing.getDark();
-            flame -= this.PlayerRing.getFlame();
-            frost -= this.PlayerRing.getFrost();
-            vitality -= this.PlayerRing.getVitality();
-            intellect -= this.PlayerRing.getIntellect();
-        }
-        changeDark(dark);
-        changeFrost(frost);
-        changeFlame(flame);
-        changeVitality(vitality);
-        changeIntellect(intellect);
-        
+        changeGearStatChange(this.PlayerRing, ring);
         this.PlayerRing = ring;
     }
     
     public void equipNeck(Neck neck)
     {
-        int dark = neck.getDark(), flame = neck.getFlame(), frost = neck.getFrost(),
-                vitality = neck.getVitality(), intellect = neck.getIntellect();
-        if(PlayerNeck != null)
-        {
-            dark -= this.PlayerNeck.getDark();
-            flame -= this.PlayerNeck.getFlame();
-            frost -= this.PlayerNeck.getFrost();
-            vitality -= this.PlayerNeck.getVitality();
-            intellect -= this.PlayerNeck.getIntellect();
-        }
-        changeDark(dark);
-        changeFrost(frost);
-        changeFlame(flame);
-        changeVitality(vitality);
-        changeIntellect(intellect);
-        
+        changeGearStatChange(this.PlayerNeck, neck);
         this.PlayerNeck = neck;
     }
     
     public void equipBoots(Boots boots)
     {
-        int dark = boots.getDark(), flame = boots.getFlame(), frost = boots.getFrost(),
-                vitality = boots.getVitality(), intellect = boots.getIntellect();
-        if(PlayerBoots != null)
-        {
-            dark -= this.PlayerBoots.getDark();
-            flame -= this.PlayerBoots.getFlame();
-            frost -= this.PlayerBoots.getFrost();
-            vitality -= this.PlayerBoots.getVitality();
-            intellect -= this.PlayerBoots.getIntellect();
-        }
-        changeDark(dark);
-        changeFrost(frost);
-        changeFlame(flame);
-        changeVitality(vitality);
-        changeIntellect(intellect);
-        
+        changeGearStatChange(this.PlayerBoots, boots);
         this.PlayerBoots = boots;
     }
     
     public void equipTome(Tome tome)
     {
-        int dark = tome.getDark(), flame = tome.getFlame(), frost = tome.getFrost(),
-                vitality = tome.getVitality(), intellect = tome.getIntellect();
-        if(PlayerTome != null)
-        {
-            dark -= this.PlayerTome.getDark();
-            flame -= this.PlayerTome.getFlame();
-            frost -= this.PlayerTome.getFrost();
-            vitality -= this.PlayerTome.getVitality();
-            intellect -= this.PlayerTome.getIntellect();
-        }
-        changeDark(dark);
-        changeFrost(frost);
-        changeFlame(flame);
-        changeVitality(vitality);
-        changeIntellect(intellect);
-        
+        changeGearStatChange(this.PlayerTome, tome);
         this.PlayerTome = tome;
     }
     
-    private void changeDark(int dark)
+    private void changeGearStatChange(Gear oldGear, Gear newGear)
     {
+        int dark = newGear.getDark(), flame = newGear.getFlame(), frost = newGear.getFrost(),
+                vitality = newGear.getVitality(), intellect = newGear.getIntellect(),
+                speed = newGear.getMoveSpeed();
+        if(oldGear != null)
+        {
+            dark -= oldGear.getDark();
+            flame -= oldGear.getFlame();
+            frost -= oldGear.getFrost();
+            vitality -= oldGear.getVitality();
+            intellect -= oldGear.getIntellect();
+            speed -= oldGear.getMoveSpeed();
+        }
         this.Dark += dark;
-    }
-    
-    private void changeFrost(int frost)
-    {
         this.Frost += frost;
-    }
-    
-    private void changeFlame(int flame)
-    {
         this.Flame += flame;
-    }
-    
-    private void changeIntellect(int intellect)
-    {
         this.Intellect += intellect;
+        this.BaseSpeed += speed;
+        changeVitality(vitality);
     }
     
     private void changeVitality(int vitality)
@@ -457,8 +398,7 @@ public class WizardPlayer extends MovingObject implements Observer{
             }
             
             this.SpellBook.get(CurrentSpellPage).resetCoolDown();
-            return(new PlayerProjectile(this.FireX, this.FireY, this.getLeftBound(),
-                    this.getRightBound(), this.getUpBound(), this.getDownBound(),
+            return(new PlayerProjectile(this.FireX, this.FireY, 
                     ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getSpeed(), this.AimAngle, 
                     ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getDamage() + spellDamage + this.Intellect, 
                     this.SpellBook.get(CurrentSpellPage).isFire(),
@@ -960,16 +900,6 @@ public class WizardPlayer extends MovingObject implements Observer{
         {
             this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
         }
-        
-        //Move the player back into the game's bounds if they are outside the boundaries
-        if(this.getX() < this.getLeftBound())
-            this.setX(this.getLeftBound());
-        if(this.getX() + this.getWidth() > this.getRightBound())
-            this.setX(this.getRightBound() - this.getWidth());
-        if(this.getY() < this.getUpBound())
-            this.setY(this.getUpBound());
-        if(this.getY() + this.getHeight() > this.getDownBound())
-            this.setY(this.getDownBound() - this.getHeight());
     }
     
     @Override

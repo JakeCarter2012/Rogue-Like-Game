@@ -13,11 +13,10 @@ public class Projectile extends MovingObject{
     private double AccurateX, AccurateY;
     private int Damage;
     
-    public Projectile(int x, int y, int leftbound, int rightbound, int upbound, int downbound,
-            int Speed, double Angle, int damage, Image img, Image shadow, Image[] endAnimation)
+    public Projectile(int x, int y, int Speed, double Angle, int damage, 
+            Image img, Image shadow, Image[] endAnimation)
     {
-        super(x, y, leftbound,rightbound, upbound, downbound, img.getWidth(null),
-                img.getHeight(null), Speed, Angle);
+        super(x, y, img.getWidth(null), img.getHeight(null), Speed, Angle);
         this.Sprite = img;
         this.Shadow = shadow;
         this.EndAnimationImage = endAnimation;
@@ -48,16 +47,6 @@ public class Projectile extends MovingObject{
     public int getDamage()
     {
         return this.Damage;
-    }
-    
-    public boolean outOfBounds()
-    {
-        //If projectile moves out of bounds, return true so it can be removed
-        if(this.getX() < this.getLeftBound() || this.getX() + this.getWidth() > this.getRightBound() ||
-                this.getY() < this.getUpBound() || this.getY() + this.getHeight() > this.getDownBound())
-            return true;
-        else
-            return false;
     }
     
     public void updateProjectile()

@@ -12,14 +12,12 @@ public class DartGoblin extends MovingEnemy{
     private boolean FacingRight, CloseToPlayer;
     private Image CurrentSprite;
     
-    public DartGoblin(int x, int y, int leftbound, int rightbound, int upbound, 
-            int downbound, int floor, Image[] moveLeft, Image[] moveRight, 
+    public DartGoblin(int x, int y, int floor, Image[] moveLeft, Image[] moveRight, 
             Image[] attackLeft, Image[] attackRight, Image dart, Image dartShadow,
             Image[] endProjectile)
     {
         super(x, y, moveLeft[0].getWidth(null), moveLeft[0].getHeight(null), 
-                leftbound, rightbound, upbound, downbound, 100 + 50 * floor, 3, 50 + 25 * floor,
-                0, 0);
+                100 + 50 * floor, 3, 50 + 25 * floor, 0, 0);
         this.MoveLeftImages = moveLeft;
         this.MoveRightImages = moveRight;
         this.AttackLeft = attackLeft;
@@ -75,9 +73,7 @@ public class DartGoblin extends MovingEnemy{
         }
         
         Projectile dart = new Projectile(this.getX() + dartX, this.getY() + 36, 
-                this.getLeftBound(), this.getRightBound(), this.getUpBound(), 
-                this.getDownBound(), 8, this.getAngle(), 50, this.Dart, this.DartShadow,
-                this.EndProjectile);
+                8, this.getAngle(), 50, this.Dart, this.DartShadow, this.EndProjectile);
         
         return dart;
     }
@@ -132,7 +128,12 @@ public class DartGoblin extends MovingEnemy{
         
         this.updateImage(playerX);
         
-        this.updatePosition(generalCollision, horizontalCollision, verticalCollision);
+        //if attacking or close to the player, don't need to move closer
+        if(!this.CloseToPlayer && !(this.ProjectileTimer < 30) && !(this.ProjectileTimer > 110))
+        {
+            this.updatePosition(generalCollision, horizontalCollision, verticalCollision);
+        }
+        
         
         this.setAngle((int)(90 - Math.toDegrees(Math.atan2(playerX - this.getCenterX(), playerY - this.getCenterY()))));
         
@@ -200,38 +201,5 @@ public class DartGoblin extends MovingEnemy{
             this.ImageTimer = 0;
         }
         this.ImageTimer++;
-    }
-    
-    private void updatePosition(boolean generalCollision, boolean horizontalCollision, boolean verticalCollision) 
-    {
-        //if attacking or close to the player, don't need to move closer
-        if(this.CloseToPlayer || this.ProjectileTimer < 30 || this.ProjectileTimer > 110)
-        {
-            return;
-        }
-        
-        if(!generalCollision)
-        {
-            this.setX(this.getX() + (int)Math.round(this.getSpeed()*Math.cos(Math.toRadians(this.getAngle()))));
-            this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
-        }
-        else if(!horizontalCollision)
-        {
-            this.setX(this.getX() + (int)Math.round(this.getSpeed()*Math.cos(Math.toRadians(this.getAngle()))));
-        }
-        else if(!verticalCollision)
-        {
-            this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
-        }
-        
-        //If outside of game's bounds, move back into the game's boundss
-        if(this.getX() < this.getLeftBound())
-            this.setX(this.getLeftBound());
-        if(this.getX() + this.getWidth() > this.getRightBound())
-            this.setX(this.getRightBound() - this.getWidth());
-        if(this.getY() < this.getUpBound())
-            this.setY(this.getUpBound());
-        if(this.getY() + this.getHeight() > this.getDownBound())
-            this.setY(this.getDownBound() - this.getHeight());
     }
 }

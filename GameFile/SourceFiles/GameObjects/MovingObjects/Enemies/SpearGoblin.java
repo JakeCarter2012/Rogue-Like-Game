@@ -10,12 +10,10 @@ public class SpearGoblin extends MovingEnemy{
     private boolean FacingRight;
     private Image CurrentSprite;
     
-    public SpearGoblin(int x, int y, int leftbound, int rightbound, int upbound, 
-            int downbound, int floor, Image[] moveLeft, Image[] moveRight)
+    public SpearGoblin(int x, int y, int floor, Image[] moveLeft, Image[] moveRight)
     {
         super(x, y, moveLeft[0].getWidth(null), moveLeft[0].getHeight(null), 
-                leftbound, rightbound, upbound, downbound, 100 + 50 * floor, 5, 50 + 25 * floor,
-                0, 0);
+                100 + 50 * floor, 5, 50 + 25 * floor, 0, 0);
         this.MoveLeftImages = moveLeft;
         this.MoveRightImages = moveRight;
         this.ImageTimer = 0;
@@ -114,30 +112,4 @@ public class SpearGoblin extends MovingEnemy{
         this.ImageTimer++;
     }
     
-    private void updatePosition(boolean generalCollision, boolean horizontalCollision, boolean verticalCollision) 
-    {
-        if(!generalCollision)
-        {
-            this.setX(this.getX() + (int)Math.round(this.getSpeed()*Math.cos(Math.toRadians(this.getAngle()))));
-            this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
-        }
-        else if(!horizontalCollision)
-        {
-            this.setX(this.getX() + (int)Math.round(this.getSpeed()*Math.cos(Math.toRadians(this.getAngle()))));
-        }
-        else if(!verticalCollision)
-        {
-            this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
-        }
-        
-        //If outside of game's bounds, move back into the game's boundss
-        if(this.getX() < this.getLeftBound())
-            this.setX(this.getLeftBound());
-        if(this.getX() + this.getWidth() > this.getRightBound())
-            this.setX(this.getRightBound() - this.getWidth());
-        if(this.getY() < this.getUpBound())
-            this.setY(this.getUpBound());
-        if(this.getY() + this.getHeight() > this.getDownBound())
-            this.setY(this.getDownBound() - this.getHeight());
-    }
 }

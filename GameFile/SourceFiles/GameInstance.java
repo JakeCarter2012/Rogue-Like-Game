@@ -337,7 +337,7 @@ public class GameInstance {
         //Now constant spells/objects that never change are created
         IceShards = new ProjectileSpell("Ice Shards", 5,10, 30, false, true, false, 30, IceShardsImg, IceShardsIcon, IceShardsShadow, IceShardsBreak);
         FireBall = new ProjectileSpell("Fire Ball", 5,10, 30, true, false, false, 30, FireBallImg, FireBallIcon, FireBallShadow, FireBallEnd);
-        VoidWave = new ProjectileSpell("Void Wave", 1,10, 59, false, false, true, 0, VoidWaveImg, VoidWaveIcon, VoidWaveShadow, VoidWaveEnd);
+        VoidWave = new ProjectileSpell("Void Wave", 1,10, 119, false, false, true, 0, VoidWaveImg, VoidWaveIcon, VoidWaveShadow, VoidWaveEnd);
         
         Burning = new Animation(0, 0, 0, BurningImgs, 3, true);
         
@@ -370,11 +370,11 @@ public class GameInstance {
         */
         
         this.Money = 0;
-        this.Player = new WizardPlayer(200, 200, 0, this.GameWidth, 0, this.GameHeight, 
-                WizRightForwardAttack, WizRightForward, WizRightBackAttack,
-                WizRightAttack, WizRight, WizLeftForwardAttack, WizLeftForward,
-                WizLeftBackwardAttack, WizLeftAttack, WizLeft, WizForwardAttack, 
-                WizForward, WizBackAttack, WizBack);
+        this.Player = new WizardPlayer(200, 200,WizRightForwardAttack, 
+                WizRightForward, WizRightBackAttack, WizRightAttack, WizRight, 
+                WizLeftForwardAttack, WizLeftForward, WizLeftBackwardAttack, 
+                WizLeftAttack, WizLeft, WizForwardAttack, WizForward, WizBackAttack, 
+                WizBack);
         
         
         this.Player.addNewSpell(IceShards);
@@ -398,13 +398,11 @@ public class GameInstance {
         this.Rooms[RoomsI][RoomsJ].addWall(RightWallMid);
         this.Rooms[RoomsI][RoomsJ].addWall(BottomWallMid);
        
-        SpearGoblin gobo = new SpearGoblin(700, 700, 0, this.GameWidth, 0, 
-                this.GameHeight, 1, this.SpearGoblinLeft, this.SpearGoblinRight);
-        DartGoblin gobo2 = new DartGoblin(900, 900, 0, this.GameWidth, 0, 
-                this.GameHeight, 1, this.DartGoblinLeft, this.DartGoblinRight,
-                this.DartGoblinLeftAttack, this.DartGoblinRightAttack, 
-                this.SmallProjectileGreen, this.SmallProjectileShadow,
-                this.SmallGreenProjectileEnd);
+        SpearGoblin gobo = new SpearGoblin(700, 700, 1, this.SpearGoblinLeft, this.SpearGoblinRight);
+        DartGoblin gobo2 = new DartGoblin(900, 900, 1, this.DartGoblinLeft, 
+                this.DartGoblinRight, this.DartGoblinLeftAttack, 
+                this.DartGoblinRightAttack, this.SmallProjectileGreen, 
+                this.SmallProjectileShadow, this.SmallGreenProjectileEnd);
         
         Rooms[RoomsI][RoomsJ].lockDoors();
         Rooms[RoomsI][RoomsJ].addEnemy(gobo);
@@ -474,12 +472,12 @@ public class GameInstance {
             {
                 generalCol = true;
                 
-                if(col.horizontalCollision(Player, Walls[i]))
+                if(col.horizontalSlideCollision(Player, Walls[i]))
                 {
                     horizontalCol = true;
                 }
                 
-                if(col.verticalCollision(Player, Walls[i]))
+                if(col.verticalSlideCollision(Player, Walls[i]))
                 {
                     verticalCol = true;
                 }
@@ -499,12 +497,12 @@ public class GameInstance {
                 
                 if(Rooms[RoomsI][RoomsJ].getDoor(i).isLocked())
                 {
-                    if(col.horizontalCollision(Player, Rooms[RoomsI][RoomsJ].getDoor(i)))
+                    if(col.horizontalSlideCollision(Player, Rooms[RoomsI][RoomsJ].getDoor(i)))
                     {
                         horizontalCol = true;
                     }
 
-                    if(col.verticalCollision(Player, Rooms[RoomsI][RoomsJ].getDoor(i)))
+                    if(col.verticalSlideCollision(Player, Rooms[RoomsI][RoomsJ].getDoor(i)))
                     {
                         verticalCol = true;
                     }
@@ -558,12 +556,12 @@ public class GameInstance {
             {
                 generalCol = true;
                 
-                if(col.horizontalCollision(Player, Rooms[RoomsI][RoomsJ].getWall(i)))
+                if(col.horizontalSlideCollision(Player, Rooms[RoomsI][RoomsJ].getWall(i)))
                 {
                     horizontalCol = true;
                 }
                 
-                if(col.verticalCollision(Player, Rooms[RoomsI][RoomsJ].getWall(i)))
+                if(col.verticalSlideCollision(Player, Rooms[RoomsI][RoomsJ].getWall(i)))
                 {
                     verticalCol = true;
                 }
@@ -581,12 +579,12 @@ public class GameInstance {
             {
                 generalCol = true;
                 
-                if(col.horizontalCollision(Player, Rooms[RoomsI][RoomsJ].getBarrel(i)))
+                if(col.horizontalSlideCollision(Player, Rooms[RoomsI][RoomsJ].getBarrel(i)))
                 {
                     horizontalCol = true;
                 }
                 
-                if(col.verticalCollision(Player, Rooms[RoomsI][RoomsJ].getBarrel(i)))
+                if(col.verticalSlideCollision(Player, Rooms[RoomsI][RoomsJ].getBarrel(i)))
                 {
                     verticalCol = true;
                 }
@@ -599,12 +597,12 @@ public class GameInstance {
             {
                 generalCol = true;
                 
-                if(col.horizontalCollision(Player, Rooms[RoomsI][RoomsJ].getEnemy(i)))
+                if(col.horizontalSlideCollision(Player, Rooms[RoomsI][RoomsJ].getEnemy(i)))
                 {
                     horizontalCol = true;
                 }
                 
-                if(col.verticalCollision(Player, Rooms[RoomsI][RoomsJ].getEnemy(i)))
+                if(col.verticalSlideCollision(Player, Rooms[RoomsI][RoomsJ].getEnemy(i)))
                 {
                     verticalCol = true;
                 }
@@ -1182,8 +1180,6 @@ public class GameInstance {
             if(!generalCol)
             {
                 Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).updateProjectile();
-                if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).outOfBounds())
-                    Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
             }
         }
     }
@@ -1282,8 +1278,6 @@ public class GameInstance {
             if(!generalCol)
             {
                 Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).updateProjectile();
-                if(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).outOfBounds())
-                    Rooms[RoomsI][RoomsJ].removeEnemyProjectile(i);
             }
         }
     }

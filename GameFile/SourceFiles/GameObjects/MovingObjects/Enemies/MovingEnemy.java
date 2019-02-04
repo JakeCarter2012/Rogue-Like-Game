@@ -18,11 +18,10 @@ abstract public class MovingEnemy extends MovingObject{
     protected boolean Frozen, Chilled, Burning;
     private int StatusTimer;
     
-    public MovingEnemy(int x, int y, int width, int height, int leftbound, int 
-            rightbound, int upbound, int downbound, int health, int speed, 
+    public MovingEnemy(int x, int y, int width, int height, int health, int speed, 
             int bumpDmg, int burnRes, int iceRes)
     {
-        super(x, y, leftbound,rightbound, upbound, downbound, width, height, speed, 0);
+        super(x, y, width, height, speed, 0);
         this.Health = health;
         this.BumpDamage = bumpDmg;
         this.Frozen = false;
@@ -167,6 +166,23 @@ abstract public class MovingEnemy extends MovingObject{
     public int getSpeed()
     {
         return this.CurrentSpeed;
+    }
+    
+    protected void updatePosition(boolean generalCollision, boolean horizontalCollision, boolean verticalCollision) 
+    {
+        if(!generalCollision)
+        {
+            this.setX(this.getX() + (int)Math.round(this.getSpeed()*Math.cos(Math.toRadians(this.getAngle()))));
+            this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
+        }
+        else if(!horizontalCollision)
+        {
+            this.setX(this.getX() + this.getSpeed());
+        }
+        else if(!verticalCollision)
+        {
+            this.setY(this.getY() + this.getSpeed());
+        }
     }
     
     abstract public boolean isProjectileReady();
