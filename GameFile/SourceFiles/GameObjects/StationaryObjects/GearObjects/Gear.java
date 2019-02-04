@@ -63,6 +63,11 @@ public class Gear extends StationaryObject{
         return this.Level;
     }
     
+    public int getMoveSpeed()
+    {
+        return this.MoveSpeed;
+    }
+    
     public String getItemName()
     {
         return this.ItemName;
