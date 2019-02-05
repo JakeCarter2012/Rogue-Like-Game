@@ -57,8 +57,7 @@ public class SpearGoblin extends MovingEnemy{
         return this.CurrentSprite;
     }
     
-    public void updateMovingEnemy(int playerX, int playerY, boolean generalCollision,
-            boolean horizontalCollision, boolean verticalCollision)
+    public void updateMovingEnemy(int playerX, int playerY)
     {
         this.updateStatus();
         
@@ -67,7 +66,7 @@ public class SpearGoblin extends MovingEnemy{
         
         this.updateImage(playerX);
         
-        this.updatePosition(generalCollision, horizontalCollision, verticalCollision);
+        this.updatePosition();
         
         this.setAngle((int)(90 - Math.toDegrees(Math.atan2(playerX - this.getCenterX(), playerY - this.getCenterY()))));
     }

@@ -17,6 +17,9 @@ abstract public class MovingEnemy extends MovingObject{
     private int BurnDamage;
     protected boolean Frozen, Chilled, Burning;
     private int StatusTimer;
+    boolean GeneralCollision, CollisionUp, CollisionDown, CollisionRight,
+            CollisionLeft, RequestMoveRight, RequestMoveLeft, RequestMoveUp,
+            RequestMoveDown;
     
     public MovingEnemy(int x, int y, int width, int height, int health, int speed, 
             int bumpDmg, int burnRes, int iceRes)
@@ -32,6 +35,9 @@ abstract public class MovingEnemy extends MovingObject{
         this.StatusTimer = 0;
         this.BumpDamage = bumpDmg;
         this.NormalSpeed = this.CurrentSpeed = speed;
+        this.GeneralCollision = CollisionDown = CollisionRight = CollisionUp = 
+                CollisionLeft = RequestMoveRight = RequestMoveLeft = RequestMoveUp =
+                RequestMoveDown = false;
     }
     
     public boolean isChilled()
@@ -168,21 +174,102 @@ abstract public class MovingEnemy extends MovingObject{
         return this.CurrentSpeed;
     }
     
-    protected void updatePosition(boolean generalCollision, boolean horizontalCollision, boolean verticalCollision) 
+    protected void updatePosition() 
     {
-        if(!generalCollision)
+        if(!GeneralCollision)
         {
             this.setX(this.getX() + (int)Math.round(this.getSpeed()*Math.cos(Math.toRadians(this.getAngle()))));
             this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
         }
-        else if(!horizontalCollision)
+        else if(this.RequestMoveUp && !this.RequestMoveDown && !this.CollisionUp)
         {
-            this.setX(this.getX() + this.getSpeed());
+            this.setY(this.getY() - this.getSpeed());
         }
-        else if(!verticalCollision)
+        else if(this.RequestMoveDown && !this.RequestMoveUp && !this.CollisionDown)
         {
             this.setY(this.getY() + this.getSpeed());
         }
+        else if(this.RequestMoveLeft && !this.RequestMoveRight && !this.CollisionLeft)
+        {
+            this.setX(this.getX() - this.getSpeed());
+        }
+        else if(this.RequestMoveRight && !this.RequestMoveLeft && !this.CollisionRight)
+        {
+            this.setX(this.getX() + this.getSpeed());
+        }
+        GeneralCollision = CollisionDown = CollisionRight = CollisionUp = 
+                CollisionLeft = RequestMoveRight = RequestMoveLeft = RequestMoveUp =
+                RequestMoveDown = false;
+    }
+    
+    public boolean getGeneralCollision()
+    {
+        return this.GeneralCollision;
+    }
+    
+    public void setGeneralCollision()
+    {
+        this.GeneralCollision = true;
+    }
+    
+    public void setCollisionUp()
+    {
+        this.CollisionUp = true;
+    }
+    
+    public void setCollisionDown()
+    {
+        this.CollisionDown = true;
+    }
+    
+    public void setCollisionLeft()
+    {
+        this.CollisionLeft = true;
+    }
+    
+    public void setCollisionRight()
+    {
+        this.CollisionRight = true;
+    }
+    
+    public boolean getCollisionUp()
+    {
+        return this.CollisionUp;
+    }
+    
+    public boolean getCollisionDown()
+    {
+        return this.CollisionDown;
+    }
+    
+    public boolean getCollisionLeft()
+    {
+        return this.CollisionLeft;
+    }
+    
+    public boolean getCollisionRight()
+    {
+        return this.CollisionRight;
+    }
+    
+    public void requestMoveDown()
+    {
+        this.RequestMoveDown = true;
+    }
+    
+    public void requestMoveUp()
+    {
+        this.RequestMoveUp = true;
+    }
+    
+    public void requestMoveLeft()
+    {
+        this.RequestMoveLeft = true;
+    }
+    
+    public void requestMoveRight()
+    {
+        this.RequestMoveRight = true;
     }
     
     abstract public boolean isProjectileReady();
@@ -199,6 +286,5 @@ abstract public class MovingEnemy extends MovingObject{
     
     abstract public Image getSprite();
     
-    abstract public void updateMovingEnemy(int playerX, int playerY, boolean generalCollision,
-            boolean horizontalCollision, boolean verticalCollision);
+    abstract public void updateMovingEnemy(int playerX, int playerY);
 }

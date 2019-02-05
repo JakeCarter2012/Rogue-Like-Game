@@ -808,15 +808,8 @@ public class GameInstance {
         */
         CollisionDetector col = new CollisionDetector();
         
-        boolean generalCol = false;
-        boolean verticalCol = false;
-        boolean horizontalCol = false;
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].EnemySize(); i++)
         {
-            generalCol = false;
-            verticalCol = false;
-            horizontalCol = false;
-            
             if(Rooms[RoomsI][RoomsJ].getEnemy(i).isDead())
             {
                 Rooms[RoomsI][RoomsJ].removeEnemy(i);
@@ -830,158 +823,51 @@ public class GameInstance {
             
             for(int j = 0; j < Walls.length; j++)
             {
-                if(verticalCol && horizontalCol)
-                {
-                    break;
-                }
-
-                if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
-                        Walls[j]))
-                {
-                    generalCol = true;
-
-                    if(col.horizontalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
-                            Walls[j]))
-                    {
-                        horizontalCol = true;
-                    }
-
-                    if(col.verticalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
-                            Walls[j]))
-                    {
-                        verticalCol = true;
-                    }
-                }
+                col.EnemyCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), Walls[j], 
+                        Player.getCenterX(), Player.getCenterY());
             }
             
             for(int j = 0; j < Rooms[RoomsI][RoomsJ].DoorSize(); j++)
             {
-                if(verticalCol && horizontalCol)
-                {
-                    break;
-                }
-
-                if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
-                        Rooms[RoomsI][RoomsJ].getDoor(j)))
-                {
-                    generalCol = true;
-
-                    if(col.horizontalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
-                            Rooms[RoomsI][RoomsJ].getDoor(j)))
-                    {
-                        horizontalCol = true;
-                    }
-
-                    if(col.verticalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
-                            Rooms[RoomsI][RoomsJ].getDoor(j)))
-                    {
-                        verticalCol = true;
-                    }
-                }
+                col.EnemyCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
+                        Rooms[RoomsI][RoomsJ].getDoor(j), Player.getCenterX(), 
+                        Player.getCenterY());
             }
             
             for(int j = 0; j < Rooms[RoomsI][RoomsJ].WallSize(); j++)
             {
-                if(verticalCol && horizontalCol)
-                {
-                    break;
-                }
-
-                if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
-                        Rooms[RoomsI][RoomsJ].getWall(j)))
-                {
-                    generalCol = true;
-
-                    if(col.horizontalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
-                            Rooms[RoomsI][RoomsJ].getWall(j)))
-                    {
-                        horizontalCol = true;
-                    }
-
-                    if(col.verticalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
-                            Rooms[RoomsI][RoomsJ].getWall(j)))
-                    {
-                        verticalCol = true;
-                    }
-                }
+                col.EnemyCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
+                        Rooms[RoomsI][RoomsJ].getWall(j), Player.getCenterX(), 
+                        Player.getCenterY());
             }
 
             for(int j = 0; j < Rooms[RoomsI][RoomsJ].BarrelSize(); j++)
             {
-                if(verticalCol && horizontalCol)
-                {
-                    break;
-                }
-
-                if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
-                        Rooms[RoomsI][RoomsJ].getBarrel(j)))
-                {
-                    generalCol = true;
-
-                    if(col.horizontalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
-                            Rooms[RoomsI][RoomsJ].getBarrel(j)))
-                    {
-                        horizontalCol = true;
-                    }
-
-                    if(col.verticalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
-                            Rooms[RoomsI][RoomsJ].getBarrel(j)))
-                    {
-                        verticalCol = true;
-                    }
-                }
+                col.EnemyCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
+                        Rooms[RoomsI][RoomsJ].getBarrel(j), Player.getCenterX(), 
+                        Player.getCenterY());
             }
             
             for(int j = 0; j < Rooms[RoomsI][RoomsJ].EnemySize(); j++)
             {
-                if(verticalCol && horizontalCol)
-                {
-                    break;
-                }
-                
                 if(i == j)
                 {
                     continue;
                 }
-                
-                if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
-                        Rooms[RoomsI][RoomsJ].getEnemy(j)))
-                {
-                    generalCol = true;
-
-                    if(col.horizontalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
-                                Rooms[RoomsI][RoomsJ].getEnemy(j)))
-                    {
-                        horizontalCol = true;
-                    }
-
-                    if(col.verticalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
-                            Rooms[RoomsI][RoomsJ].getEnemy(j)))
-                    {
-                        verticalCol = true;
-                    }
-                }
+                col.EnemyCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
+                        Rooms[RoomsI][RoomsJ].getEnemy(j), Player.getCenterX(), 
+                        Player.getCenterY());
             }
+            col.EnemyCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), Player, 
+                    Player.getCenterX(), Player.getCenterY());
             
             if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), Player))
             {
-                generalCol = true;
-                
                 Player.takeDamage(Rooms[RoomsI][RoomsJ].getEnemy(i).getBumpDamage());
-
-                if(col.horizontalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), Player))
-                {
-                    horizontalCol = true;
-                }
-
-                if(col.verticalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), Player))
-                {
-                    verticalCol = true;
-                }
             }
             
             Rooms[RoomsI][RoomsJ].getEnemy(i).updateMovingEnemy(Player.getCenterX(), 
-                    Player.getCenterY(), generalCol, horizontalCol, verticalCol);
+                    Player.getCenterY());
             
             for(int j = 0; j < Rooms[RoomsI][RoomsJ].PlayerAoeSize(); j++)
             {

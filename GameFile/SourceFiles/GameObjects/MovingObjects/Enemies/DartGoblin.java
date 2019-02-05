@@ -104,8 +104,7 @@ public class DartGoblin extends MovingEnemy{
         return this.CurrentSprite;
     }
     
-    public void updateMovingEnemy(int playerX, int playerY, boolean generalCollision,
-            boolean horizontalCollision, boolean verticalCollision)
+    public void updateMovingEnemy(int playerX, int playerY)
     {
         this.updateStatus();
         
@@ -131,7 +130,7 @@ public class DartGoblin extends MovingEnemy{
         //if attacking or close to the player, don't need to move closer
         if(!this.CloseToPlayer && !(this.ProjectileTimer < 30) && !(this.ProjectileTimer > 110))
         {
-            this.updatePosition(generalCollision, horizontalCollision, verticalCollision);
+            this.updatePosition();
         }
         
         

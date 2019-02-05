@@ -75,8 +75,8 @@ public class WizardPlayer extends MovingObject implements Observer{
         
         this.CurrentSpriteSet = this.WizForward;
         this.CurrentSprite = this.WizForward[0];
-        this.MaxHealth = 500;
-        this.Currenthealth = 500;
+        this.MaxHealth = 5000;
+        this.Currenthealth = 5000;
         this.BaseDamage = 4;
         this.BonusDamage = 0;
         this.UpKey = KeyEvent.VK_W;
