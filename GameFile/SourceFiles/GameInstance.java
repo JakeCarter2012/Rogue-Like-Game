@@ -1,8 +1,6 @@
 package SourceFiles;
 
 import SourceFiles.GameLogic.CollisionDetector;
-import SourceFiles.GameLogic.GameEvents;
-import SourceFiles.GameLogic.KeyControl;
 import SourceFiles.GameObjects.Animations.Animation;
 import SourceFiles.GameObjects.MovingObjects.Enemies.DartGoblin;
 import SourceFiles.GameObjects.MovingObjects.Enemies.MovingEnemy;
@@ -18,13 +16,10 @@ import SourceFiles.GameObjects.StationaryObjects.GearObjects.Tome;
 import SourceFiles.GameObjects.StationaryObjects.Wall;
 import SourceFiles.Room.Room;
 import java.awt.Image;
-import java.awt.MouseInfo;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.io.File;
 import java.util.Random;
+import javafx.util.Pair;
+import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 
@@ -33,13 +28,12 @@ public class GameInstance {
     //Array of arrays used to store Rooms on a grid
     private Room[][] Rooms;
     private int RoomsI, RoomsJ;
-    //private final int ScreenWidth = 540, ScreenHeight = 720;
-    private final int ScreenWidth = 1280, ScreenHeight = 960;
+    private int ScreenWidth, ScreenHeight;
     private final int GameWidth = 1280, GameHeight = 1280;
     private final int ShadowHeight = 60;
     private boolean levelFinished;
     private WizardPlayer Player;
-    private int Money;
+    private int Money, FloorLevel;
     
     private Image IceShardsImg, IceShardsIcon, FireBallImg, FireBallIcon, VoidWaveImg,
             VoidWaveIcon, IceShardsShadow,
@@ -71,14 +65,17 @@ public class GameInstance {
             SaphireNeck, EmeraldNeck, AmethystNeck;
     private Image FlameTome, FrostTome, VoidTome, FlameBoots, FrostBoots, VoidBoots;
     
-    public GameInstance()
+    public GameInstance(int screenWidth, int screenHeight)
     {
+        this.ScreenWidth = screenWidth;
+        this.ScreenHeight = screenHeight;
+        
         this.resourcesInit();
         this.newGameInit();
-        this.testLevelInit();
+        this.floorRandomizer();
     }
     
-    public void resourcesInit()
+    private void resourcesInit()
     {
         /*
         Initializes all images/ constants, such as walls, used in the game.
@@ -371,7 +368,8 @@ public class GameInstance {
         */
         
         this.Money = 0;
-        this.Player = new WizardPlayer(200, 200,WizRightForwardAttack, 
+        this.FloorLevel = 1;
+        this.Player = new WizardPlayer(600, 600, WizRightForwardAttack, 
                 WizRightForward, WizRightBackAttack, WizRightAttack, WizRight, 
                 WizLeftForwardAttack, WizLeftForward, WizLeftBackwardAttack, 
                 WizLeftAttack, WizLeft, WizForwardAttack, WizForward, WizBackAttack, 
@@ -381,37 +379,248 @@ public class GameInstance {
         this.Player.addNewSpell(IceShards);
         this.Player.addNewSpell(FireBall);
         this.Player.addNewSpell(VoidWave);
-        //this.Player.addNewSpell(new ProjectileSpell("Test Spell", 5,10, 30, false, false, false, 0, TestSpellImg,this.NullSpellIcon,this.SmallProjectileShadow, null));
-        
-        
     }
     
-    public void testLevelInit()
+    private void floorRandomizer()
     {
-        //Temporary test level to test new objects as they are created
         Rooms = new Room[5][5];
-        this.RoomsI = 0;
-        this.RoomsJ = 0;
+        this.RoomsI = 2;
+        this.RoomsJ = 2;
         this.Rooms[RoomsI][RoomsJ] = new Room();
         
-        this.Rooms[RoomsI][RoomsJ].addDoor(TopDoor);
-        this.Rooms[RoomsI][RoomsJ].addDoor(LeftDoor);
-        this.Rooms[RoomsI][RoomsJ].addWall(RightWallMid);
-        this.Rooms[RoomsI][RoomsJ].addWall(BottomWallMid);
-       
+        ArrayList<Pair<Integer, Integer>> createdRooms = new ArrayList<Pair<Integer, Integer>>();
+        createdRooms.add(new Pair(RoomsI, RoomsJ));
+        
+        Random rnd = new Random();
+        
+        if(rnd.nextInt(2) == 0)
+        {
+            Rooms[RoomsI - 1][RoomsJ] = new Room();
+            createdRooms.add(new Pair(RoomsI - 1, RoomsJ));
+        }
+        else
+        {
+            Rooms[RoomsI][RoomsJ - 1] = new Room();
+            createdRooms.add(new Pair(RoomsI, RoomsJ - 1));
+        }
+        
+        int totalRooms = this.FloorLevel + 5;
+        int selectedRoom, selectedI, selectedJ, selectedDoor;
+        
+        while(createdRooms.size() < totalRooms)
+        {
+            selectedRoom = rnd.nextInt(createdRooms.size());
+            selectedI = createdRooms.get(selectedRoom).getKey();
+            selectedJ = createdRooms.get(selectedRoom).getValue();
+            selectedDoor = rnd.nextInt(4);
+            
+            if(selectedDoor == 0 && selectedI != 0)//top
+            {
+                if(Rooms[selectedI - 1][selectedJ] == null)
+                {
+                    Rooms[selectedI - 1][selectedJ] = new Room();
+                    createdRooms.add(new Pair(selectedI - 1, selectedJ));
+                }
+            }
+            else if(selectedDoor == 1 && selectedI != 4)//bottom
+            {
+                if(Rooms[selectedI + 1][selectedJ] == null)
+                {
+                    Rooms[selectedI + 1][selectedJ] = new Room();
+                    createdRooms.add(new Pair(selectedI + 1, selectedJ));
+                }
+            }
+            else if(selectedDoor == 2 && selectedJ != 0)//left
+            {
+                if(Rooms[selectedI][selectedJ - 1] == null)
+                {
+                    Rooms[selectedI][selectedJ - 1] = new Room();
+                    createdRooms.add(new Pair(selectedI, selectedJ - 1));
+                }
+            }
+            else if(selectedDoor == 3 && selectedJ != 4)//right
+            {
+                if(Rooms[selectedI][selectedJ + 1] == null)
+                {
+                    Rooms[selectedI][selectedJ + 1] = new Room();
+                    createdRooms.add(new Pair(selectedI, selectedJ + 1));
+                }
+            }
+        }
+        
+        this.setBossRoom();
+        this.fillRooms();
+    }
+    
+    private void fillRooms()
+    {
+        Random rnd = new Random();
+        boolean lootRoom = false, shopRoom = false;
+        int remainingRooms;
+        if(this.FloorLevel == 10)
+        {
+            remainingRooms = 13;
+        }
+        else
+        {
+            remainingRooms = this.FloorLevel + 3;
+        }
+        
+        for(int i = 0; i < 5; i++)
+        {
+            for(int j = 0; j < 5; j++)
+            {
+                if(Rooms[i][j] != null)
+                {
+                    if(i == 2 && j == 2)
+                    {
+                        this.startingRoom();
+                    }
+                    else if(Rooms[i][j].isBossRoom())
+                    {
+                        this.addBoss(i, j);
+                    }
+                    /*
+                    else if(!lootRoom)
+                    {
+                        if(rnd.nextInt(remainingRooms) == 0)
+                        {
+                            
+                        }
+                        else if(!shopRoom && remainingRooms == 2)
+                        {
+                            
+                        }
+                        else
+                        {
+                            this.addRandomEnemies(i, j);
+                        }
+                        remainingRooms--;
+                    }
+                    else if(!shopRoom)
+                    {
+                        if(rnd.nextInt(remainingRooms) == 0)
+                        {
+                            
+                        }
+                        else
+                        {
+                            this.addRandomEnemies(i, j);
+                        }
+                        remainingRooms--;
+                    }
+                    */
+                    else
+                    {
+                        this.addRandomEnemies(i, j);
+                        remainingRooms--;
+                    }
+                    
+                    addDoors(i, j);
+                }
+            }
+        }
+    }
+    
+    private void addBoss(int i, int j)
+    {
+        //Enemies in boss room are temporary until I create assets for a boss
         SpearGoblin gobo = new SpearGoblin(700, 700, 1, this.SpearGoblinLeft, this.SpearGoblinRight);
         DartGoblin gobo2 = new DartGoblin(900, 900, 1, this.DartGoblinLeft, 
                 this.DartGoblinRight, this.DartGoblinLeftAttack, 
                 this.DartGoblinRightAttack, this.SmallProjectileGreen, 
                 this.SmallProjectileShadow, this.SmallGreenProjectileEnd);
+    }
+    
+    private void addRandomEnemies(int i, int j)
+    {
         
-        Rooms[RoomsI][RoomsJ].lockDoors();
-        Rooms[RoomsI][RoomsJ].addEnemy(gobo);
-        Rooms[RoomsI][RoomsJ].addEnemy(gobo2);
-        
-        addRandomGear(400, 200);
-        addRandomGear(600, 200);
-        addRandomGear(800, 200);
+    }
+    
+    private void addDoors(int i, int j)
+    {
+        //top doorway
+        if(Rooms[i][j].isBossRoom())
+        {
+            Rooms[i][j].addDoor(TopDoor);
+        }
+        else if(i == 0)
+        {
+            Rooms[i][j].addWall(TopWallMid);
+        }
+        else if(Rooms[i - 1][j] != null)
+        {
+            Rooms[i][j].addDoor(TopDoor);
+        }
+        else
+        {
+            Rooms[i][j].addWall(TopWallMid);
+        }
+
+        //bottom doorway
+        if(i == 4)
+        {
+            Rooms[i][j].addWall(BottomWallMid);
+        }
+        else if(Rooms[i + 1][j] != null)
+        {
+            Rooms[i][j].addDoor(BottomDoor);
+        }
+        else
+        {
+            Rooms[i][j].addWall(BottomWallMid);
+        }
+
+        //right doorway
+        if(j == 4)
+        {
+            Rooms[i][j].addWall(RightWallMid);
+        }
+        else if(Rooms[i][j + 1] != null)
+        {
+            Rooms[i][j].addDoor(RightDoor);
+        }
+        else
+        {
+            Rooms[i][j].addWall(RightWallMid);
+        }
+
+        //left doorway
+        if(j == 0)
+        {
+            Rooms[i][j].addWall(LeftWallMid);
+        }
+        else if(Rooms[i][j - 1] != null)
+        {
+            Rooms[i][j].addDoor(LeftDoor);
+        }
+        else
+        {
+            Rooms[i][j].addWall(LeftWallMid);
+        }
+    }
+    
+    private void setBossRoom()
+    {
+        for(int i = 0; i < 5; i ++)
+        {
+            for(int j = 0; j < 5; j++)
+            {
+                if(Rooms[i][j] != null)
+                {
+                    Rooms[i][j].setBossRoom();
+                    return;
+                }
+            }
+        }
+    }
+    
+    private void startingRoom()
+    {
+        addRandomGear(250, 400);
+        addRandomGear(400, 250);
+        addRandomGear(800, 250);
+        addRandomGear(950, 400);
     }
    
     public WizardPlayer getPlayer()
@@ -491,26 +700,37 @@ public class GameInstance {
                 {
                     if(Rooms[RoomsI][RoomsJ].getDoor(i).getY() == 0)
                     {
-                        if(RoomsI == 0 || Rooms[RoomsI][RoomsJ] == null)
+                        if(Rooms[RoomsI][RoomsJ].isBossRoom())
                         {
-                            //handle next level creation
+                            this.FloorLevel++;
+                            floorRandomizer();
+                            Player.setX(600);
+                            Player.setY(600);
                         }
                         else
                         {
-                            //RoomsI--;
+                            RoomsI--;
+                            Player.setX(600);
+                            Player.setY(1000);
                         }
                     }
                     else if(Rooms[RoomsI][RoomsJ].getDoor(i).getX() == 0)
                     {
-                        //RoomsJ--;
+                        RoomsJ--;
+                        Player.setX(1000);
+                        Player.setY(600);
                     }
                     else if(Rooms[RoomsI][RoomsJ].getDoor(i).getY() == 1152)
                     {
-                        //RoomsI++;
+                        RoomsI++;
+                        Player.setX(600);
+                        Player.setY(100);
                     }
                     else if(Rooms[RoomsI][RoomsJ].getDoor(i).getX() == 1152)
                     {
-                        //RoomsJ++;
+                        RoomsJ++;
+                        Player.setX(150);
+                        Player.setY(600);
                     }
                     
                     if(Rooms[RoomsI][RoomsJ].EnemySize() > 0)

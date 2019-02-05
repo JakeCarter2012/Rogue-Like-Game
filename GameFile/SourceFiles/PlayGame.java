@@ -1,24 +1,8 @@
 package SourceFiles;
 
-import SourceFiles.GameInstance;
-import SourceFiles.Room.Room;
-import SourceFiles.GameObjects.MovingObjects.Player.Spell;
-import SourceFiles.GameObjects.MovingObjects.Player.ProjectileSpell;
-import SourceFiles.GameObjects.MovingObjects.Player.WizardPlayer;
 import SourceFiles.GameLogic.GameEvents;
-import SourceFiles.GameObjects.MovingObjects.Enemies.MovingEnemy;
-import SourceFiles.GameObjects.MovingObjects.Enemies.SpearGoblin;
-import SourceFiles.GameObjects.MovingObjects.Enemies.DartGoblin;
-import SourceFiles.GameObjects.StationaryObjects.StationaryObject;
-import SourceFiles.GameObjects.StationaryObjects.Wall;
-import SourceFiles.GameObjects.StationaryObjects.Door;
-import SourceFiles.GameObjects.Animations.Animation;
-import SourceFiles.GameObjects.StationaryObjects.GearObjects.Boots;
-import SourceFiles.GameObjects.StationaryObjects.GearObjects.Ring;
 import SourceFiles.GameObjects.StationaryObjects.GearObjects.Gear;
-import SourceFiles.GameObjects.StationaryObjects.GearObjects.Tome;
 import SourceFiles.GameLogic.KeyControl;
-import SourceFiles.GameLogic.CollisionDetector;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -41,7 +25,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
-import java.util.Random;
 import javax.swing.*;
 
 public class PlayGame extends JPanel implements KeyListener{
@@ -69,7 +52,7 @@ public class PlayGame extends JPanel implements KeyListener{
     
     private JButton testButton;
     
-    public void startGame()
+    private void startGame()
     {
         /*
         startGame is called when game first opens, it creates the GameWindow used
@@ -92,7 +75,7 @@ public class PlayGame extends JPanel implements KeyListener{
         
     }
     
-    public void resourcesInit()
+    private void resourcesInit()
     {
         try {
             this.TempleFloor = ImageIO.read(new File("Resources" + File.separator + "Floor.png"));
@@ -105,12 +88,12 @@ public class PlayGame extends JPanel implements KeyListener{
         }
     }
     
-    public void newGameInit()
+    private void newGameInit()
     {
         this.Paused = false;
         this.InGame = true;
         
-        Game = new GameInstance();
+        Game = new GameInstance(ScreenWidth, ScreenHeight);
         
         PlayerKeyEvent = new GameEvents();
         PlayerKeyEvent.addObserver(Game.getPlayer());
@@ -142,12 +125,12 @@ public class PlayGame extends JPanel implements KeyListener{
         });
     }
     
-    public void mainMenuInit()
+    private void mainMenuInit()
     {
         
     }
     
-    public void pauseMenuInit()
+    private void pauseMenuInit()
     {
         /*
         PauseMenu is used whenever the pause game button is pressed. Currently
@@ -207,14 +190,14 @@ public class PlayGame extends JPanel implements KeyListener{
         GameWindow.setVisible(true);
     }
     
-    public void pauseGame()
+    private void pauseGame()
     {
         this.Paused = true;
         this.setVisible(false);
         this.PauseMenu.setVisible(true);
     }
     
-    public void unPauseGame()
+    private void unPauseGame()
     {
         this.Paused = false;
         this.PauseMenu.setVisible(false);
@@ -247,7 +230,7 @@ public class PlayGame extends JPanel implements KeyListener{
     }
     
  
-    public void timerLoop()
+    private void timerLoop()
     {
         /*
         timerLoop is the main game loop that repeats to update the game. It aims 
@@ -292,7 +275,7 @@ public class PlayGame extends JPanel implements KeyListener{
         }
     }
     
-    public void updateGame()
+    private void updateGame()
     {
         //scale ammount is used to adjust the mouse angle for scaled window sizes
         double scale;
@@ -317,7 +300,7 @@ public class PlayGame extends JPanel implements KeyListener{
     }
     
 
-    public void mainMenu()
+    private void mainMenu()
     {
         /*
         Initializes the main game menu. Still needs implementation
@@ -642,28 +625,28 @@ public class PlayGame extends JPanel implements KeyListener{
                 
         for(int i = 0; i < this.Game.getRoom().RingSize(); i++)
         {
-            this.paintGearInfo(Game.getRoom().getRing(i), gtemp);
+            this.paintGearInfo(Game.getRoom().getRing(i), Game.getPlayer().getRing(), gtemp);
         }
         
         for(int i = 0; i < this.Game.getRoom().NeckSize(); i++)
         {
-            this.paintGearInfo(Game.getRoom().getNeck(i), gtemp);
+            this.paintGearInfo(Game.getRoom().getNeck(i), Game.getPlayer().getNeck(), gtemp);
         }
         
         for(int i = 0; i < this.Game.getRoom().BootsSize(); i++)
         {
-            this.paintGearInfo(Game.getRoom().getBoots(i), gtemp);
+            this.paintGearInfo(Game.getRoom().getBoots(i), Game.getPlayer().getBoots(), gtemp);
         }
         
         for(int i = 0; i < this.Game.getRoom().TomeSize(); i++)
         {
-            this.paintGearInfo(Game.getRoom().getTome(i), gtemp);
+            this.paintGearInfo(Game.getRoom().getTome(i), Game.getPlayer().getTome(), gtemp);
         }
         
         gtemp.dispose();
     }
     
-    public void paintGearInfo(Gear gear, Graphics2D gtemp)
+    private void paintGearInfo(Gear gear, Gear oldGear, Graphics2D gtemp)
     {
         Color purple = new Color(100, 0, 150);
         Color blue = new Color(0, 0, 250);
@@ -682,29 +665,23 @@ public class PlayGame extends JPanel implements KeyListener{
 
         int darkVal, flameVal, frostVal, vitVal, intVal, speedVal;
 
-        if(Game.getPlayer().getBoots() == null)
+        if(oldGear == null)
         {
-            darkVal =  gear.getDark();
-            flameVal =  gear.getFlame();
-            frostVal =  gear.getFrost();
-            vitVal =  gear.getVitality();
-            intVal =  gear.getIntellect();
-            speedVal =  gear.getMoveSpeed();
+            darkVal = gear.getDark();
+            flameVal = gear.getFlame();
+            frostVal = gear.getFrost();
+            vitVal = gear.getVitality();
+            intVal = gear.getIntellect();
+            speedVal = gear.getMoveSpeed();
         }
         else
         {
-            darkVal =  gear.getDark() -
-                    Game.getPlayer().getBoots().getDark();
-            flameVal =  gear.getFlame() -
-                    Game.getPlayer().getBoots().getFlame();
-            frostVal =  gear.getFrost() -
-                    Game.getPlayer().getBoots().getFrost();
-            vitVal =  gear.getVitality() -
-                    Game.getPlayer().getBoots().getVitality();
-            intVal =  gear.getIntellect() -
-                    Game.getPlayer().getBoots().getIntellect();
-            speedVal =  gear.getMoveSpeed() -
-                    Game.getPlayer().getBoots().getMoveSpeed();
+            darkVal =  gear.getDark() - oldGear.getDark();
+            flameVal = gear.getFlame() - oldGear.getFlame();
+            frostVal = gear.getFrost() - oldGear.getFrost();
+            vitVal = gear.getVitality() - oldGear.getVitality();
+            intVal = gear.getIntellect() - oldGear.getIntellect();
+            speedVal = gear.getMoveSpeed() - oldGear.getMoveSpeed();
         }
 
         if(speedVal != 0)
@@ -799,7 +776,7 @@ public class PlayGame extends JPanel implements KeyListener{
         }
     }
         
-    public BufferedImage bufferedImageConverter(Image img) {
+    private BufferedImage bufferedImageConverter(Image img) {
         /*
         used to convert images into buffered images
         */
@@ -811,7 +788,7 @@ public class PlayGame extends JPanel implements KeyListener{
         return bimg;
     }
 
-    public void paintRotatedImg(Image img, double angle, int x, int y) {
+    private void paintRotatedImg(Image img, double angle, int x, int y) {
         double rAngle = Math.toRadians(angle);
         int h = (int) (img.getWidth(null) * Math.abs(Math.sin(rAngle)) + img.getHeight(null) * Math.abs(Math.cos(rAngle)));
         int w = (int) (img.getHeight(null) * Math.abs(Math.sin(rAngle)) + img.getWidth(null) * Math.abs(Math.cos(rAngle)));
