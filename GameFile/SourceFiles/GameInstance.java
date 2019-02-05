@@ -33,8 +33,8 @@ public class GameInstance {
     //Array of arrays used to store Rooms on a grid
     private Room[][] Rooms;
     private int RoomsI, RoomsJ;
-    private final int ScreenWidth = 1280, ScreenHeight = 960;
     //private final int ScreenWidth = 540, ScreenHeight = 720;
+    private final int ScreenWidth = 1280, ScreenHeight = 960;
     private final int GameWidth = 1280, GameHeight = 1280;
     private final int ShadowHeight = 60;
     private boolean levelFinished;
@@ -760,13 +760,12 @@ public class GameInstance {
             
             for(int j = 0; j < Rooms[RoomsI][RoomsJ].EnemySize(); j++)
             {
-                if(i == j)
+                if(i != j)
                 {
-                    continue;
+                    col.EnemyCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
+                            Rooms[RoomsI][RoomsJ].getEnemy(j), Player.getCenterX(), 
+                            Player.getCenterY());
                 }
-                col.EnemyCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
-                        Rooms[RoomsI][RoomsJ].getEnemy(j), Player.getCenterX(), 
-                        Player.getCenterY());
             }
             
             if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), Player))

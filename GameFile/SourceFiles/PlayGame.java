@@ -15,7 +15,7 @@ import SourceFiles.GameObjects.StationaryObjects.Door;
 import SourceFiles.GameObjects.Animations.Animation;
 import SourceFiles.GameObjects.StationaryObjects.GearObjects.Boots;
 import SourceFiles.GameObjects.StationaryObjects.GearObjects.Ring;
-import SourceFiles.GameObjects.StationaryObjects.GearObjects.Neck;
+import SourceFiles.GameObjects.StationaryObjects.GearObjects.Gear;
 import SourceFiles.GameObjects.StationaryObjects.GearObjects.Tome;
 import SourceFiles.GameLogic.KeyControl;
 import SourceFiles.GameLogic.CollisionDetector;
@@ -642,637 +642,163 @@ public class PlayGame extends JPanel implements KeyListener{
                 
         for(int i = 0; i < this.Game.getRoom().RingSize(); i++)
         {
-            itemNameFont = (new Font("Arial Black", Font.PLAIN, 12));
-            gtemp.setFont(itemNameFont);
-            metrics = gtemp.getFontMetrics(itemNameFont);
-        
-            int rarityDisplacement = 10;
-            String statValue;
-            
-            int darkVal, flameVal, frostVal, vitVal, intVal;
-            
-            if(Game.getPlayer().getRing() == null)
-            {
-                darkVal = this.Game.getRoom().getRing(i).getDark();
-                flameVal = this.Game.getRoom().getRing(i).getFlame();
-                frostVal = this.Game.getRoom().getRing(i).getFrost();
-                vitVal = this.Game.getRoom().getRing(i).getVitality();
-                intVal = this.Game.getRoom().getRing(i).getIntellect();
-            }
-            else
-            {
-                darkVal = this.Game.getRoom().getRing(i).getDark() -
-                        Game.getPlayer().getRing().getDark();
-                flameVal = this.Game.getRoom().getRing(i).getFlame() -
-                        Game.getPlayer().getRing().getFlame();
-                frostVal = this.Game.getRoom().getRing(i).getFrost() -
-                        Game.getPlayer().getRing().getFrost();
-                vitVal = this.Game.getRoom().getRing(i).getVitality() -
-                        Game.getPlayer().getRing().getVitality();
-                intVal = this.Game.getRoom().getRing(i).getIntellect() -
-                        Game.getPlayer().getRing().getIntellect();
-            }
-            
-            if(darkVal != 0)
-            {
-                if(darkVal > 0)
-                {
-                    gtemp.setColor(green);
-                    statValue = "+";
-                }
-                else
-                {
-                    gtemp.setColor(red);
-                    statValue = "-";
-                }
-                
-                statValue += Integer.toString(Math.abs(darkVal)) + " Void";
-                gtemp.drawString(statValue, this.Game.getRoom().getRing(i).getCenterX() - 
-                                metrics.stringWidth(statValue)/2 + xShift, 
-                        this.Game.getRoom().getRing(i).getY() - rarityDisplacement - yShift);
-                rarityDisplacement += 15;
-            }
-            if(frostVal != 0)
-            {
-                if(frostVal > 0)
-                {
-                    gtemp.setColor(green);
-                    statValue = "+";
-                }
-                else
-                {
-                    gtemp.setColor(red);
-                    statValue = "-";
-                }
-                
-                statValue += Integer.toString(Math.abs(frostVal)) + " Frost";
-                gtemp.drawString(statValue, this.Game.getRoom().getRing(i).getCenterX() - 
-                                metrics.stringWidth(statValue)/2 + xShift, 
-                        this.Game.getRoom().getRing(i).getY() - rarityDisplacement - yShift);
-                rarityDisplacement += 15;
-            }
-            if(flameVal != 0)
-            {
-                if(flameVal > 0)
-                {
-                    gtemp.setColor(green);
-                    statValue = "+";
-                }
-                else
-                {
-                    gtemp.setColor(red);
-                    statValue = "-";
-                }
-                
-                statValue += Integer.toString(Math.abs(flameVal)) + " Flame";
-                gtemp.drawString(statValue, this.Game.getRoom().getRing(i).getCenterX() - 
-                                metrics.stringWidth(statValue)/2 + xShift, 
-                        this.Game.getRoom().getRing(i).getY() - rarityDisplacement - yShift);
-                rarityDisplacement += 15;
-            }
-            if(vitVal != 0)
-            {
-                if(vitVal > 0)
-                {
-                    gtemp.setColor(green);
-                    statValue = "+";
-                }
-                else
-                {
-                    gtemp.setColor(red);
-                    statValue = "-";
-                }
-                
-                statValue += Integer.toString(Math.abs(vitVal)) + " Vitality";
-                gtemp.drawString(statValue, this.Game.getRoom().getRing(i).getCenterX() - 
-                                metrics.stringWidth(statValue)/2 + xShift, 
-                        this.Game.getRoom().getRing(i).getY() - rarityDisplacement - yShift);
-                rarityDisplacement += 15;
-            }
-            if(intVal != 0)
-            {
-                if(intVal > 0)
-                {
-                    gtemp.setColor(green);
-                    statValue = "+";
-                }
-                else
-                {
-                    gtemp.setColor(red);
-                    statValue = "-";
-                }
-                
-                statValue += Integer.toString(Math.abs(intVal)) + " Intellect";
-                gtemp.drawString(statValue, this.Game.getRoom().getRing(i).getCenterX() - 
-                                metrics.stringWidth(statValue)/2 + xShift, 
-                        this.Game.getRoom().getRing(i).getY() - rarityDisplacement - yShift);
-                rarityDisplacement += 15;
-            }
-            
-            if(this.Game.getRoom().getRing(i).getRarity() == 2)
-            {
-                gtemp.setColor(blue);
-            }
-            else if(this.Game.getRoom().getRing(i).getRarity() == 3)
-            {
-                gtemp.setColor(purple);
-            }
-            else
-            {
-                gtemp.setColor(trash);
-            }
-            
-            itemNameFont = (new Font("Arial Black", Font.PLAIN, 14));
-            gtemp.setFont(itemNameFont);
-            metrics = gtemp.getFontMetrics(itemNameFont);
-            
-            gtemp.drawString(this.Game.getRoom().getRing(i).getItemName(), 
-                        this.Game.getRoom().getRing(i).getCenterX() - 
-                                metrics.stringWidth(this.Game.getRoom().getRing(i).getItemName())/2 + xShift, 
-                        this.Game.getRoom().getRing(i).getY() - rarityDisplacement - yShift);
+            this.paintGearInfo(Game.getRoom().getRing(i), gtemp);
         }
         
         for(int i = 0; i < this.Game.getRoom().NeckSize(); i++)
         {
-            itemNameFont = (new Font("Arial Black", Font.PLAIN, 12));
-            gtemp.setFont(itemNameFont);
-            metrics = gtemp.getFontMetrics(itemNameFont);
-        
-            int rarityDisplacement = 10;
-            String statValue;
-            
-            int darkVal, flameVal, frostVal, vitVal, intVal;
-            
-            if(Game.getPlayer().getNeck() == null)
-            {
-                darkVal = this.Game.getRoom().getNeck(i).getDark();
-                flameVal = this.Game.getRoom().getNeck(i).getFlame();
-                frostVal = this.Game.getRoom().getNeck(i).getFrost();
-                vitVal = this.Game.getRoom().getNeck(i).getVitality();
-                intVal = this.Game.getRoom().getNeck(i).getIntellect();
-            }
-            else
-            {
-                darkVal = this.Game.getRoom().getNeck(i).getDark() -
-                        Game.getPlayer().getNeck().getDark();
-                flameVal = this.Game.getRoom().getNeck(i).getFlame() -
-                        Game.getPlayer().getNeck().getFlame();
-                frostVal = this.Game.getRoom().getNeck(i).getFrost() -
-                        Game.getPlayer().getNeck().getFrost();
-                vitVal = this.Game.getRoom().getNeck(i).getVitality() -
-                        Game.getPlayer().getNeck().getVitality();
-                intVal = this.Game.getRoom().getNeck(i).getIntellect() -
-                        Game.getPlayer().getNeck().getIntellect();
-            }
-            
-            if(darkVal != 0)
-            {
-                if(darkVal > 0)
-                {
-                    gtemp.setColor(green);
-                    statValue = "+";
-                }
-                else
-                {
-                    gtemp.setColor(red);
-                    statValue = "-";
-                }
-                
-                statValue += Integer.toString(Math.abs(darkVal)) + " Void";
-                gtemp.drawString(statValue, this.Game.getRoom().getNeck(i).getCenterX() - 
-                                metrics.stringWidth(statValue)/2 + xShift, 
-                        this.Game.getRoom().getNeck(i).getY() - rarityDisplacement - yShift);
-                rarityDisplacement += 15;
-            }
-            if(frostVal != 0)
-            {
-                if(frostVal > 0)
-                {
-                    gtemp.setColor(green);
-                    statValue = "+";
-                }
-                else
-                {
-                    gtemp.setColor(red);
-                    statValue = "-";
-                }
-                
-                statValue += Integer.toString(Math.abs(frostVal)) + " Frost";
-                gtemp.drawString(statValue, this.Game.getRoom().getNeck(i).getCenterX() - 
-                                metrics.stringWidth(statValue)/2 + xShift, 
-                        this.Game.getRoom().getNeck(i).getY() - rarityDisplacement - yShift);
-                rarityDisplacement += 15;
-            }
-            if(flameVal != 0)
-            {
-                if(flameVal > 0)
-                {
-                    gtemp.setColor(green);
-                    statValue = "+";
-                }
-                else
-                {
-                    gtemp.setColor(red);
-                    statValue = "-";
-                }
-                
-                statValue += Integer.toString(Math.abs(flameVal)) + " Flame";
-                gtemp.drawString(statValue, this.Game.getRoom().getNeck(i).getCenterX() - 
-                                metrics.stringWidth(statValue)/2 + xShift, 
-                        this.Game.getRoom().getNeck(i).getY() - rarityDisplacement - yShift);
-                rarityDisplacement += 15;
-            }
-            if(vitVal != 0)
-            {
-                if(vitVal > 0)
-                {
-                    gtemp.setColor(green);
-                    statValue = "+";
-                }
-                else
-                {
-                    gtemp.setColor(red);
-                    statValue = "-";
-                }
-                
-                statValue += Integer.toString(Math.abs(vitVal)) + " Vitality";
-                gtemp.drawString(statValue, this.Game.getRoom().getNeck(i).getCenterX() - 
-                                metrics.stringWidth(statValue)/2 + xShift, 
-                        this.Game.getRoom().getNeck(i).getY() - rarityDisplacement - yShift);
-                rarityDisplacement += 15;
-            }
-            if(intVal != 0)
-            {
-                if(intVal > 0)
-                {
-                    gtemp.setColor(green);
-                    statValue = "+";
-                }
-                else
-                {
-                    gtemp.setColor(red);
-                    statValue = "-";
-                }
-                
-                statValue += Integer.toString(Math.abs(intVal)) + " Intellect";
-                gtemp.drawString(statValue, this.Game.getRoom().getNeck(i).getCenterX() - 
-                                metrics.stringWidth(statValue)/2 + xShift, 
-                        this.Game.getRoom().getNeck(i).getY() - rarityDisplacement - yShift);
-                rarityDisplacement += 15;
-            }
-            
-            if(this.Game.getRoom().getNeck(i).getRarity() == 2)
-            {
-                gtemp.setColor(blue);
-            }
-            else if(this.Game.getRoom().getNeck(i).getRarity() == 3)
-            {
-                gtemp.setColor(purple);
-            }
-            else
-            {
-                gtemp.setColor(trash);
-            }
-            
-            itemNameFont = (new Font("Arial Black", Font.PLAIN, 14));
-            gtemp.setFont(itemNameFont);
-            metrics = gtemp.getFontMetrics(itemNameFont);
-            
-            gtemp.drawString(this.Game.getRoom().getNeck(i).getItemName(), 
-                        this.Game.getRoom().getNeck(i).getCenterX() - 
-                                metrics.stringWidth(this.Game.getRoom().getNeck(i).getItemName())/2 + xShift, 
-                        this.Game.getRoom().getNeck(i).getY() - rarityDisplacement - yShift);
+            this.paintGearInfo(Game.getRoom().getNeck(i), gtemp);
         }
         
         for(int i = 0; i < this.Game.getRoom().BootsSize(); i++)
         {
-            itemNameFont = (new Font("Arial Black", Font.PLAIN, 12));
-            gtemp.setFont(itemNameFont);
-            metrics = gtemp.getFontMetrics(itemNameFont);
-        
-            int rarityDisplacement = 10;
-            String statValue;
-            
-            int darkVal, flameVal, frostVal, vitVal, intVal, speedVal;
-            
-            if(Game.getPlayer().getBoots() == null)
-            {
-                darkVal = this.Game.getRoom().getBoots(i).getDark();
-                flameVal = this.Game.getRoom().getBoots(i).getFlame();
-                frostVal = this.Game.getRoom().getBoots(i).getFrost();
-                vitVal = this.Game.getRoom().getBoots(i).getVitality();
-                intVal = this.Game.getRoom().getBoots(i).getIntellect();
-                speedVal = this.Game.getRoom().getBoots(i).getMoveSpeed();
-            }
-            else
-            {
-                darkVal = this.Game.getRoom().getBoots(i).getDark() -
-                        Game.getPlayer().getBoots().getDark();
-                flameVal = this.Game.getRoom().getBoots(i).getFlame() -
-                        Game.getPlayer().getBoots().getFlame();
-                frostVal = this.Game.getRoom().getBoots(i).getFrost() -
-                        Game.getPlayer().getBoots().getFrost();
-                vitVal = this.Game.getRoom().getBoots(i).getVitality() -
-                        Game.getPlayer().getBoots().getVitality();
-                intVal = this.Game.getRoom().getBoots(i).getIntellect() -
-                        Game.getPlayer().getBoots().getIntellect();
-                speedVal = this.Game.getRoom().getBoots(i).getMoveSpeed() -
-                        Game.getPlayer().getBoots().getMoveSpeed();
-            }
-            
-            if(speedVal != 0)
-            {
-                if(speedVal > 0)
-                {
-                    gtemp.setColor(green);
-                    statValue = "+";
-                }
-                else
-                {
-                    gtemp.setColor(red);
-                    statValue = "-";
-                }
-                
-                statValue += Integer.toString(Math.abs(speedVal)) + " Move Speed";
-                gtemp.drawString(statValue, this.Game.getRoom().getBoots(i).getCenterX() - 
-                                metrics.stringWidth(statValue)/2 + xShift, 
-                        this.Game.getRoom().getBoots(i).getY() - rarityDisplacement - yShift);
-                rarityDisplacement += 15;
-            }
-            if(darkVal != 0)
-            {
-                if(darkVal > 0)
-                {
-                    gtemp.setColor(green);
-                    statValue = "+";
-                }
-                else
-                {
-                    gtemp.setColor(red);
-                    statValue = "-";
-                }
-                
-                statValue += Integer.toString(Math.abs(darkVal)) + " Void";
-                gtemp.drawString(statValue, this.Game.getRoom().getBoots(i).getCenterX() - 
-                                metrics.stringWidth(statValue)/2 + xShift, 
-                        this.Game.getRoom().getBoots(i).getY() - rarityDisplacement - yShift);
-                rarityDisplacement += 15;
-            }
-            if(frostVal != 0)
-            {
-                if(frostVal > 0)
-                {
-                    gtemp.setColor(green);
-                    statValue = "+";
-                }
-                else
-                {
-                    gtemp.setColor(red);
-                    statValue = "-";
-                }
-                
-                statValue += Integer.toString(Math.abs(frostVal)) + " Frost";
-                gtemp.drawString(statValue, this.Game.getRoom().getBoots(i).getCenterX() - 
-                                metrics.stringWidth(statValue)/2 + xShift, 
-                        this.Game.getRoom().getBoots(i).getY() - rarityDisplacement - yShift);
-                rarityDisplacement += 15;
-            }
-            if(flameVal != 0)
-            {
-                if(flameVal > 0)
-                {
-                    gtemp.setColor(green);
-                    statValue = "+";
-                }
-                else
-                {
-                    gtemp.setColor(red);
-                    statValue = "-";
-                }
-                
-                statValue += Integer.toString(Math.abs(flameVal)) + " Flame";
-                gtemp.drawString(statValue, this.Game.getRoom().getBoots(i).getCenterX() - 
-                                metrics.stringWidth(statValue)/2 + xShift, 
-                        this.Game.getRoom().getBoots(i).getY() - rarityDisplacement - yShift);
-                rarityDisplacement += 15;
-            }
-            if(vitVal != 0)
-            {
-                if(vitVal > 0)
-                {
-                    gtemp.setColor(green);
-                    statValue = "+";
-                }
-                else
-                {
-                    gtemp.setColor(red);
-                    statValue = "-";
-                }
-                
-                statValue += Integer.toString(Math.abs(vitVal)) + " Vitality";
-                gtemp.drawString(statValue, this.Game.getRoom().getBoots(i).getCenterX() - 
-                                metrics.stringWidth(statValue)/2 + xShift, 
-                        this.Game.getRoom().getBoots(i).getY() - rarityDisplacement - yShift);
-                rarityDisplacement += 15;
-            }
-            if(intVal != 0)
-            {
-                if(intVal > 0)
-                {
-                    gtemp.setColor(green);
-                    statValue = "+";
-                }
-                else
-                {
-                    gtemp.setColor(red);
-                    statValue = "-";
-                }
-                
-                statValue += Integer.toString(Math.abs(intVal)) + " Intellect";
-                gtemp.drawString(statValue, this.Game.getRoom().getBoots(i).getCenterX() - 
-                                metrics.stringWidth(statValue)/2 + xShift, 
-                        this.Game.getRoom().getBoots(i).getY() - rarityDisplacement - yShift);
-                rarityDisplacement += 15;
-            }
-            
-            if(this.Game.getRoom().getBoots(i).getRarity() == 2)
-            {
-                gtemp.setColor(blue);
-            }
-            else if(this.Game.getRoom().getBoots(i).getRarity() == 4)
-            {
-                gtemp.setColor(orange);
-            }
-            else
-            {
-                gtemp.setColor(trash);
-            }
-            
-            itemNameFont = (new Font("Arial Black", Font.PLAIN, 14));
-            gtemp.setFont(itemNameFont);
-            metrics = gtemp.getFontMetrics(itemNameFont);
-            
-            gtemp.drawString(this.Game.getRoom().getBoots(i).getItemName(), 
-                        this.Game.getRoom().getBoots(i).getCenterX() - 
-                                metrics.stringWidth(this.Game.getRoom().getBoots(i).getItemName())/2 + xShift, 
-                        this.Game.getRoom().getBoots(i).getY() - rarityDisplacement - yShift);
+            this.paintGearInfo(Game.getRoom().getBoots(i), gtemp);
         }
         
         for(int i = 0; i < this.Game.getRoom().TomeSize(); i++)
         {
-            itemNameFont = (new Font("Arial Black", Font.PLAIN, 12));
-            gtemp.setFont(itemNameFont);
-            metrics = gtemp.getFontMetrics(itemNameFont);
-        
-            int rarityDisplacement = 10;
-            String statValue;
-            
-            int darkVal, flameVal, frostVal, vitVal, intVal;
-            
-            if(Game.getPlayer().getTome() == null)
-            {
-                darkVal = this.Game.getRoom().getTome(i).getDark();
-                flameVal = this.Game.getRoom().getTome(i).getFlame();
-                frostVal = this.Game.getRoom().getTome(i).getFrost();
-                vitVal = this.Game.getRoom().getTome(i).getVitality();
-                intVal = this.Game.getRoom().getTome(i).getIntellect();
-            }
-            else
-            {
-                darkVal = this.Game.getRoom().getTome(i).getDark() -
-                        Game.getPlayer().getTome().getDark();
-                flameVal = this.Game.getRoom().getTome(i).getFlame() -
-                        Game.getPlayer().getTome().getFlame();
-                frostVal = this.Game.getRoom().getTome(i).getFrost() -
-                        Game.getPlayer().getTome().getFrost();
-                vitVal = this.Game.getRoom().getTome(i).getVitality() -
-                        Game.getPlayer().getTome().getVitality();
-                intVal = this.Game.getRoom().getTome(i).getIntellect() -
-                        Game.getPlayer().getTome().getIntellect();
-            }
-            
-            if(darkVal != 0)
-            {
-                if(darkVal > 0)
-                {
-                    gtemp.setColor(green);
-                    statValue = "+";
-                }
-                else
-                {
-                    gtemp.setColor(red);
-                    statValue = "-";
-                }
-                
-                statValue += Integer.toString(Math.abs(darkVal)) + " Void";
-                gtemp.drawString(statValue, this.Game.getRoom().getTome(i).getCenterX() - 
-                                metrics.stringWidth(statValue)/2 + xShift, 
-                        this.Game.getRoom().getTome(i).getY() - rarityDisplacement - yShift);
-                rarityDisplacement += 15;
-            }
-            if(frostVal != 0)
-            {
-                if(frostVal > 0)
-                {
-                    gtemp.setColor(green);
-                    statValue = "+";
-                }
-                else
-                {
-                    gtemp.setColor(red);
-                    statValue = "-";
-                }
-                
-                statValue += Integer.toString(Math.abs(frostVal)) + " Frost";
-                gtemp.drawString(statValue, this.Game.getRoom().getTome(i).getCenterX() - 
-                                metrics.stringWidth(statValue)/2 + xShift, 
-                        this.Game.getRoom().getTome(i).getY() - rarityDisplacement - yShift);
-                rarityDisplacement += 15;
-            }
-            if(flameVal != 0)
-            {
-                if(flameVal > 0)
-                {
-                    gtemp.setColor(green);
-                    statValue = "+";
-                }
-                else
-                {
-                    gtemp.setColor(red);
-                    statValue = "-";
-                }
-                
-                statValue += Integer.toString(Math.abs(flameVal)) + " Flame";
-                gtemp.drawString(statValue, this.Game.getRoom().getTome(i).getCenterX() - 
-                                metrics.stringWidth(statValue)/2 + xShift, 
-                        this.Game.getRoom().getTome(i).getY() - rarityDisplacement - yShift);
-                rarityDisplacement += 15;
-            }
-            if(vitVal != 0)
-            {
-                if(vitVal > 0)
-                {
-                    gtemp.setColor(green);
-                    statValue = "+";
-                }
-                else
-                {
-                    gtemp.setColor(red);
-                    statValue = "-";
-                }
-                
-                statValue += Integer.toString(Math.abs(vitVal)) + " Vitality";
-                gtemp.drawString(statValue, this.Game.getRoom().getTome(i).getCenterX() - 
-                                metrics.stringWidth(statValue)/2 + xShift, 
-                        this.Game.getRoom().getTome(i).getY() - rarityDisplacement - yShift);
-                rarityDisplacement += 15;
-            }
-            if(intVal != 0)
-            {
-                if(intVal > 0)
-                {
-                    gtemp.setColor(green);
-                    statValue = "+";
-                }
-                else
-                {
-                    gtemp.setColor(red);
-                    statValue = "-";
-                }
-                
-                statValue += Integer.toString(Math.abs(intVal)) + " Intellect";
-                gtemp.drawString(statValue, this.Game.getRoom().getTome(i).getCenterX() - 
-                                metrics.stringWidth(statValue)/2 + xShift, 
-                        this.Game.getRoom().getTome(i).getY() - rarityDisplacement - yShift);
-                rarityDisplacement += 15;
-            }
-            
-            if(this.Game.getRoom().getTome(i).getRarity() == 2)
-            {
-                gtemp.setColor(blue);
-            }
-            else if(this.Game.getRoom().getTome(i).getRarity() == 3)
-            {
-                gtemp.setColor(purple);
-            }
-            else
-            {
-                gtemp.setColor(trash);
-            }
-            
-            itemNameFont = (new Font("Arial Black", Font.PLAIN, 14));
-            gtemp.setFont(itemNameFont);
-            metrics = gtemp.getFontMetrics(itemNameFont);
-            
-            gtemp.drawString(this.Game.getRoom().getTome(i).getItemName(), 
-                        this.Game.getRoom().getTome(i).getCenterX() - 
-                                metrics.stringWidth(this.Game.getRoom().getTome(i).getItemName())/2 + xShift, 
-                        this.Game.getRoom().getTome(i).getY() - rarityDisplacement - yShift);
+            this.paintGearInfo(Game.getRoom().getTome(i), gtemp);
         }
         
         gtemp.dispose();
     }
     
+    public void paintGearInfo(Gear gear, Graphics2D gtemp)
+    {
+        Color purple = new Color(100, 0, 150);
+        Color blue = new Color(0, 0, 250);
+        Color orange = new Color(230, 80, 0);
+        Color trash = new Color(200, 200, 255);
+        
+        int yShift = Game.screenShiftY();
+        int xShift = Game.screenShiftX();
+                
+        Font itemNameFont = (new Font("Arial Black", Font.PLAIN, 12));
+        gtemp.setFont(itemNameFont);
+        FontMetrics metrics = gtemp.getFontMetrics(itemNameFont);
+
+        int rarityDisplacement = 10;
+        String statValue;
+
+        int darkVal, flameVal, frostVal, vitVal, intVal, speedVal;
+
+        if(Game.getPlayer().getBoots() == null)
+        {
+            darkVal =  gear.getDark();
+            flameVal =  gear.getFlame();
+            frostVal =  gear.getFrost();
+            vitVal =  gear.getVitality();
+            intVal =  gear.getIntellect();
+            speedVal =  gear.getMoveSpeed();
+        }
+        else
+        {
+            darkVal =  gear.getDark() -
+                    Game.getPlayer().getBoots().getDark();
+            flameVal =  gear.getFlame() -
+                    Game.getPlayer().getBoots().getFlame();
+            frostVal =  gear.getFrost() -
+                    Game.getPlayer().getBoots().getFrost();
+            vitVal =  gear.getVitality() -
+                    Game.getPlayer().getBoots().getVitality();
+            intVal =  gear.getIntellect() -
+                    Game.getPlayer().getBoots().getIntellect();
+            speedVal =  gear.getMoveSpeed() -
+                    Game.getPlayer().getBoots().getMoveSpeed();
+        }
+
+        if(speedVal != 0)
+        {
+            this.printStatInfo(speedVal, rarityDisplacement, "Move Speed", gtemp, gear);
+            rarityDisplacement += 15;
+        }
+
+        if(darkVal != 0)
+        {
+            this.printStatInfo(darkVal, rarityDisplacement, "Void", gtemp, gear);
+            rarityDisplacement += 15;
+        }
+        if(frostVal != 0)
+        {
+            this.printStatInfo(frostVal, rarityDisplacement, "Frost", gtemp, gear);
+            rarityDisplacement += 15;
+        }
+        if(flameVal != 0)
+        {
+            this.printStatInfo(flameVal, rarityDisplacement, "Flame", gtemp, gear);
+            rarityDisplacement += 15;
+        }
+        if(vitVal != 0)
+        {
+            this.printStatInfo(vitVal, rarityDisplacement, "Vitality", gtemp, gear);
+            rarityDisplacement += 15;
+        }
+        if(intVal != 0)
+        {
+            this.printStatInfo(intVal, rarityDisplacement, "Intellect", gtemp, gear);
+            rarityDisplacement += 15;
+        }
+
+        if( gear.getRarity() == 2)
+        {
+            gtemp.setColor(blue);
+        }
+        else if( gear.getRarity() == 3)
+        {
+            gtemp.setColor(purple);
+        }
+        else if( gear.getRarity() == 4)
+        {
+            gtemp.setColor(orange);
+        }
+        else
+        {
+            gtemp.setColor(trash);
+        }
+
+        itemNameFont = (new Font("Arial Black", Font.PLAIN, 14));
+        gtemp.setFont(itemNameFont);
+        metrics = gtemp.getFontMetrics(itemNameFont);
+
+        gtemp.drawString( gear.getItemName(), gear.getCenterX() - 
+                metrics.stringWidth( gear.getItemName())/2 - xShift, 
+                gear.getY() - rarityDisplacement - yShift);
+    }
+    
+    public void printStatInfo(int statVal, int rarityDisplacement, String statName,
+            Graphics2D gtemp, Gear gear)
+    {
+        Color green =  new Color(0, 255, 50);
+        Color red = new Color(200, 0, 0);
+        
+        int yShift = Game.screenShiftY();
+        int xShift = Game.screenShiftX();
+                
+        Font itemNameFont = (new Font("Arial Black", Font.PLAIN, 12));
+        gtemp.setFont(itemNameFont);
+        FontMetrics metrics = gtemp.getFontMetrics(itemNameFont);
+        
+        if(statVal != 0)
+        {
+            String statString = "";
+            
+            if(statVal > 0)
+            {
+                gtemp.setColor(green);
+                statString = "+";
+            }
+            else
+            {
+                gtemp.setColor(red);
+                statString = "-";
+            }
+
+            statString += Integer.toString(Math.abs(statVal)) + " " + statName;
+            gtemp.drawString(statString, gear.getCenterX() - metrics.stringWidth(statString)/2
+                    - xShift, gear.getY() - rarityDisplacement - yShift);
+        }
+    }
+        
     public BufferedImage bufferedImageConverter(Image img) {
         /*
         used to convert images into buffered images
