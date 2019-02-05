@@ -34,6 +34,7 @@ public class GameInstance {
     private Room[][] Rooms;
     private int RoomsI, RoomsJ;
     private final int ScreenWidth = 1280, ScreenHeight = 960;
+    //private final int ScreenWidth = 540, ScreenHeight = 720;
     private final int GameWidth = 1280, GameHeight = 1280;
     private final int ShadowHeight = 60;
     private boolean levelFinished;
@@ -457,54 +458,33 @@ public class GameInstance {
         */
         CollisionDetector col = new CollisionDetector();
         
-        boolean generalCol = false;
-        boolean verticalCol = false;
-        boolean horizontalCol = false;
-        
         for(int i = 0; i < Walls.length; i++)
         {
-            if(verticalCol && horizontalCol)
-            {
-                break;
-            }
-            
-            if(col.normalCollision(Player, Walls[i]))
-            {
-                generalCol = true;
-                
-                if(col.horizontalSlideCollision(Player, Walls[i]))
-                {
-                    horizontalCol = true;
-                }
-                
-                if(col.verticalSlideCollision(Player, Walls[i]))
-                {
-                    verticalCol = true;
-                }
-            }
+            col.playerCollision(Player, Walls[i]);
         }
         
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].DoorSize(); i++)
         {
-            if(verticalCol && horizontalCol)
-            {
-                break;
-            }
-            
             if(col.normalCollision(Player, Rooms[RoomsI][RoomsJ].getDoor(i)))
             {
-                generalCol = true;
+                Player.setGeneralCollision();
                 
                 if(Rooms[RoomsI][RoomsJ].getDoor(i).isLocked())
                 {
-                    if(col.horizontalSlideCollision(Player, Rooms[RoomsI][RoomsJ].getDoor(i)))
+                    if(!Player.getHorizontalCollision())
                     {
-                        horizontalCol = true;
+                        if(col.horizontalSlideCollision(Player, Rooms[RoomsI][RoomsJ].getDoor(i)))
+                        {
+                            Player.setHorizontalCollision();
+                        }
                     }
-
-                    if(col.verticalSlideCollision(Player, Rooms[RoomsI][RoomsJ].getDoor(i)))
+                    
+                    if(!Player.getVerticalCollision())
                     {
-                        verticalCol = true;
+                        if(col.verticalSlideCollision(Player, Rooms[RoomsI][RoomsJ].getDoor(i)))
+                        {
+                            Player.setVerticalCollision();
+                        }
                     }
                 }
                 else
@@ -543,76 +523,25 @@ public class GameInstance {
         
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].WallSize(); i++)
         {
-            //if both collisions are already true, no need to waste resources and
-            //continue checking
-            if(verticalCol && horizontalCol)
-            {
-                break;
-            }
-            
-            //test for normal collision first, and if there is a collision, then
-            //test for vertical/horizontal collisions
-            if(col.normalCollision(Player, Rooms[RoomsI][RoomsJ].getWall(i)))
-            {
-                generalCol = true;
-                
-                if(col.horizontalSlideCollision(Player, Rooms[RoomsI][RoomsJ].getWall(i)))
-                {
-                    horizontalCol = true;
-                }
-                
-                if(col.verticalSlideCollision(Player, Rooms[RoomsI][RoomsJ].getWall(i)))
-                {
-                    verticalCol = true;
-                }
-            }
+            col.playerCollision(Player ,Rooms[RoomsI][RoomsJ].getWall(i));
         }
         
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].BarrelSize(); i++)
         {
-            if(verticalCol && horizontalCol)
-            {
-                break;
-            }
-            
-            if(col.normalCollision(Player, Rooms[RoomsI][RoomsJ].getBarrel(i)))
-            {
-                generalCol = true;
-                
-                if(col.horizontalSlideCollision(Player, Rooms[RoomsI][RoomsJ].getBarrel(i)))
-                {
-                    horizontalCol = true;
-                }
-                
-                if(col.verticalSlideCollision(Player, Rooms[RoomsI][RoomsJ].getBarrel(i)))
-                {
-                    verticalCol = true;
-                }
-            }
+            col.playerCollision(Player ,Rooms[RoomsI][RoomsJ].getBarrel(i));
         }
         
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].EnemySize(); i++)
         {
-            if(col.normalCollision(Player, Rooms[RoomsI][RoomsJ].getEnemy(i)))
-            {
-                generalCol = true;
-                
-                if(col.horizontalSlideCollision(Player, Rooms[RoomsI][RoomsJ].getEnemy(i)))
-                {
-                    horizontalCol = true;
-                }
-                
-                if(col.verticalSlideCollision(Player, Rooms[RoomsI][RoomsJ].getEnemy(i)))
-                {
-                    verticalCol = true;
-                }
-            }
+            col.playerCollision(Player ,Rooms[RoomsI][RoomsJ].getEnemy(i));
         }
         
+        //now update the player's position
+        Player.updatePlayer(mouseX, mouseY);
         //now test for collisions with gear
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].RingSize(); i++)
         {
-            if(col.normalCollision(Player, Rooms[RoomsI][RoomsJ].getRing(i)))
+            if(col.standingCollision(Player, Rooms[RoomsI][RoomsJ].getRing(i)))
             {
                 if(!Rooms[RoomsI][RoomsJ].getRing(i).wasDropped())
                 {
@@ -639,7 +568,7 @@ public class GameInstance {
         
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].NeckSize(); i++)
         {
-            if(col.normalCollision(Player, Rooms[RoomsI][RoomsJ].getNeck(i)))
+            if(col.standingCollision(Player, Rooms[RoomsI][RoomsJ].getNeck(i)))
             {
                 if(!Rooms[RoomsI][RoomsJ].getNeck(i).wasDropped())
                 {
@@ -666,7 +595,7 @@ public class GameInstance {
         
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].BootsSize(); i++)
         {
-            if(col.normalCollision(Player, Rooms[RoomsI][RoomsJ].getBoots(i)))
+            if(col.standingCollision(Player, Rooms[RoomsI][RoomsJ].getBoots(i)))
             {
                 if(!Rooms[RoomsI][RoomsJ].getBoots(i).wasDropped())
                 {
@@ -693,7 +622,7 @@ public class GameInstance {
         
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].TomeSize(); i++)
         {
-            if(col.normalCollision(Player, Rooms[RoomsI][RoomsJ].getTome(i)))
+            if(col.standingCollision(Player, Rooms[RoomsI][RoomsJ].getTome(i)))
             {
                 if(!Rooms[RoomsI][RoomsJ].getTome(i).wasDropped())
                 {
@@ -717,25 +646,6 @@ public class GameInstance {
                 Rooms[RoomsI][RoomsJ].getTome(i).setDropped(false);
             }
         }
-        
-        //scale ammount is used to adjust the mouse angle for scaled window sizes
-        double scale;
-        
-        if(ScreenHeight < ScreenWidth)
-        {
-            scale = (double)ScreenWidth/GameWidth;
-        }
-        else if(ScreenHeight > ScreenWidth)
-        {
-            scale = (double)ScreenHeight/GameHeight;
-        }
-        else
-        {
-            scale = 1;
-        }
-        
-        //now update the player's position
-        Player.updatePlayer(mouseX, mouseY, generalCol, horizontalCol, verticalCol);
         
         //now test for remaining collisions based on where the player ends up standing
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].CoinSize(); i++)
@@ -858,12 +768,11 @@ public class GameInstance {
                         Rooms[RoomsI][RoomsJ].getEnemy(j), Player.getCenterX(), 
                         Player.getCenterY());
             }
-            col.EnemyCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), Player, 
-                    Player.getCenterX(), Player.getCenterY());
             
             if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), Player))
             {
                 Player.takeDamage(Rooms[RoomsI][RoomsJ].getEnemy(i).getBumpDamage());
+                Rooms[RoomsI][RoomsJ].getEnemy(i).setPlayerCollsion();
             }
             
             Rooms[RoomsI][RoomsJ].getEnemy(i).updateMovingEnemy(Player.getCenterX(), 

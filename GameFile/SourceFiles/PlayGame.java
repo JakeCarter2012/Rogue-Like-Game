@@ -56,7 +56,7 @@ public class PlayGame extends JPanel implements KeyListener{
     private Image  TempleFloor,  NullSpellIcon, CurrentSpellIcon, ChilledImg, FrozenImg;
     
     //private final int ScreenWidth = 1024, ScreenHeight = 960;
-    //private final int ScreenWidth = 1280, ScreenHeight = 720;
+    //private final int ScreenWidth = 540, ScreenHeight = 720;
     private final int ScreenWidth = 1280, ScreenHeight = 960;
     private final int FPS = 60;
     
@@ -569,14 +569,14 @@ public class PlayGame extends JPanel implements KeyListener{
         {
             if(Game.getPlayer().getSpell(i) == null)
             {
-                g2d.drawImage(this.NullSpellIcon, 54 + (int)xShift + 100 * i, (int)scaledHeight - 110 + yShift, this);
+                g2d.drawImage(this.NullSpellIcon, 54 + xShift + 100 * i, (int)scaledHeight - 110 + yShift, this);
             }
             else
             {
-                g2d.drawImage(Game.getPlayer().getSpell(i).getIcon(), 54 + (int)xShift + 100 * i, (int)scaledHeight - 110 + yShift, this);
+                g2d.drawImage(Game.getPlayer().getSpell(i).getIcon(), 54 + xShift + 100 * i, (int)scaledHeight - 110 + yShift, this);
                 if(i == Game.getPlayer().getCurrentSpellNumber())
                 {
-                    g2d.drawImage(this.CurrentSpellIcon, 52 + (int)xShift + 100 * i, (int)scaledHeight - 112 + yShift, this);
+                    g2d.drawImage(this.CurrentSpellIcon, 52 + xShift + 100 * i, (int)scaledHeight - 112 + yShift, this);
                 }
             }
         }
@@ -1099,7 +1099,7 @@ public class PlayGame extends JPanel implements KeyListener{
             {
                 gtemp.setColor(blue);
             }
-            else if(this.Game.getRoom().getBoots(i).getRarity() == 3)
+            else if(this.Game.getRoom().getBoots(i).getRarity() == 4)
             {
                 gtemp.setColor(orange);
             }

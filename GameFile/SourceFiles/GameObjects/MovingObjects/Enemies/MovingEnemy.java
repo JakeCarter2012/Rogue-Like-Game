@@ -19,7 +19,7 @@ abstract public class MovingEnemy extends MovingObject{
     private int StatusTimer;
     boolean GeneralCollision, CollisionUp, CollisionDown, CollisionRight,
             CollisionLeft, RequestMoveRight, RequestMoveLeft, RequestMoveUp,
-            RequestMoveDown;
+            RequestMoveDown, PlayerCollision;
     
     public MovingEnemy(int x, int y, int width, int height, int health, int speed, 
             int bumpDmg, int burnRes, int iceRes)
@@ -176,30 +176,38 @@ abstract public class MovingEnemy extends MovingObject{
     
     protected void updatePosition() 
     {
-        if(!GeneralCollision)
+        if(!PlayerCollision)
         {
-            this.setX(this.getX() + (int)Math.round(this.getSpeed()*Math.cos(Math.toRadians(this.getAngle()))));
-            this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
-        }
-        else if(this.RequestMoveUp && !this.RequestMoveDown && !this.CollisionUp)
-        {
-            this.setY(this.getY() - this.getSpeed());
-        }
-        else if(this.RequestMoveDown && !this.RequestMoveUp && !this.CollisionDown)
-        {
-            this.setY(this.getY() + this.getSpeed());
-        }
-        else if(this.RequestMoveLeft && !this.RequestMoveRight && !this.CollisionLeft)
-        {
-            this.setX(this.getX() - this.getSpeed());
-        }
-        else if(this.RequestMoveRight && !this.RequestMoveLeft && !this.CollisionRight)
-        {
-            this.setX(this.getX() + this.getSpeed());
+            if(!GeneralCollision)
+            {
+                this.setX(this.getX() + (int)Math.round(this.getSpeed()*Math.cos(Math.toRadians(this.getAngle()))));
+                this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
+            }
+            else if(this.RequestMoveUp && !this.RequestMoveDown && !this.CollisionUp)
+            {
+                this.setY(this.getY() - this.getSpeed());
+            }
+            else if(this.RequestMoveDown && !this.RequestMoveUp && !this.CollisionDown)
+            {
+                this.setY(this.getY() + this.getSpeed());
+            }
+            else if(this.RequestMoveLeft && !this.RequestMoveRight && !this.CollisionLeft)
+            {
+                this.setX(this.getX() - this.getSpeed());
+            }
+            else if(this.RequestMoveRight && !this.RequestMoveLeft && !this.CollisionRight)
+            {
+                this.setX(this.getX() + this.getSpeed());
+            }
         }
         GeneralCollision = CollisionDown = CollisionRight = CollisionUp = 
                 CollisionLeft = RequestMoveRight = RequestMoveLeft = RequestMoveUp =
-                RequestMoveDown = false;
+                RequestMoveDown = PlayerCollision = false;
+    }
+    
+    public void setPlayerCollsion()
+    {
+        this.PlayerCollision = true;
     }
     
     public boolean getGeneralCollision()

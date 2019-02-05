@@ -3,7 +3,9 @@ package SourceFiles.GameLogic;
 import SourceFiles.GameObjects.GameObject;
 import SourceFiles.GameObjects.MovingObjects.MovingObject;
 import SourceFiles.GameObjects.MovingObjects.Enemies.MovingEnemy;
+import SourceFiles.GameObjects.MovingObjects.Player.WizardPlayer;
 import java.awt.Rectangle;
+import java.util.ArrayList;
 
 public class CollisionDetector {
     /*
@@ -26,8 +28,6 @@ public class CollisionDetector {
     
     public void EnemyCollision(MovingEnemy enemy, GameObject obj, int playerX, int playerY)
     {
-        Rectangle objRec = new Rectangle(obj.getX(), obj.getY(), obj.getWidth(), 
-                obj.getHeight());
         Rectangle enemyRec = new Rectangle(enemy.getX() + (int)Math.round(enemy.getSpeed()*Math.cos(Math.toRadians(enemy.getAngle()))), 
                 enemy.getY() + (int)Math.round(enemy.getSpeed()*Math.sin(Math.toRadians(enemy.getAngle()))), enemy.getWidth(), enemy.getHeight());
         Rectangle enemyRecRight = new Rectangle(enemy.getX() + enemy.getSpeed(), enemy.getY(), 
@@ -39,6 +39,17 @@ public class CollisionDetector {
         Rectangle enemyRecUp = new Rectangle(enemy.getX(), enemy.getY() - 
                 enemy.getSpeed(), enemy.getWidth(), enemy.getHeight());
                 
+        calculateEnemyCollision(enemy, playerX, playerY, obj, enemyRec, enemyRecRight, 
+            enemyRecLeft, enemyRecDown, enemyRecUp);
+    }
+    
+    private void calculateEnemyCollision(MovingEnemy enemy, int playerX, int playerY, 
+            GameObject obj, Rectangle enemyRec, Rectangle enemyRecRight, 
+            Rectangle enemyRecLeft, Rectangle enemyRecDown, Rectangle enemyRecUp)
+    {
+        Rectangle objRec = new Rectangle(obj.getX(), obj.getY(), obj.getWidth(), 
+                obj.getHeight());
+        
         if(enemyRec.intersects(objRec))
         {
             enemy.setGeneralCollision();
@@ -93,30 +104,46 @@ public class CollisionDetector {
         }
     }
     
-    public boolean verticalCollision(MovingObject mover, GameObject obj)
+    public void playerCollision(WizardPlayer player, GameObject obj)
     {
-        Rectangle moverRec = new Rectangle(mover.getX(), mover.getY() + mover.getSpeed(),
-                mover.getWidth(), mover.getHeight());
         Rectangle objRec = new Rectangle(obj.getX(), obj.getY(), obj.getWidth(), 
                 obj.getHeight());
         
-        if(moverRec.intersects(objRec))
-            return true;
-        else
-            return false;
-    }
-    
-    public boolean horizontalCollision(MovingObject mover, GameObject obj)
-    {
-        Rectangle moverRec = new Rectangle(mover.getX() + mover.getSpeed(), 
-                mover.getY(), mover.getWidth(), mover.getHeight());
-        Rectangle objRec = new Rectangle(obj.getX(), obj.getY(), obj.getWidth(), 
-                obj.getHeight());
+        if(!player.getGeneralCollision())
+        {
+            Rectangle playerRec = new Rectangle(player.getX() + (int)Math.round(player.getSpeed()*Math.cos(Math.toRadians(player.getAngle()))), 
+                    player.getY() + (int)Math.round(player.getSpeed()*Math.sin(Math.toRadians(player.getAngle()))), player.getWidth(), player.getHeight());
+            if(playerRec.intersects(objRec))
+            {
+                player.setGeneralCollision();
+            }
+        }
         
-        if(moverRec.intersects(objRec))
-            return true;
-        else
-            return false;
+        if(player.getGeneralCollision())
+        {
+            if(!player.getVerticalCollision())
+            {
+                Rectangle verticalRec = new Rectangle(player.getX(), player.getY() + 
+                        (int)Math.round(player.getSpeed()*Math.sin(Math.toRadians(player.getAngle()))), 
+                        player.getWidth(), player.getHeight());
+                
+                if(verticalRec.intersects(objRec))
+                {
+                    player.setVerticalCollision();
+                }
+            }
+            if(!player.getHorizontalCollision())
+            {
+                Rectangle horizontalRec = new Rectangle(player.getX() + 
+                        (int)Math.round(player.getSpeed()*Math.cos(Math.toRadians(player.getAngle()))), 
+                        player.getY(), player.getWidth(),player.getHeight());
+                
+                if(horizontalRec.intersects(objRec))
+                {
+                    player.setHorizontalCollision();
+                }
+            }
+        }
     }
     
     public boolean verticalSlideCollision(MovingObject mover, GameObject obj)
@@ -145,10 +172,10 @@ public class CollisionDetector {
             return false;
     }
     
-    public boolean standingCollision(GameObject mover, GameObject obj)
+    public boolean standingCollision(GameObject stander, GameObject obj)
     {
-        Rectangle moverRec = new Rectangle(mover.getX(), mover.getY(), 
-                mover.getWidth(), mover.getHeight());
+        Rectangle moverRec = new Rectangle(stander.getX(), stander.getY(), 
+                stander.getWidth(), stander.getHeight());
         Rectangle objRec = new Rectangle(obj.getX(), obj.getY(), obj.getWidth(), 
                 obj.getHeight());
         

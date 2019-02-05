@@ -32,7 +32,7 @@ public class Boots extends Gear{
         }
         else
         {
-            this.Rarity = 3;
+            this.Rarity = 4;
         }
         
         this.Vitality = this.Level * 3 + rareValue;

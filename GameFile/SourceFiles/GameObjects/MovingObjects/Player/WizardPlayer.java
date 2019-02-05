@@ -37,6 +37,7 @@ public class WizardPlayer extends MovingObject implements Observer{
     private int FireX, FireY;
     private int BaseSpeed;
     private boolean Up, Down, Left, Right, Fire, SwapDown, SwapUp;
+    private boolean VerticalCollision, HorizontalCollision, GeneralCollision;
     private int UpKey, DownKey, LeftKey, RightKey, UpKey2, DownKey2, LeftKey2, RightKey2,
             FireKey, SpellOneKey, SpellTwoKey, SpellThreeKey, SpellFourKey, PauseKey;
     private int CurrentSpellPage;
@@ -75,8 +76,8 @@ public class WizardPlayer extends MovingObject implements Observer{
         
         this.CurrentSpriteSet = this.WizForward;
         this.CurrentSprite = this.WizForward[0];
-        this.MaxHealth = 5000;
-        this.Currenthealth = 5000;
+        this.MaxHealth = 500;
+        this.Currenthealth = 500;
         this.BaseDamage = 4;
         this.BonusDamage = 0;
         this.UpKey = KeyEvent.VK_W;
@@ -94,6 +95,7 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.PauseKey = KeyEvent.VK_P;
         this.Up = this.Down = this.Left = this.Right = this.Fire = this.SwapUp = 
                 this.SwapDown = false;
+        VerticalCollision = HorizontalCollision = GeneralCollision = false;
         this.SpellBook = new ArrayList<Spell>();
         this.CurrentSpellPage = 0;
         this.AimAngle = 90;
@@ -319,6 +321,36 @@ public class WizardPlayer extends MovingObject implements Observer{
         return this.SkillPoints;
     }
     
+    public void setGeneralCollision()
+    {
+        this.GeneralCollision = true;
+    }
+    
+    public void setHorizontalCollision()
+    {
+        this.HorizontalCollision = true;
+    }
+    
+    public void setVerticalCollision()
+    {
+        this.VerticalCollision = true;
+    }
+    
+    public boolean getGeneralCollision()
+    {
+        return GeneralCollision ;
+    }
+    
+    public boolean getHorizontalCollision()
+    {
+        return this.HorizontalCollision;
+    }
+    
+    public boolean getVerticalCollision()
+    {
+        return this.VerticalCollision;
+    }
+    
     public void addExperience(int exp)
     {
         this.CurrentExperience += exp;
@@ -446,11 +478,10 @@ public class WizardPlayer extends MovingObject implements Observer{
         return this.SpellBook.get(index);
     }
             
-    public void updatePlayer(int mouseX, int mouseY, boolean generalCollision, 
-            boolean horizontalCollision, boolean verticalCollision)
+    public void updatePlayer(int mouseX, int mouseY)
     {
         //updatePlayer is used to call all update functions
-        this.updatePosition(generalCollision, horizontalCollision, verticalCollision);
+        this.updatePosition();
         
         this.updateAngle();
         
@@ -880,26 +911,28 @@ public class WizardPlayer extends MovingObject implements Observer{
         }
     }
 
-    private void updatePosition(boolean generalCollision, boolean horizontalCollision, boolean verticalCollision) 
+    private void updatePosition() 
     {
         /*
         If there is no general collision, move the player to the new location;
         otherwise "slide" the character vertically/horizontally based on which 
         collisions are not false.
         */
-        if(!generalCollision)
+        if(!GeneralCollision)
         {
             this.setX(this.getX() + (int)Math.round(this.getSpeed()*Math.cos(Math.toRadians(this.getAngle()))));
             this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
         }
-        else if(!horizontalCollision)
+        else if(!HorizontalCollision)
         {
             this.setX(this.getX() + (int)Math.round(this.getSpeed()*Math.cos(Math.toRadians(this.getAngle()))));
         }
-        else if(!verticalCollision)
+        else if(!VerticalCollision)
         {
             this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
         }
+        
+        GeneralCollision = HorizontalCollision = VerticalCollision = false;
     }
     
     @Override
