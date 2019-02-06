@@ -98,7 +98,7 @@ abstract public class MovingEnemy extends MovingObject{
     public void freeze(int eleChance, int freezeTime)
     {
         //If BurnResist is at/above 100, enemy is immune to freezing
-        if (this.FreezeResist == 100)
+        if (this.FreezeResist == 100 || this.Frozen)
             return;
         int freezeChance = eleChance - this.FreezeResist;
         if (freezeChance <= 0)

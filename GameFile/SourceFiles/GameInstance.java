@@ -525,16 +525,82 @@ public class GameInstance {
     private void addBoss(int i, int j)
     {
         //Enemies in boss room are temporary until I create assets for a boss
-        SpearGoblin gobo = new SpearGoblin(700, 700, 1, this.SpearGoblinLeft, this.SpearGoblinRight);
-        DartGoblin gobo2 = new DartGoblin(900, 900, 1, this.DartGoblinLeft, 
+        Rooms[i][j].addEnemy(new SpearGoblin(500, 400, 1, this.SpearGoblinLeft,
+                this.SpearGoblinRight));
+        Rooms[i][j].addEnemy(new SpearGoblin(700, 400, 1, this.SpearGoblinLeft,
+                this.SpearGoblinRight));
+        Rooms[i][j].addEnemy(new DartGoblin(400, 200, 1, this.DartGoblinLeft, 
                 this.DartGoblinRight, this.DartGoblinLeftAttack, 
                 this.DartGoblinRightAttack, this.SmallProjectileGreen, 
-                this.SmallProjectileShadow, this.SmallGreenProjectileEnd);
+                this.SmallProjectileShadow, this.SmallGreenProjectileEnd));
+        Rooms[i][j].addEnemy(new DartGoblin(800, 200, 1, this.DartGoblinLeft, 
+                this.DartGoblinRight, this.DartGoblinLeftAttack, 
+                this.DartGoblinRightAttack, this.SmallProjectileGreen, 
+                this.SmallProjectileShadow, this.SmallGreenProjectileEnd));
     }
     
     private void addRandomEnemies(int i, int j)
     {
-        
+        Random rnd = new Random();
+        int randomRoom = rnd.nextInt(3);
+        if(randomRoom == 0)
+        {
+            this.enemyRoom1(i, j);
+        }
+        else if(randomRoom == 1)
+        {
+            this.enemyRoom2(i, j);
+        }
+        else
+        {
+            this.enemyRoom3(i, j);
+        }
+    }
+    
+    private void enemyRoom1(int i, int j)
+    {
+        Rooms[i][j].addEnemy(new SpearGoblin(400, 400, 1, this.SpearGoblinLeft,
+                this.SpearGoblinRight));
+        Rooms[i][j].addEnemy(new SpearGoblin(800, 800, 1, this.SpearGoblinLeft,
+                this.SpearGoblinRight));
+        Rooms[i][j].addEnemy(new DartGoblin(600, 600, 1, this.DartGoblinLeft, 
+                this.DartGoblinRight, this.DartGoblinLeftAttack, 
+                this.DartGoblinRightAttack, this.SmallProjectileGreen, 
+                this.SmallProjectileShadow, this.SmallGreenProjectileEnd));
+    }
+    
+    private void enemyRoom2(int i, int j)
+    {
+        Rooms[i][j].addEnemy(new SpearGoblin(600, 600, 1, this.SpearGoblinLeft,
+                this.SpearGoblinRight));
+        Rooms[i][j].addEnemy(new DartGoblin(400, 400, 1, this.DartGoblinLeft, 
+                this.DartGoblinRight, this.DartGoblinLeftAttack, 
+                this.DartGoblinRightAttack, this.SmallProjectileGreen, 
+                this.SmallProjectileShadow, this.SmallGreenProjectileEnd));
+        Rooms[i][j].addEnemy(new DartGoblin(800, 400, 1, this.DartGoblinLeft, 
+                this.DartGoblinRight, this.DartGoblinLeftAttack, 
+                this.DartGoblinRightAttack, this.SmallProjectileGreen, 
+                this.SmallProjectileShadow, this.SmallGreenProjectileEnd));
+    }
+    
+    private void enemyRoom3(int i, int j)
+    {
+        Rooms[i][j].addEnemy(new DartGoblin(400, 400, 1, this.DartGoblinLeft, 
+                this.DartGoblinRight, this.DartGoblinLeftAttack, 
+                this.DartGoblinRightAttack, this.SmallProjectileGreen, 
+                this.SmallProjectileShadow, this.SmallGreenProjectileEnd));
+        Rooms[i][j].addEnemy(new DartGoblin(400, 800, 1, this.DartGoblinLeft, 
+                this.DartGoblinRight, this.DartGoblinLeftAttack, 
+                this.DartGoblinRightAttack, this.SmallProjectileGreen, 
+                this.SmallProjectileShadow, this.SmallGreenProjectileEnd));
+        Rooms[i][j].addEnemy(new DartGoblin(800, 400, 1, this.DartGoblinLeft, 
+                this.DartGoblinRight, this.DartGoblinLeftAttack, 
+                this.DartGoblinRightAttack, this.SmallProjectileGreen, 
+                this.SmallProjectileShadow, this.SmallGreenProjectileEnd));
+        Rooms[i][j].addEnemy(new DartGoblin(800, 800, 1, this.DartGoblinLeft, 
+                this.DartGoblinRight, this.DartGoblinLeftAttack, 
+                this.DartGoblinRightAttack, this.SmallProjectileGreen, 
+                this.SmallProjectileShadow, this.SmallGreenProjectileEnd));
     }
     
     private void addDoors(int i, int j)
@@ -602,6 +668,7 @@ public class GameInstance {
     
     private void setBossRoom()
     {
+        //random instead, first room where above room is null/doesn't exist?
         for(int i = 0; i < 5; i ++)
         {
             for(int j = 0; j < 5; j++)
