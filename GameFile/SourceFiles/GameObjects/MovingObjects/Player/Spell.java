@@ -58,10 +58,14 @@ public abstract class Spell {
     
     public int getCoolDown(int fps)
     {
-        if(this.CoolDownTime < fps)
+        if((this.CoolDownTime < fps) || (this.Timer < 0))
+        {
             return 0;
+        }
         else
+        {
             return 1 + this.Timer/fps;
+        }
     }
     
     public void resetCoolDown()

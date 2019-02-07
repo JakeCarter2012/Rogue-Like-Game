@@ -11,19 +11,23 @@ abstract public class MovingEnemy extends MovingObject{
     Parent class for all MovingEnemies, contains accesors and update status method
     */
     private int Health;
+    protected int EnemyLevel;
     private int BumpDamage;
     protected int CurrentSpeed, NormalSpeed;
     private int BurnResist, FreezeResist;
     private int BurnDamage;
     protected boolean Frozen, Chilled, Burning;
     private int StatusTimer;
+    boolean GeneralCollision, CollisionUp, CollisionDown, CollisionRight,
+            CollisionLeft, RequestMoveRight, RequestMoveLeft, RequestMoveUp,
+            RequestMoveDown, PlayerCollision;
     
-    public MovingEnemy(int x, int y, int width, int height, int leftbound, int 
-            rightbound, int upbound, int downbound, int health, int speed, 
+    public MovingEnemy(int x, int y, int enemyLevel, int width, int height, int health, int speed, 
             int bumpDmg, int burnRes, int iceRes)
     {
-        super(x, y, leftbound,rightbound, upbound, downbound, width, height, speed, 0);
+        super(x, y, width, height, speed, 0);
         this.Health = health;
+        this.EnemyLevel = enemyLevel;
         this.BumpDamage = bumpDmg;
         this.Frozen = false;
         this.Burning = false;
@@ -33,6 +37,9 @@ abstract public class MovingEnemy extends MovingObject{
         this.StatusTimer = 0;
         this.BumpDamage = bumpDmg;
         this.NormalSpeed = this.CurrentSpeed = speed;
+        this.GeneralCollision = CollisionDown = CollisionRight = CollisionUp = 
+                CollisionLeft = RequestMoveRight = RequestMoveLeft = RequestMoveUp =
+                RequestMoveDown = false;
     }
     
     public boolean isChilled()
@@ -93,7 +100,7 @@ abstract public class MovingEnemy extends MovingObject{
     public void freeze(int eleChance, int freezeTime)
     {
         //If BurnResist is at/above 100, enemy is immune to freezing
-        if (this.FreezeResist == 100)
+        if (this.FreezeResist == 100 || this.Frozen)
             return;
         int freezeChance = eleChance - this.FreezeResist;
         if (freezeChance <= 0)
@@ -169,6 +176,114 @@ abstract public class MovingEnemy extends MovingObject{
         return this.CurrentSpeed;
     }
     
+    protected void updatePosition() 
+    {
+        if(!PlayerCollision)
+        {
+            if(!GeneralCollision)
+            {
+                this.setX(this.getX() + (int)Math.round(this.getSpeed()*Math.cos(Math.toRadians(this.getAngle()))));
+                this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
+            }
+            else if(this.RequestMoveUp && !this.RequestMoveDown && !this.CollisionUp)
+            {
+                this.setY(this.getY() - this.getSpeed());
+            }
+            else if(this.RequestMoveDown && !this.RequestMoveUp && !this.CollisionDown)
+            {
+                this.setY(this.getY() + this.getSpeed());
+            }
+            else if(this.RequestMoveLeft && !this.RequestMoveRight && !this.CollisionLeft)
+            {
+                this.setX(this.getX() - this.getSpeed());
+            }
+            else if(this.RequestMoveRight && !this.RequestMoveLeft && !this.CollisionRight)
+            {
+                this.setX(this.getX() + this.getSpeed());
+            }
+        }
+        GeneralCollision = CollisionDown = CollisionRight = CollisionUp = 
+                CollisionLeft = RequestMoveRight = RequestMoveLeft = RequestMoveUp =
+                RequestMoveDown = PlayerCollision = false;
+    }
+    
+    public void setPlayerCollsion()
+    {
+        this.PlayerCollision = true;
+    }
+    
+    public boolean getGeneralCollision()
+    {
+        return this.GeneralCollision;
+    }
+    
+    public void setGeneralCollision()
+    {
+        this.GeneralCollision = true;
+    }
+    
+    public void setCollisionUp()
+    {
+        this.CollisionUp = true;
+    }
+    
+    public void setCollisionDown()
+    {
+        this.CollisionDown = true;
+    }
+    
+    public void setCollisionLeft()
+    {
+        this.CollisionLeft = true;
+    }
+    
+    public void setCollisionRight()
+    {
+        this.CollisionRight = true;
+    }
+    
+    public boolean getCollisionUp()
+    {
+        return this.CollisionUp;
+    }
+    
+    public boolean getCollisionDown()
+    {
+        return this.CollisionDown;
+    }
+    
+    public boolean getCollisionLeft()
+    {
+        return this.CollisionLeft;
+    }
+    
+    public boolean getCollisionRight()
+    {
+        return this.CollisionRight;
+    }
+    
+    public void requestMoveDown()
+    {
+        this.RequestMoveDown = true;
+    }
+    
+    public void requestMoveUp()
+    {
+        this.RequestMoveUp = true;
+    }
+    
+    public void requestMoveLeft()
+    {
+        this.RequestMoveLeft = true;
+    }
+    
+    public void requestMoveRight()
+    {
+        this.RequestMoveRight = true;
+    }
+    
+    abstract public int getExperience();
+    
     abstract public boolean isProjectileReady();
     
     abstract public Projectile fireProjectile();
@@ -183,6 +298,5 @@ abstract public class MovingEnemy extends MovingObject{
     
     abstract public Image getSprite();
     
-    abstract public void updateMovingEnemy(int playerX, int playerY, boolean generalCollision,
-            boolean horizontalCollision, boolean verticalCollision);
+    abstract public void updateMovingEnemy(int playerX, int playerY);
 }

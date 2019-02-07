@@ -542,4 +542,12 @@ public class Room {
             }
         }
     }
+    
+    public void leaveRoom()
+    {
+        this.EnemyProjectiles.clear();
+        this.PlayerProjectiles.clear();
+        this.EnemyAoes.clear();
+        this.PlayerAoes.clear();
+    }
 }
