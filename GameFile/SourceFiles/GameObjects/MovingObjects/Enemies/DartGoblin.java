@@ -3,6 +3,7 @@ package SourceFiles.GameObjects.MovingObjects.Enemies;
 import SourceFiles.GameObjects.MovingObjects.Projectiles.Projectile;
 import SourceFiles.GameObjects.StationaryObjects.AreaOfEffect;
 import java.awt.Image;
+import java.util.Random;
 
 public class DartGoblin extends MovingEnemy{
     private Image[] MoveLeftImages, MoveRightImages, AttackLeft, AttackRight;
@@ -33,6 +34,9 @@ public class DartGoblin extends MovingEnemy{
         this.CloseToPlayer = false;
         
         this.CurrentSprite = this.AttackRight[0];
+        
+        Random rnd = new Random();
+        this.ProjectileTimer = rnd.nextInt(60) + 50;
     }
     
     public int getExperience()
@@ -203,6 +207,7 @@ public class DartGoblin extends MovingEnemy{
                     this.CurrentSprite = this.MoveLeftImages[this.CurrentFrame];
                 }
             }
+            
             this.ImageTimer = 0;
         }
         this.ImageTimer++;
