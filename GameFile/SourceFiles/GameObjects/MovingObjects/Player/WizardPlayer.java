@@ -301,6 +301,11 @@ public class WizardPlayer extends MovingObject implements Observer{
         return this.Currenthealth;
     }
     
+    public int getMaxHealth()
+    {
+        return this.MaxHealth;
+    }
+    
     public int getLevel()
     {
         return this.Level;

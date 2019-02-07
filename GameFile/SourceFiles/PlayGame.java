@@ -37,7 +37,8 @@ public class PlayGame extends JPanel implements KeyListener{
     
     private BufferedImage bufImg;
     private Graphics2D g2d;
-    private Image  TempleFloor,  NullSpellIcon, CurrentSpellIcon, ChilledImg, FrozenImg;
+    private Image  TempleFloor,  NullSpellIcon, CurrentSpellIcon, ChilledImg, 
+            FrozenImg, HealthBar, HealthBarBackground;
     
     //private final int ScreenWidth = 1024, ScreenHeight = 960;
     //private final int ScreenWidth = 540, ScreenHeight = 720;
@@ -89,6 +90,8 @@ public class PlayGame extends JPanel implements KeyListener{
             this.CurrentSpellIcon = ImageIO.read(new File("Resources" + File.separator + "CurrentSpellIcon.png"));
             this.ChilledImg = ImageIO.read(new File("Resources" + File.separator + "chilled.png"));
             this.FrozenImg = ImageIO.read(new File("Resources" + File.separator + "frozen.png"));
+            this.HealthBar = ImageIO.read(new File("Resources" + File.separator + "HealthBar.png"));
+            this.HealthBarBackground = ImageIO.read(new File("Resources" + File.separator + "HealthBarBackground.png"));
         }catch (Exception e) {
             System.out.print(e.getStackTrace() + " Error loading resources in PlayGsme \n");
         }
@@ -673,11 +676,87 @@ public class PlayGame extends JPanel implements KeyListener{
             g2d.drawString(pauseString, (int)scaledWidth + xShift - 400, 30 + yShift);
         }
         
+        int hpWidth = 211 * Game.getPlayer().getCurrentHealth() / Game.getPlayer().getMaxHealth();
+        int xpWidth = 130 * Game.getPlayer().getExperience() / Game.getPlayer().getNextLevel();
+        
+        g2d.drawImage(this.HealthBarBackground, 40 + xShift, 40 + yShift, this);
+        g2d.setColor(new Color(0, 245, 0));
+        g2d.fillRect(112 + xShift, 60 + yShift, hpWidth, 1);
+        g2d.setColor(new Color(0, 220, 0));
+        g2d.fillRect(112 + xShift, 61 + yShift, hpWidth, 2);
+        g2d.setColor(new Color(0, 200, 0));
+        g2d.fillRect(112 + xShift, 63 + yShift, hpWidth, 5);
+        g2d.setColor(new Color(0, 180, 0));
+        g2d.fillRect(112 + xShift, 68 + yShift, hpWidth, 2);
+        g2d.setColor(new Color(0, 160, 0));
+        g2d.fillRect(112 + xShift, 70 + yShift, hpWidth, 2);
+        g2d.setColor(new Color(0, 100, 0));
+        g2d.fillRect(112 + xShift, 72 + yShift, hpWidth, 1);
+        g2d.setColor(new Color(90, 0, 135));
+        g2d.fillRect(115 + xShift, 80 + yShift, xpWidth, 5);
+        
+        Color frostColor = new Color(0, 100, 225);
+        Color flameColor = new Color(250, 0, 0);
+        Color voidColor = new Color(90, 0, 135);
+        
+        if(Game.getPlayer().getSpell(Game.getPlayer().getCurrentSpellNumber()).isIce())
+        {
+            g2d.setColor(frostColor);
+            this.drawLeftOrb();
+            if(Game.getPlayer().getSpell(Game.getPlayer().getCurrentSpellNumber()).isFire())
+            {
+                g2d.setColor(flameColor);
+            }
+            else if(Game.getPlayer().getSpell(Game.getPlayer().getCurrentSpellNumber()).isVoid())
+            {
+                g2d.setColor(voidColor);
+            }
+            this.drawRightOrb();
+        }
+        else if(Game.getPlayer().getSpell(Game.getPlayer().getCurrentSpellNumber()).isFire())
+        {
+            g2d.setColor(flameColor);
+            this.drawLeftOrb();
+            if(Game.getPlayer().getSpell(Game.getPlayer().getCurrentSpellNumber()).isVoid())
+            {
+                g2d.setColor(voidColor);
+            }
+            this.drawRightOrb();
+        }
+        else
+        {
+            g2d.setColor(voidColor);
+            this.drawLeftOrb();
+            this.drawRightOrb();
+        }
+        
+        g2d.drawImage(this.HealthBar, 40 + xShift, 40 + yShift, this);
+        
         BufferedImage shiftImg = bufImg.getSubimage(xShift, yShift, (int)scaledWidth, (int)scaledHeight);
         gtemp.scale(scale, scale);
         gtemp.drawImage(shiftImg, 0, 0, this);
         
         gtemp.dispose();
+    }
+    
+    private void drawLeftOrb()
+    {
+        int yShift = Game.screenShiftY();
+        int xShift = Game.screenShiftX();
+        
+        g2d.fillRect(78 + xShift, 46 + yShift, 18, 66);
+        g2d.fillRect(96 + xShift, 52 + yShift, 10, 52);
+        g2d.fillRect(106 + xShift, 56 + yShift, 4, 36);
+    }
+    
+    private void drawRightOrb()
+    {
+        int yShift = Game.screenShiftY();
+        int xShift = Game.screenShiftX();
+        
+        g2d.fillRect(60 + xShift, 46 + yShift, 18, 66);
+        g2d.fillRect(50 + xShift, 52 + yShift, 10, 52);
+        g2d.fillRect(46 + xShift, 56 + yShift, 4, 36);
     }
     
     private void paintStrings()
