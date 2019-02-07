@@ -49,6 +49,7 @@ public class PlayGame extends JPanel implements KeyListener{
     private JPanel PauseMenu, MainMenu;
     private GameEvents PlayerKeyEvent;
     private GameInstance Game;
+    private boolean PauseTutorial;
     
     private float OpaqueValue;
     private boolean OpaqueLower, OpaqueRaise;
@@ -73,6 +74,7 @@ public class PlayGame extends JPanel implements KeyListener{
         GameWindow.setBackground(Color.black);
         this.Paused = false;
         this.InGame = false;
+        PauseTutorial = true;
         
         //GameWindow.setExtendedState(JFrame.MAXIMIZED_BOTH);
         //GameWindow.setUndecorated(true);
@@ -269,6 +271,7 @@ public class PlayGame extends JPanel implements KeyListener{
             //and continously checks if the game is puased until the game resumes.
             if(this.Paused)
             {
+                this.PauseTutorial = false;
                 pauseGame();
                 while(Paused)
                 {
@@ -659,6 +662,15 @@ public class PlayGame extends JPanel implements KeyListener{
             metrics = g2d.getFontMetrics(spellNameFont);
             g2d.drawString(Integer.toString(i+1), 
                     88 + xShift + 100 * i - (metrics.stringWidth(Integer.toString(i+1)))/2, (int)scaledHeight - 20 + yShift);
+        }
+        
+        if(PauseTutorial && Game.getPlayer().getSkillPoints() > 0)
+        {
+            Font pauseTutorialFont = (new Font("Arial Black", Font.PLAIN, 10));
+            g2d.setColor(Color.black);
+            metrics = g2d.getFontMetrics(pauseTutorialFont);
+            String pauseString = "Press [Esc], [P], or [M] to spend skill points.";
+            g2d.drawString(pauseString, (int)scaledWidth + xShift - 400, 30 + yShift);
         }
         
         BufferedImage shiftImg = bufImg.getSubimage(xShift, yShift, (int)scaledWidth, (int)scaledHeight);

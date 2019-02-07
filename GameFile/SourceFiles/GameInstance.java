@@ -373,7 +373,7 @@ public class GameInstance {
         this.FloorLevel = 1;
         this.Transition = false;
         this.RoomChangeI = this.RoomChangeJ = 0;
-        this.Player = new WizardPlayer(600, 600, WizRightForwardAttack, 
+        this.Player = new WizardPlayer(609, 576, WizRightForwardAttack, 
                 WizRightForward, WizRightBackAttack, WizRightAttack, WizRight, 
                 WizLeftForwardAttack, WizLeftForward, WizLeftBackwardAttack, 
                 WizLeftAttack, WizLeft, WizForwardAttack, WizForward, WizBackAttack, 
@@ -749,33 +749,38 @@ public class GameInstance {
             {
                 this.FloorLevel++;
                 floorRandomizer();
-                Player.setX(600);
-                Player.setY(600);
+                Player.setX(609);
+                Player.setY(576);
+                Player.faceDown();
             }
             else
             {
                 RoomsI--;
-                Player.setX(600);
-                Player.setY(1000);
+                Player.setX(609);
+                Player.setY(976);
+                Player.faceUp();
             }
         }
         else if(RoomChangeJ == -1)
         {
             RoomsJ--;
-            Player.setX(1000);
-            Player.setY(600);
+            Player.setX(1038);
+            Player.setY(576);
+            Player.faceLeft();
         }
         else if(RoomChangeI == 1)
         {
             RoomsI++;
-            Player.setX(600);
-            Player.setY(100);
+            Player.setX(609);
+            Player.setY(this.ShadowHeight + 20);
+            Player.faceDown();
         }
         else if(RoomChangeJ == 1)
         {
             RoomsJ++;
-            Player.setX(150);
-            Player.setY(600);
+            Player.setX(178);
+            Player.setY(576);
+            Player.faceRight();
         }
         
         this.RoomChangeI = 0;

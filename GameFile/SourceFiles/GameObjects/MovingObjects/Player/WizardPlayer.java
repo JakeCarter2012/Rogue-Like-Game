@@ -37,7 +37,7 @@ public class WizardPlayer extends MovingObject implements Observer{
     private int FireX, FireY;
     private int BaseSpeed;
     private boolean Up, Down, Left, Right, Fire, SwapDown, SwapUp;
-    private boolean VerticalCollision, HorizontalCollision, GeneralCollision;
+    private boolean VerticalCollision, HorizontalCollision, GeneralCollision, ChangingRooms;
     private int UpKey, DownKey, LeftKey, RightKey, UpKey2, DownKey2, LeftKey2, RightKey2,
             FireKey, SpellOneKey, SpellTwoKey, SpellThreeKey, SpellFourKey, PauseKey;
     private int CurrentSpellPage;
@@ -95,7 +95,7 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.PauseKey = KeyEvent.VK_P;
         this.Up = this.Down = this.Left = this.Right = this.Fire = this.SwapUp = 
                 this.SwapDown = false;
-        VerticalCollision = HorizontalCollision = GeneralCollision = false;
+        VerticalCollision = HorizontalCollision = GeneralCollision = ChangingRooms = false;
         this.SpellBook = new ArrayList<Spell>();
         this.CurrentSpellPage = 0;
         this.AimAngle = 90;
@@ -398,6 +398,42 @@ public class WizardPlayer extends MovingObject implements Observer{
     {
         this.SwapDown = true;
         this.SwapUp = false;
+    }
+    
+    public void faceDown()
+    {
+        this.CurrentSpriteSet = this.WizForward;
+        this.FireX = this.getX() + 30;
+        this.FireY = this.getY() + 54;
+        this.setCurrentSprite();
+        this.ChangingRooms = true;
+    }
+    
+    public void faceUp()
+    {
+        this.CurrentSpriteSet = this.WizBack;
+        this.FireX = this.getX() + 30;
+        this.FireY = this.getY() + 30;
+        this.setCurrentSprite();
+        this.ChangingRooms = true;
+    }
+    
+    public void faceLeft()
+    {
+        this.CurrentSpriteSet = this.WizLeft;
+        this.FireX = this.getX();
+        this.FireY = this.getY() + 54;
+        this.setCurrentSprite();
+        this.ChangingRooms = true;
+    }
+    
+    public void faceRight()
+    {
+        this.CurrentSpriteSet = this.WizRight;
+        this.FireX = this.getX() + 62;
+        this.FireY = this.getY() + 54;
+        this.setCurrentSprite();
+        this.ChangingRooms = true;
     }
     
     public PlayerProjectile fireProjectile()
@@ -895,7 +931,11 @@ public class WizardPlayer extends MovingObject implements Observer{
             }
         }
         
-        
+        this.setCurrentSprite();
+    }
+    
+    private void setCurrentSprite()
+    {
         if(this.LevitateCounter < 15)
         {
             this.CurrentSprite = this.CurrentSpriteSet[0];
@@ -918,21 +958,24 @@ public class WizardPlayer extends MovingObject implements Observer{
         otherwise "slide" the character vertically/horizontally based on which 
         collisions are not false.
         */
-        if(!GeneralCollision)
+        if(!ChangingRooms)
         {
-            this.setX(this.getX() + (int)Math.round(this.getSpeed()*Math.cos(Math.toRadians(this.getAngle()))));
-            this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
-        }
-        else if(!HorizontalCollision)
-        {
-            this.setX(this.getX() + (int)Math.round(this.getSpeed()*Math.cos(Math.toRadians(this.getAngle()))));
-        }
-        else if(!VerticalCollision)
-        {
-            this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
+            if(!GeneralCollision)
+            {
+                this.setX(this.getX() + (int)Math.round(this.getSpeed()*Math.cos(Math.toRadians(this.getAngle()))));
+                this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
+            }
+            else if(!HorizontalCollision)
+            {
+                this.setX(this.getX() + (int)Math.round(this.getSpeed()*Math.cos(Math.toRadians(this.getAngle()))));
+            }
+            else if(!VerticalCollision)
+            {
+                this.setY(this.getY() + (int)Math.round(this.getSpeed()*Math.sin(Math.toRadians(this.getAngle()))));
+            }
         }
         
-        GeneralCollision = HorizontalCollision = VerticalCollision = false;
+        GeneralCollision = HorizontalCollision = VerticalCollision = ChangingRooms = false;
     }
     
     @Override
