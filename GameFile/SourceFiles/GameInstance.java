@@ -34,6 +34,8 @@ public class GameInstance {
     private boolean levelFinished;
     private WizardPlayer Player;
     private int Money, FloorLevel;
+    private boolean Transition;
+    private int RoomChangeI, RoomChangeJ;
     
     private Image IceShardsImg, IceShardsIcon, FireBallImg, FireBallIcon, VoidWaveImg,
             VoidWaveIcon, IceShardsShadow,
@@ -369,12 +371,13 @@ public class GameInstance {
         
         this.Money = 0;
         this.FloorLevel = 1;
+        this.Transition = false;
+        this.RoomChangeI = this.RoomChangeJ = 0;
         this.Player = new WizardPlayer(600, 600, WizRightForwardAttack, 
                 WizRightForward, WizRightBackAttack, WizRightAttack, WizRight, 
                 WizLeftForwardAttack, WizLeftForward, WizLeftBackwardAttack, 
                 WizLeftAttack, WizLeft, WizForwardAttack, WizForward, WizBackAttack, 
                 WizBack);
-        
         
         this.Player.addNewSpell(IceShards);
         this.Player.addNewSpell(FireBall);
@@ -725,6 +728,65 @@ public class GameInstance {
         return this.ShadowHeight;
     }
     
+    public boolean getTransition()
+    {
+        if(Transition)
+        {
+            Transition = false;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    public void changeRoom()
+    {
+        if(RoomChangeI == -1)
+        {
+            if(Rooms[RoomsI][RoomsJ].isBossRoom())
+            {
+                this.FloorLevel++;
+                floorRandomizer();
+                Player.setX(600);
+                Player.setY(600);
+            }
+            else
+            {
+                RoomsI--;
+                Player.setX(600);
+                Player.setY(1000);
+            }
+        }
+        else if(RoomChangeJ == -1)
+        {
+            RoomsJ--;
+            Player.setX(1000);
+            Player.setY(600);
+        }
+        else if(RoomChangeI == 1)
+        {
+            RoomsI++;
+            Player.setX(600);
+            Player.setY(100);
+        }
+        else if(RoomChangeJ == 1)
+        {
+            RoomsJ++;
+            Player.setX(150);
+            Player.setY(600);
+        }
+        
+        this.RoomChangeI = 0;
+        this.RoomChangeJ = 0;
+        
+        if(Rooms[RoomsI][RoomsJ].EnemySize() > 0)
+        {
+            Rooms[RoomsI][RoomsJ].lockDoors();
+        }
+    }
+    
     public void updatePlayer(int mouseX, int mouseY)
     {
         /*
@@ -767,42 +829,27 @@ public class GameInstance {
                 {
                     if(Rooms[RoomsI][RoomsJ].getDoor(i).getY() == 0)
                     {
-                        if(Rooms[RoomsI][RoomsJ].isBossRoom())
-                        {
-                            this.FloorLevel++;
-                            floorRandomizer();
-                            Player.setX(600);
-                            Player.setY(600);
-                        }
-                        else
-                        {
-                            RoomsI--;
-                            Player.setX(600);
-                            Player.setY(1000);
-                        }
+                        this.Transition = true;
+                        this.RoomChangeI = -1;
+                        Rooms[RoomsI][RoomsJ].leaveRoom();
                     }
                     else if(Rooms[RoomsI][RoomsJ].getDoor(i).getX() == 0)
                     {
-                        RoomsJ--;
-                        Player.setX(1000);
-                        Player.setY(600);
+                        this.RoomChangeJ = - 1;
+                        this.Transition = true;
+                        Rooms[RoomsI][RoomsJ].leaveRoom();
                     }
                     else if(Rooms[RoomsI][RoomsJ].getDoor(i).getY() == 1152)
                     {
-                        RoomsI++;
-                        Player.setX(600);
-                        Player.setY(100);
+                        this.RoomChangeI = 1;
+                        this.Transition = true;
+                        Rooms[RoomsI][RoomsJ].leaveRoom();
                     }
                     else if(Rooms[RoomsI][RoomsJ].getDoor(i).getX() == 1152)
                     {
-                        RoomsJ++;
-                        Player.setX(150);
-                        Player.setY(600);
-                    }
-                    
-                    if(Rooms[RoomsI][RoomsJ].EnemySize() > 0)
-                    {
-                        Rooms[RoomsI][RoomsJ].lockDoors();
+                        this.RoomChangeJ = 1;
+                        this.Transition = true;
+                        Rooms[RoomsI][RoomsJ].leaveRoom();
                     }
                 }
             }
@@ -1009,6 +1056,7 @@ public class GameInstance {
         {
             if(Rooms[RoomsI][RoomsJ].getEnemy(i).isDead())
             {
+                Player.addExperience(Rooms[RoomsI][RoomsJ].getEnemy(i).getExperience());
                 Rooms[RoomsI][RoomsJ].removeEnemy(i);
                 if(Rooms[RoomsI][RoomsJ].EnemySize() == 0)
                 {

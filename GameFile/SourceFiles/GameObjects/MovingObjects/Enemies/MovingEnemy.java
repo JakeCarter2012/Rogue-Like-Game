@@ -11,6 +11,7 @@ abstract public class MovingEnemy extends MovingObject{
     Parent class for all MovingEnemies, contains accesors and update status method
     */
     private int Health;
+    protected int EnemyLevel;
     private int BumpDamage;
     protected int CurrentSpeed, NormalSpeed;
     private int BurnResist, FreezeResist;
@@ -21,11 +22,12 @@ abstract public class MovingEnemy extends MovingObject{
             CollisionLeft, RequestMoveRight, RequestMoveLeft, RequestMoveUp,
             RequestMoveDown, PlayerCollision;
     
-    public MovingEnemy(int x, int y, int width, int height, int health, int speed, 
+    public MovingEnemy(int x, int y, int enemyLevel, int width, int height, int health, int speed, 
             int bumpDmg, int burnRes, int iceRes)
     {
         super(x, y, width, height, speed, 0);
         this.Health = health;
+        this.EnemyLevel = enemyLevel;
         this.BumpDamage = bumpDmg;
         this.Frozen = false;
         this.Burning = false;
@@ -279,6 +281,8 @@ abstract public class MovingEnemy extends MovingObject{
     {
         this.RequestMoveRight = true;
     }
+    
+    abstract public int getExperience();
     
     abstract public boolean isProjectileReady();
     

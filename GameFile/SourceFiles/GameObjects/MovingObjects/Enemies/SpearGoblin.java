@@ -12,13 +12,20 @@ public class SpearGoblin extends MovingEnemy{
     
     public SpearGoblin(int x, int y, int floor, Image[] moveLeft, Image[] moveRight)
     {
-        super(x, y, moveLeft[0].getWidth(null), moveLeft[0].getHeight(null), 
+        super(x, y, floor, moveLeft[0].getWidth(null), moveLeft[0].getHeight(null), 
                 100 + 50 * floor, 5, 50 + 25 * floor, 0, 0);
         this.MoveLeftImages = moveLeft;
         this.MoveRightImages = moveRight;
         this.ImageTimer = 0;
         this.CurrentFrame = 0;
         this.FacingRight = true;
+        
+        this.CurrentSprite = this.MoveRightImages[0];
+    }
+    
+    public int getExperience()
+    {
+        return(this.EnemyLevel * 5);
     }
     
     //SpearGoblin returns no projectiles/aoe's/summons

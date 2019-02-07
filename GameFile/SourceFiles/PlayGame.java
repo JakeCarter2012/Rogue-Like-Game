@@ -3,6 +3,7 @@ package SourceFiles;
 import SourceFiles.GameLogic.GameEvents;
 import SourceFiles.GameObjects.StationaryObjects.GearObjects.Gear;
 import SourceFiles.GameLogic.KeyControl;
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -49,6 +50,8 @@ public class PlayGame extends JPanel implements KeyListener{
     private GameEvents PlayerKeyEvent;
     private GameInstance Game;
     
+    private float OpaqueValue;
+    private boolean OpaqueLower, OpaqueRaise;
     
     private JButton testButton;
     
@@ -67,6 +70,7 @@ public class PlayGame extends JPanel implements KeyListener{
         GameWindow.setVisible(true);
         GameWindow.getContentPane().setFocusable(true);
         GameWindow.getContentPane().addKeyListener(this);
+        GameWindow.setBackground(Color.black);
         this.Paused = false;
         this.InGame = false;
         
@@ -92,6 +96,10 @@ public class PlayGame extends JPanel implements KeyListener{
     {
         this.Paused = false;
         this.InGame = true;
+        
+        this.OpaqueValue = 0f;
+        this.OpaqueRaise = true;
+        this.OpaqueLower = false;
         
         Game = new GameInstance(ScreenWidth, ScreenHeight);
         
@@ -246,7 +254,15 @@ public class PlayGame extends JPanel implements KeyListener{
         while ((Game.getPlayer().isAlive())) {
             currTime = System.nanoTime();
             
-            updateGame();
+            if(Game.getTransition())
+            {
+                OpaqueLower = true;
+            }
+            
+            if(!OpaqueLower && !OpaqueRaise)
+            {
+                updateGame();
+            }
             repaint();
             
             //While the game is paused, leave the game loop in loop that sleeps
@@ -322,8 +338,43 @@ public class PlayGame extends JPanel implements KeyListener{
             bufImg = (BufferedImage) createImage(Game.getGameWith(), Game.getGameHeight());
         }
         Graphics2D gtemp = (Graphics2D) g;
+        gtemp.setBackground(Color.black);
         g2d = bufImg.createGraphics();
         super.paintComponent(gtemp);
+        
+        if(OpaqueRaise)
+        {
+            this.OpaqueValue += 0.05f;
+            
+            if(OpaqueValue < 1f)
+            {
+                g2d.fillRect(0, 0, 1280, 1280);
+                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, this.OpaqueValue));
+            }
+            else
+            {
+                OpaqueRaise = false;
+            }
+        }
+        if(OpaqueLower)
+        {
+            this.OpaqueValue -= 0.05f;
+            
+            if(OpaqueValue < 0f)
+            {
+                OpaqueLower = false;
+                OpaqueRaise = true;
+                g2d.fillRect(0, 0, 1280, 1280);
+                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0f));
+                Game.changeRoom();
+            }
+            else
+            {
+                g2d.fillRect(0, 0, 1280, 1280);
+                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, this.OpaqueValue));
+            }
+        }
+        
         
         for(int i = 0; i < 8; i++)
         {
@@ -564,56 +615,80 @@ public class PlayGame extends JPanel implements KeyListener{
             }
         }
         
-        BufferedImage shiftImg = bufImg.getSubimage(xShift, yShift, (int)scaledWidth, (int)scaledHeight);
-        gtemp.scale(scale, scale);
-        gtemp.drawImage(shiftImg, 0, 0, this);
         
-        //Text for items
-        gtemp.setColor(Color.WHITE);
+        paintStrings();
+        
+        for(int i = 0; i < 4; i ++)
+        {
+            if(Game.getPlayer().getSpell(i) == null)
+            {
+                g2d.drawImage(this.NullSpellIcon, 54 + xShift + 100 * i, (int)scaledHeight - 110 + yShift, this);
+            }
+            else
+            {
+                g2d.drawImage(Game.getPlayer().getSpell(i).getIcon(), 54 + xShift + 100 * i, (int)scaledHeight - 110 + yShift, this);
+                if(i == Game.getPlayer().getCurrentSpellNumber())
+                {
+                    g2d.drawImage(this.CurrentSpellIcon, 52 + xShift + 100 * i, (int)scaledHeight - 112 + yShift, this);
+                }
+            }
+        }
+        
+        g2d.setColor(Color.WHITE);
         Font spellNameFont = (new Font("Arial Black", Font.PLAIN, 16));
         Font spellCoolDownFont = (new Font("Arial Black", Font.PLAIN, 32));
-        FontMetrics metrics = gtemp.getFontMetrics(spellNameFont);
+        FontMetrics metrics = g2d.getFontMetrics(spellNameFont);
         
         for(int i = 0; i < 4; i ++)
         {
             if(Game.getPlayer().getSpell(i) != null)
             {
-                gtemp.setFont(spellNameFont);
-                metrics = gtemp.getFontMetrics(spellNameFont);
-                gtemp.drawString(Game.getPlayer().getSpell(i).getSpellName(), 
-                        88 + 100 * i - (metrics.stringWidth(Game.getPlayer().getSpell(i).getSpellName()))/2, (int)scaledHeight - 120);
+                g2d.setFont(spellNameFont);
+                metrics = g2d.getFontMetrics(spellNameFont);
+                g2d.drawString(Game.getPlayer().getSpell(i).getSpellName(), 
+                        88 + xShift +100 * i - (metrics.stringWidth(Game.getPlayer().getSpell(i).getSpellName()))/2, (int)scaledHeight - 120 + yShift);
                 if(Game.getPlayer().getSpell(i).getCoolDown(FPS) > 0)
                 {
-                    gtemp.setFont(spellCoolDownFont);
-                    metrics = gtemp.getFontMetrics(spellCoolDownFont);
-                    gtemp.drawString(Integer.toString(Game.getPlayer().getSpell(i).getCoolDown(FPS)), 
-                            88 + 100 * i - metrics.stringWidth(Integer.toString(Game.getPlayer().getSpell(i).getCoolDown(FPS)))/2, (int)scaledHeight - 65);
+                    g2d.setFont(spellCoolDownFont);
+                    metrics = g2d.getFontMetrics(spellCoolDownFont);
+                    g2d.drawString(Integer.toString(Game.getPlayer().getSpell(i).getCoolDown(FPS)), 
+                            88 + xShift + 100 * i - metrics.stringWidth(Integer.toString(Game.getPlayer().getSpell(i).getCoolDown(FPS)))/2, (int)scaledHeight - 65 + yShift);
                 }
             }
-            gtemp.setFont(spellNameFont);
-            metrics = gtemp.getFontMetrics(spellNameFont);
-            gtemp.drawString(Integer.toString(i+1), 
-                    88 + 100 * i - (metrics.stringWidth(Integer.toString(i+1)))/2, (int)scaledHeight - 20);
+            g2d.setFont(spellNameFont);
+            metrics = g2d.getFontMetrics(spellNameFont);
+            g2d.drawString(Integer.toString(i+1), 
+                    88 + xShift + 100 * i - (metrics.stringWidth(Integer.toString(i+1)))/2, (int)scaledHeight - 20 + yShift);
         }
         
+        BufferedImage shiftImg = bufImg.getSubimage(xShift, yShift, (int)scaledWidth, (int)scaledHeight);
+        gtemp.scale(scale, scale);
+        gtemp.drawImage(shiftImg, 0, 0, this);
+        
+        gtemp.dispose();
+    }
+    
+    private void paintStrings()
+    {
+        //Text for items
         Font itemNameFont = (new Font("Arial Black", Font.PLAIN, 14));
-        gtemp.setFont(itemNameFont);
-        metrics = gtemp.getFontMetrics(itemNameFont);
+        g2d.setFont(itemNameFont);
+        FontMetrics metrics = g2d.getFontMetrics(itemNameFont);
         
         for(int i = 0; i < this.Game.getRoom().RuneSize(); i++)
         {
-            gtemp.drawString(this.Game.getRoom().getRune(i).getRuneName(), 
+            g2d.drawString(this.Game.getRoom().getRune(i).getRuneName(), 
                         this.Game.getRoom().getRune(i).getCenterX() - 
-                                metrics.stringWidth(this.Game.getRoom().getRune(i).getRuneName())/2 + xShift, 
-                        this.Game.getRoom().getRune(i).getY() - 10 - yShift);
+                                metrics.stringWidth(this.Game.getRoom().getRune(i).getRuneName())/2, 
+                        this.Game.getRoom().getRune(i).getY() - 10);
         }
         
         for(int i = 0; i < this.Game.getRoom().PageSize(); i++)
         {
-            gtemp.drawString(this.Game.getRoom().getPage(i).getSpellName(), 
+            g2d.drawString(this.Game.getRoom().getPage(i).getSpellName(), 
                         this.Game.getRoom().getPage(i).getCenterX() - 
-                                metrics.stringWidth(this.Game.getRoom().getPage(i).getSpellName())/2 + xShift, 
-                        this.Game.getRoom().getPage(i).getY() - 10 - yShift);
+                                metrics.stringWidth(this.Game.getRoom().getPage(i).getSpellName())/2, 
+                        this.Game.getRoom().getPage(i).getY() - 10);
         }
         
         Color purple = new Color(100, 0, 150);
@@ -625,40 +700,35 @@ public class PlayGame extends JPanel implements KeyListener{
                 
         for(int i = 0; i < this.Game.getRoom().RingSize(); i++)
         {
-            this.paintGearInfo(Game.getRoom().getRing(i), Game.getPlayer().getRing(), gtemp);
+            this.paintGearInfo(Game.getRoom().getRing(i), Game.getPlayer().getRing());
         }
         
         for(int i = 0; i < this.Game.getRoom().NeckSize(); i++)
         {
-            this.paintGearInfo(Game.getRoom().getNeck(i), Game.getPlayer().getNeck(), gtemp);
+            this.paintGearInfo(Game.getRoom().getNeck(i), Game.getPlayer().getNeck());
         }
         
         for(int i = 0; i < this.Game.getRoom().BootsSize(); i++)
         {
-            this.paintGearInfo(Game.getRoom().getBoots(i), Game.getPlayer().getBoots(), gtemp);
+            this.paintGearInfo(Game.getRoom().getBoots(i), Game.getPlayer().getBoots());
         }
         
         for(int i = 0; i < this.Game.getRoom().TomeSize(); i++)
         {
-            this.paintGearInfo(Game.getRoom().getTome(i), Game.getPlayer().getTome(), gtemp);
+            this.paintGearInfo(Game.getRoom().getTome(i), Game.getPlayer().getTome());
         }
-        
-        gtemp.dispose();
     }
     
-    private void paintGearInfo(Gear gear, Gear oldGear, Graphics2D gtemp)
+    private void paintGearInfo(Gear gear, Gear oldGear)
     {
         Color purple = new Color(100, 0, 150);
         Color blue = new Color(0, 0, 250);
         Color orange = new Color(230, 80, 0);
         Color trash = new Color(200, 200, 255);
         
-        int yShift = Game.screenShiftY();
-        int xShift = Game.screenShiftX();
-                
         Font itemNameFont = (new Font("Arial Black", Font.PLAIN, 12));
-        gtemp.setFont(itemNameFont);
-        FontMetrics metrics = gtemp.getFontMetrics(itemNameFont);
+        g2d.setFont(itemNameFont);
+        FontMetrics metrics = g2d.getFontMetrics(itemNameFont);
 
         int rarityDisplacement = 10;
         String statValue;
@@ -686,74 +756,71 @@ public class PlayGame extends JPanel implements KeyListener{
 
         if(speedVal != 0)
         {
-            this.printStatInfo(speedVal, rarityDisplacement, "Move Speed", gtemp, gear);
+            this.printStatInfo(speedVal, rarityDisplacement, "Move Speed", gear);
             rarityDisplacement += 15;
         }
 
         if(darkVal != 0)
         {
-            this.printStatInfo(darkVal, rarityDisplacement, "Void", gtemp, gear);
+            this.printStatInfo(darkVal, rarityDisplacement, "Void", gear);
             rarityDisplacement += 15;
         }
         if(frostVal != 0)
         {
-            this.printStatInfo(frostVal, rarityDisplacement, "Frost", gtemp, gear);
+            this.printStatInfo(frostVal, rarityDisplacement, "Frost", gear);
             rarityDisplacement += 15;
         }
         if(flameVal != 0)
         {
-            this.printStatInfo(flameVal, rarityDisplacement, "Flame", gtemp, gear);
+            this.printStatInfo(flameVal, rarityDisplacement, "Flame", gear);
             rarityDisplacement += 15;
         }
         if(vitVal != 0)
         {
-            this.printStatInfo(vitVal, rarityDisplacement, "Vitality", gtemp, gear);
+            this.printStatInfo(vitVal, rarityDisplacement, "Vitality", gear);
             rarityDisplacement += 15;
         }
         if(intVal != 0)
         {
-            this.printStatInfo(intVal, rarityDisplacement, "Intellect", gtemp, gear);
+            this.printStatInfo(intVal, rarityDisplacement, "Intellect", gear);
             rarityDisplacement += 15;
         }
 
         if( gear.getRarity() == 2)
         {
-            gtemp.setColor(blue);
+            g2d.setColor(blue);
         }
         else if( gear.getRarity() == 3)
         {
-            gtemp.setColor(purple);
+            g2d.setColor(purple);
         }
         else if( gear.getRarity() == 4)
         {
-            gtemp.setColor(orange);
+            g2d.setColor(orange);
         }
         else
         {
-            gtemp.setColor(trash);
+            g2d.setColor(trash);
         }
 
         itemNameFont = (new Font("Arial Black", Font.PLAIN, 14));
-        gtemp.setFont(itemNameFont);
-        metrics = gtemp.getFontMetrics(itemNameFont);
+        g2d.setFont(itemNameFont);
+        metrics = g2d.getFontMetrics(itemNameFont);
 
-        gtemp.drawString( gear.getItemName(), gear.getCenterX() - 
-                metrics.stringWidth( gear.getItemName())/2 - xShift, 
-                gear.getY() - rarityDisplacement - yShift);
+        g2d.drawString( gear.getItemName(), gear.getCenterX() - 
+                metrics.stringWidth( gear.getItemName())/2, 
+                gear.getY() - rarityDisplacement);
     }
     
     public void printStatInfo(int statVal, int rarityDisplacement, String statName,
-            Graphics2D gtemp, Gear gear)
+            Gear gear)
     {
         Color green =  new Color(0, 255, 50);
         Color red = new Color(200, 0, 0);
         
-        int yShift = Game.screenShiftY();
-        int xShift = Game.screenShiftX();
-                
         Font itemNameFont = (new Font("Arial Black", Font.PLAIN, 12));
-        gtemp.setFont(itemNameFont);
-        FontMetrics metrics = gtemp.getFontMetrics(itemNameFont);
+        g2d.setFont(itemNameFont);
+        FontMetrics metrics = g2d.getFontMetrics(itemNameFont);
         
         if(statVal != 0)
         {
@@ -761,18 +828,18 @@ public class PlayGame extends JPanel implements KeyListener{
             
             if(statVal > 0)
             {
-                gtemp.setColor(green);
+                g2d.setColor(green);
                 statString = "+";
             }
             else
             {
-                gtemp.setColor(red);
+                g2d.setColor(red);
                 statString = "-";
             }
 
             statString += Integer.toString(Math.abs(statVal)) + " " + statName;
-            gtemp.drawString(statString, gear.getCenterX() - metrics.stringWidth(statString)/2
-                    - xShift, gear.getY() - rarityDisplacement - yShift);
+            g2d.drawString(statString, gear.getCenterX() - metrics.stringWidth(statString)/2,
+                    gear.getY() - rarityDisplacement);
         }
     }
         

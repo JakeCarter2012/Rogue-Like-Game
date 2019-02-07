@@ -16,7 +16,7 @@ public class DartGoblin extends MovingEnemy{
             Image[] attackLeft, Image[] attackRight, Image dart, Image dartShadow,
             Image[] endProjectile)
     {
-        super(x, y, moveLeft[0].getWidth(null), moveLeft[0].getHeight(null), 
+        super(x, y, floor, moveLeft[0].getWidth(null), moveLeft[0].getHeight(null), 
                 100 + 50 * floor, 4, 50 + 25 * floor, 0, 0);
         this.MoveLeftImages = moveLeft;
         this.MoveRightImages = moveRight;
@@ -31,6 +31,13 @@ public class DartGoblin extends MovingEnemy{
         this.CurrentFrame = 0;
         this.FacingRight = true;
         this.CloseToPlayer = false;
+        
+        this.CurrentSprite = this.AttackRight[0];
+    }
+    
+    public int getExperience()
+    {
+        return(this.EnemyLevel * 5);
     }
     
     public boolean isProjectileReady()
@@ -196,7 +203,6 @@ public class DartGoblin extends MovingEnemy{
                     this.CurrentSprite = this.MoveLeftImages[this.CurrentFrame];
                 }
             }
-            
             this.ImageTimer = 0;
         }
         this.ImageTimer++;
