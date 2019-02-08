@@ -390,6 +390,8 @@ public class PlayGame extends JPanel implements KeyListener{
             }
         }
         
+        g2d.drawImage(Game.getPlayer().getShadow(), Game.getPlayer().getShadowX(), Game.getPlayer().getY() + 120, this);
+        
         for(int i = 0; i < Game.getRoom().PlayerProjectileSize(); i++)
         {
             paintRotatedImg(Game.getRoom().getPlayerProjectile(i).getShadow(), 
@@ -557,8 +559,7 @@ public class PlayGame extends JPanel implements KeyListener{
                        Game.getRoom().getPlayerProjectile(i).getY());
         }
         
-        if(Game.getPlayer().getSprite() != null);
-            g2d.drawImage(Game.getPlayer().getSprite(), Game.getPlayer().getX(), Game.getPlayer().getY(), this);
+        g2d.drawImage(Game.getPlayer().getSprite(), Game.getPlayer().getX(), Game.getPlayer().getImageY(), this);
         
         for(int i = 0; i < Game.getRoom().PlayerProjectileSize(); i++)
         {
