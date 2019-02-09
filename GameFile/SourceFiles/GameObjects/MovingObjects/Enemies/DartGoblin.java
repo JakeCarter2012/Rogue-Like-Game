@@ -14,11 +14,11 @@ public class DartGoblin extends MovingEnemy{
     private Image CurrentSprite;
     
     public DartGoblin(int x, int y, int floor, Image[] moveLeft, Image[] moveRight, 
-            Image[] attackLeft, Image[] attackRight, Image dart, Image dartShadow,
+            Image[] attackLeft, Image[] attackRight, Image shadow, Image dart, Image dartShadow,
             Image[] endProjectile)
     {
         super(x, y, floor, moveLeft[0].getWidth(null), moveLeft[0].getHeight(null), 
-                100 + 50 * floor, 4, 50 + 25 * floor, 0, 0);
+                100 + 50 * floor, 4, 50 + 25 * floor, 0, 0, shadow);
         this.MoveLeftImages = moveLeft;
         this.MoveRightImages = moveRight;
         this.AttackLeft = attackLeft;
@@ -32,6 +32,9 @@ public class DartGoblin extends MovingEnemy{
         this.CurrentFrame = 0;
         this.FacingRight = true;
         this.CloseToPlayer = false;
+        
+        this.ShadowX = 8;
+        this.ShadowY = 97;
         
         this.CurrentSprite = this.AttackRight[0];
         
@@ -171,10 +174,12 @@ public class DartGoblin extends MovingEnemy{
             if(playerX < this.getCenterX())
             {
                 this.FacingRight = false;
+                this.ShadowY = 99;
             }
             else
             {
                 this.FacingRight = true;
+                this.ShadowY = 97;
             }
             
             if(this.FacingRight)

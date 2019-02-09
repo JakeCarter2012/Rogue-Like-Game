@@ -10,15 +10,18 @@ public class SpearGoblin extends MovingEnemy{
     private boolean FacingRight;
     private Image CurrentSprite;
     
-    public SpearGoblin(int x, int y, int floor, Image[] moveLeft, Image[] moveRight)
+    public SpearGoblin(int x, int y, int floor, Image[] moveLeft, Image[] moveRight, Image shadow)
     {
         super(x, y, floor, moveLeft[0].getWidth(null), moveLeft[0].getHeight(null), 
-                100 + 50 * floor, 5, 50 + 25 * floor, 0, 0);
+                100 + 50 * floor, 5, 50 + 25 * floor, 0, 0, shadow);
         this.MoveLeftImages = moveLeft;
         this.MoveRightImages = moveRight;
         this.ImageTimer = 0;
         this.CurrentFrame = 0;
         this.FacingRight = true;
+        
+        this.ShadowY = 105;
+        this.ShadowX = 48;
         
         this.CurrentSprite = this.MoveRightImages[0];
     }
@@ -98,10 +101,12 @@ public class SpearGoblin extends MovingEnemy{
             if(playerX < this.getCenterX())
             {
                 this.FacingRight = false;
+                this.ShadowX = 49; 
             }
             else
             {
                 this.FacingRight = true;
+                this.ShadowX = 48;
             }
             
             if(this.FacingRight)

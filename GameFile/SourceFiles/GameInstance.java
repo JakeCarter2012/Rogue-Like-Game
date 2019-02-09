@@ -59,7 +59,7 @@ public class GameInstance {
             WizForward, WizBackAttack, WizBack;
     private Image[] PlayerShadow;
     
-    private Image SmallProjectileGreen;
+    private Image SmallProjectileGreen, GoblinShadow;
     private Image[] SmallGreenProjectileEnd;
     private Image[] SpearGoblinRight, SpearGoblinLeft, DartGoblinLeft, DartGoblinRight,
             DartGoblinLeftAttack, DartGoblinRightAttack;
@@ -163,6 +163,8 @@ public class GameInstance {
             DartGoblinRightAttack[1] = ImageIO.read(new File("Resources" + File.separator + "DartGoblinRightAttack2.png"));
             
             SmallProjectileGreen = ImageIO.read(new File("Resources" + File.separator + "SmallProjectileGreen.png"));
+            
+            GoblinShadow = ImageIO.read(new File("Resources" + File.separator + "GoblinShadow.png"));
             
             TopWallRightImg = ImageIO.read(new File("Resources" + File.separator + "TopWallRight.png"));
             TopWallMidImg = ImageIO.read(new File("Resources" + File.separator + "TopWallMiddle.png"));
@@ -483,16 +485,16 @@ public class GameInstance {
     {
         //Enemies in boss room are temporary until I create assets for a boss
         Rooms[i][j].addEnemy(new SpearGoblin(500, 400, 1, this.SpearGoblinLeft,
-                this.SpearGoblinRight));
+                this.SpearGoblinRight, GoblinShadow));
         Rooms[i][j].addEnemy(new SpearGoblin(700, 400, 1, this.SpearGoblinLeft,
-                this.SpearGoblinRight));
+                this.SpearGoblinRight, GoblinShadow));
         Rooms[i][j].addEnemy(new DartGoblin(400, 200, 1, this.DartGoblinLeft, 
                 this.DartGoblinRight, this.DartGoblinLeftAttack, 
-                this.DartGoblinRightAttack, this.SmallProjectileGreen, 
+                this.DartGoblinRightAttack, GoblinShadow, this.SmallProjectileGreen, 
                 this.SmallProjectileShadow, this.SmallGreenProjectileEnd));
         Rooms[i][j].addEnemy(new DartGoblin(800, 200, 1, this.DartGoblinLeft, 
                 this.DartGoblinRight, this.DartGoblinLeftAttack, 
-                this.DartGoblinRightAttack, this.SmallProjectileGreen, 
+                this.DartGoblinRightAttack, GoblinShadow, this.SmallProjectileGreen, 
                 this.SmallProjectileShadow, this.SmallGreenProjectileEnd));
     }
     
@@ -517,26 +519,26 @@ public class GameInstance {
     private void enemyRoom1(int i, int j)
     {
         Rooms[i][j].addEnemy(new SpearGoblin(400, 400, 1, this.SpearGoblinLeft,
-                this.SpearGoblinRight));
+                this.SpearGoblinRight, GoblinShadow));
         Rooms[i][j].addEnemy(new SpearGoblin(800, 800, 1, this.SpearGoblinLeft,
-                this.SpearGoblinRight));
+                this.SpearGoblinRight, GoblinShadow));
         Rooms[i][j].addEnemy(new DartGoblin(600, 600, 1, this.DartGoblinLeft, 
                 this.DartGoblinRight, this.DartGoblinLeftAttack, 
-                this.DartGoblinRightAttack, this.SmallProjectileGreen, 
+                this.DartGoblinRightAttack, GoblinShadow, this.SmallProjectileGreen, 
                 this.SmallProjectileShadow, this.SmallGreenProjectileEnd));
     }
     
     private void enemyRoom2(int i, int j)
     {
         Rooms[i][j].addEnemy(new SpearGoblin(600, 600, 1, this.SpearGoblinLeft,
-                this.SpearGoblinRight));
+                this.SpearGoblinRight, GoblinShadow));
         Rooms[i][j].addEnemy(new DartGoblin(400, 400, 1, this.DartGoblinLeft, 
                 this.DartGoblinRight, this.DartGoblinLeftAttack, 
-                this.DartGoblinRightAttack, this.SmallProjectileGreen, 
+                this.DartGoblinRightAttack, GoblinShadow, this.SmallProjectileGreen, 
                 this.SmallProjectileShadow, this.SmallGreenProjectileEnd));
         Rooms[i][j].addEnemy(new DartGoblin(800, 400, 1, this.DartGoblinLeft, 
                 this.DartGoblinRight, this.DartGoblinLeftAttack, 
-                this.DartGoblinRightAttack, this.SmallProjectileGreen, 
+                this.DartGoblinRightAttack, GoblinShadow, this.SmallProjectileGreen, 
                 this.SmallProjectileShadow, this.SmallGreenProjectileEnd));
     }
     
@@ -544,19 +546,19 @@ public class GameInstance {
     {
         Rooms[i][j].addEnemy(new DartGoblin(400, 400, 1, this.DartGoblinLeft, 
                 this.DartGoblinRight, this.DartGoblinLeftAttack, 
-                this.DartGoblinRightAttack, this.SmallProjectileGreen, 
+                this.DartGoblinRightAttack, GoblinShadow, this.SmallProjectileGreen, 
                 this.SmallProjectileShadow, this.SmallGreenProjectileEnd));
         Rooms[i][j].addEnemy(new DartGoblin(400, 800, 1, this.DartGoblinLeft, 
                 this.DartGoblinRight, this.DartGoblinLeftAttack, 
-                this.DartGoblinRightAttack, this.SmallProjectileGreen, 
+                this.DartGoblinRightAttack, GoblinShadow, this.SmallProjectileGreen, 
                 this.SmallProjectileShadow, this.SmallGreenProjectileEnd));
         Rooms[i][j].addEnemy(new DartGoblin(800, 400, 1, this.DartGoblinLeft, 
                 this.DartGoblinRight, this.DartGoblinLeftAttack, 
-                this.DartGoblinRightAttack, this.SmallProjectileGreen, 
+                this.DartGoblinRightAttack, GoblinShadow, this.SmallProjectileGreen, 
                 this.SmallProjectileShadow, this.SmallGreenProjectileEnd));
         Rooms[i][j].addEnemy(new DartGoblin(800, 800, 1, this.DartGoblinLeft, 
                 this.DartGoblinRight, this.DartGoblinLeftAttack, 
-                this.DartGoblinRightAttack, this.SmallProjectileGreen, 
+                this.DartGoblinRightAttack, GoblinShadow, this.SmallProjectileGreen, 
                 this.SmallProjectileShadow, this.SmallGreenProjectileEnd));
     }
     

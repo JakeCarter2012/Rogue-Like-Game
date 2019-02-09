@@ -392,6 +392,13 @@ public class PlayGame extends JPanel implements KeyListener{
         
         g2d.drawImage(Game.getPlayer().getShadow(), Game.getPlayer().getShadowX(), Game.getPlayer().getY() + 120, this);
         
+        for(int i = 0; i < Game.getRoom().EnemySize(); i++)
+        {
+           g2d.drawImage(Game.getRoom().getEnemy(i).getShadow(), 
+                   Game.getRoom().getEnemy(i).getShadowX(), 
+                   Game.getRoom().getEnemy(i).getShadowY(), this);
+        }
+        
         for(int i = 0; i < Game.getRoom().PlayerProjectileSize(); i++)
         {
             paintRotatedImg(Game.getRoom().getPlayerProjectile(i).getShadow(), 
