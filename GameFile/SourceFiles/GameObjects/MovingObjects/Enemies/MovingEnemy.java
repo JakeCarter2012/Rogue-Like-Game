@@ -18,16 +18,19 @@ abstract public class MovingEnemy extends MovingObject{
     private int BurnDamage;
     protected boolean Frozen, Chilled, Burning;
     private int StatusTimer;
+    protected int ShadowX, ShadowY;
+    protected Image Shadow;
     boolean GeneralCollision, CollisionUp, CollisionDown, CollisionRight,
             CollisionLeft, RequestMoveRight, RequestMoveLeft, RequestMoveUp,
             RequestMoveDown, PlayerCollision;
     
     public MovingEnemy(int x, int y, int enemyLevel, int width, int height, int health, int speed, 
-            int bumpDmg, int burnRes, int iceRes)
+            int bumpDmg, int burnRes, int iceRes, Image shadow)
     {
         super(x, y, width, height, speed, 0);
         this.Health = health;
         this.EnemyLevel = enemyLevel;
+        this.Shadow = shadow;
         this.BumpDamage = bumpDmg;
         this.Frozen = false;
         this.Burning = false;
@@ -40,6 +43,21 @@ abstract public class MovingEnemy extends MovingObject{
         this.GeneralCollision = CollisionDown = CollisionRight = CollisionUp = 
                 CollisionLeft = RequestMoveRight = RequestMoveLeft = RequestMoveUp =
                 RequestMoveDown = false;
+    }
+    
+    public Image getShadow()
+    {
+        return this.Shadow;
+    }
+    
+    public int getShadowX()
+    {
+        return this.getX() + this.ShadowX;
+    }
+    
+    public int getShadowY()
+    {
+        return this.getY() + this.ShadowY;
     }
     
     public boolean isChilled()

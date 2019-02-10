@@ -53,16 +53,16 @@ public class Neck extends Gear{
                 
                 if(this.Rarity == 2)
                 {
-                    this.ItemName = "Emerald Choker";
+                    this.ItemName = "Emerald Amulet";
                 }
                 else
                 {
-                    this.ItemName = "Pristine Emerald Choker";
+                    this.ItemName = "Pristine Emerald Amulet";
                 }
             }
             else
             {
-                this.ItemName = "Tarnished Emerald Choker";
+                this.ItemName = "Tarnished Emerald Amulet";
             }
         }
         else if(flame)
@@ -70,16 +70,16 @@ public class Neck extends Gear{
             this.Flame = primaryStat;
             if(this.Rarity == 1)
             {
-                this.ItemName = "Tarnished Ruby Choker";
+                this.ItemName = "Tarnished Ruby Amulet";
             }
             else if(this.Rarity == 2)
             {
-                this.ItemName = "Ruby Choker";
+                this.ItemName = "Ruby Amulet";
                 this.Vitality = secondaryStat;
             }
             else
             {
-                this.ItemName = "Pristine Ruby Choker";
+                this.ItemName = "Pristine Ruby Amulet";
                 this.Vitality = secondaryStat;
             }
         }
@@ -88,16 +88,16 @@ public class Neck extends Gear{
             this.Frost = primaryStat;
             if(this.Rarity == 1)
             {
-                this.ItemName = "Tarnished Saphire Choker";
+                this.ItemName = "Tarnished Saphire Amulet";
             }
             else if(this.Rarity == 2)
             {
-                this.ItemName = "Saphire Choker";
+                this.ItemName = "Saphire Amulet";
                 this.Vitality = secondaryStat;
             }
             else
             {
-                this.ItemName = "Pristine Saphire Choker";
+                this.ItemName = "Pristine Saphire Amulet";
                 this.Vitality = secondaryStat;
             }
         }
@@ -106,16 +106,16 @@ public class Neck extends Gear{
             this.Dark = primaryStat;
             if(this.Rarity == 1)
             {
-                this.ItemName = "Tarnished Amethyst Choker";
+                this.ItemName = "Tarnished Amethyst Amulet";
             }
             else if(this.Rarity == 2)
             {
-                this.ItemName = "Amethyst Choker";
+                this.ItemName = "Amethyst Amulet";
                 this.Vitality = secondaryStat;
             }
             else
             {
-                this.ItemName = "Pristine Amethyst Choker";
+                this.ItemName = "Pristine Amethyst Amulet";
                 this.Vitality = secondaryStat;
             }
         }
