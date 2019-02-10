@@ -300,22 +300,22 @@ public class GameInstance {
         Walls = new Wall[8];
         Walls[0] = new Wall(0, 0, 579, 128 - ShadowHeight, TopWallLeftImg);
         Walls[1] = new Wall(700, 0, 580, 128 - ShadowHeight, TopWallRightImg);
-        Walls[2] = new Wall(0, 0, 128, 580, LeftWallTopImg);
-        Walls[3] = new Wall(0, 701, 128, 579, LeftWallBottomImg);
+        Walls[2] = new Wall(0, 0, 128, 528, LeftWallTopImg);
+        Walls[3] = new Wall(0, 721, 128, 559, LeftWallBottomImg);
         Walls[4] = new Wall(0, 1152, 580, 128, BottomWallLeftImg);
         Walls[5] = new Wall(701, 1152, 579, 128, BottomWallRightImg);
-        Walls[6] = new Wall(1152, 0, 128, 579, RightWallTopImg);
-        Walls[7] = new Wall(1152, 700, 128, 580, RightWallBottomImg);
+        Walls[6] = new Wall(1152, 0, 128, 528, RightWallTopImg);
+        Walls[7] = new Wall(1152, 720, 128, 560, RightWallBottomImg);
         
         TopDoor = new Door(579, 0, 121, 128 - ShadowHeight, TopDoorImgs);
-        LeftDoor = new Door(0, 580, 128,121, LeftDoorImgs);
+        LeftDoor = new Door(0, 528, 128, 193, LeftDoorImgs);
         BottomDoor = new Door(580, 1152, 121, 128, BottomDoorImgs);
-        RightDoor = new Door(1152, 579, 128, 121, RightDoorImgs);
+        RightDoor = new Door(1152, 528, 128, 192, RightDoorImgs);
         
         TopWallMid = new Wall(579, 0, 121, 60, TopWallMidImg);
-        LeftWallMid = new Wall(0, 580, 128,121, LeftWallMidImg);
+        LeftWallMid = new Wall(0, 528, 128, 193, LeftWallMidImg);
         BottomWallMid = new Wall(580, 1152, 121, 128, BottomWallMidImg);
-        RightWallMid = new Wall(1152, 579, 128, 121, RightWallMidImg);
+        RightWallMid = new Wall(1152, 528, 128, 192, RightWallMidImg);
     }
     
     public void newGameInit()
@@ -766,8 +766,6 @@ public class GameInstance {
         {
             if(col.normalCollision(Player, Rooms[RoomsI][RoomsJ].getDoor(i)))
             {
-                Player.setGeneralCollision();
-                
                 if(Rooms[RoomsI][RoomsJ].getDoor(i).isLocked())
                 {
                     if(!Player.getHorizontalCollision())
@@ -786,7 +784,7 @@ public class GameInstance {
                         }
                     }
                 }
-                else
+                else if(!Player.getGeneralCollision())
                 {
                     if(Rooms[RoomsI][RoomsJ].getDoor(i).getY() == 0)
                     {
@@ -813,6 +811,8 @@ public class GameInstance {
                         Rooms[RoomsI][RoomsJ].leaveRoom();
                     }
                 }
+                    
+                Player.setGeneralCollision();
             }
         }
         
