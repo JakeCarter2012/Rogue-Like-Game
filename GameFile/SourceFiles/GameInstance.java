@@ -47,9 +47,11 @@ public class GameInstance {
     private Image TopWallLeftImg, TopWallRightImg, TopWallMidImg,
             LeftWallTopImg, LeftWallBottomImg, LeftWallMidImg,
             RightWallTopImg, RightWallBottomImg, RightWallMidImg,
-            BottomWallLeftImg, BottomWallRightImg, BottomWallMidImg;
+            BottomWallLeftImg, BottomWallRightImg, BottomWallMidImg,
+            BossRoomSkull, BossRoomSkullLeft, BossRoomCandles, BossRoomCandlesLeft;
     private Wall[] Walls;
-    private Wall TopWallMid, LeftWallMid, BottomWallMid, RightWallMid;
+    private Wall TopWallMid, LeftWallMid, BottomWallMid, RightWallMid, BossSkull,
+            BossSkullLeft, BossCandles, BossCandlesLeft;;
     private Image[] TopDoorImgs, LeftDoorImgs, BottomDoorImgs, RightDoorImgs;
     private Door TopDoor, LeftDoor, BottomDoor, RightDoor;
     
@@ -215,6 +217,11 @@ public class GameInstance {
             BottomDoorImgs[5] = ImageIO.read(new File("Resources" + File.separator + "BottomDoorClosing5.png"));
             BottomDoorImgs[6] = ImageIO.read(new File("Resources" + File.separator + "BottomDoorClosed.png"));
             
+            BossRoomCandles = ImageIO.read(new File("Resources" + File.separator + "BossRoomCandle1.png"));
+            BossRoomCandlesLeft =  ImageIO.read(new File("Resources" + File.separator + "BossRoomCandleLeft1.png"));
+            BossRoomSkull = ImageIO.read(new File("Resources" + File.separator + "BossRoomSkull.png"));
+            BossRoomSkullLeft = ImageIO.read(new File("Resources" + File.separator + "BossRoomSkullLeft.png"));
+            
             SmallGreenProjectileEnd = new Image[4];
             SmallGreenProjectileEnd[0] = ImageIO.read(new File("Resources" + File.separator + "SmallProjectileGreenEnd1.png"));
             SmallGreenProjectileEnd[1] = ImageIO.read(new File("Resources" + File.separator + "SmallProjectileGreenEnd2.png"));
@@ -316,6 +323,13 @@ public class GameInstance {
         LeftWallMid = new Wall(0, 528, 128, 193, LeftWallMidImg);
         BottomWallMid = new Wall(580, 1152, 121, 128, BottomWallMidImg);
         RightWallMid = new Wall(1152, 528, 128, 192, RightWallMidImg);
+        
+        BossSkull = new Wall(704, 45, BossRoomSkull.getWidth(null), 20, BossRoomSkull);
+        BossSkullLeft = new Wall(45, 704, BossRoomSkullLeft.getWidth(null), 
+                BossRoomSkullLeft.getHeight(null), BossRoomSkullLeft);
+        
+        BossCandles = new Wall(550, 45, BossRoomCandles.getWidth(null), 20, BossRoomCandles);
+        BossCandlesLeft = new Wall(45, 550, 0, BossRoomCandlesLeft.getHeight(null), BossRoomCandlesLeft);
     }
     
     public void newGameInit()
@@ -496,6 +510,20 @@ public class GameInstance {
                 this.DartGoblinRight, this.DartGoblinLeftAttack, 
                 this.DartGoblinRightAttack, GoblinShadow, this.SmallProjectileGreen, 
                 this.SmallProjectileShadow, this.SmallGreenProjectileEnd));
+        
+        if(Rooms[i + 1][j] != null)
+        {
+            Rooms[i + 1][j].addWall(BossCandles);
+            Rooms[i + 1][j].addWall(BossSkull);
+        }
+        if(j < 4)
+        {
+            if(Rooms[i][j + 1] != null)
+            {
+                Rooms[i][j + 1].addWall(BossCandlesLeft);
+                Rooms[i][j + 1].addWall(BossSkullLeft);
+            }
+        }
     }
     
     private void addRandomEnemies(int i, int j)
