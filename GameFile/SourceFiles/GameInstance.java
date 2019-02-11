@@ -13,6 +13,7 @@ import SourceFiles.GameObjects.StationaryObjects.GearObjects.Boots;
 import SourceFiles.GameObjects.StationaryObjects.GearObjects.Neck;
 import SourceFiles.GameObjects.StationaryObjects.GearObjects.Ring;
 import SourceFiles.GameObjects.StationaryObjects.GearObjects.Tome;
+import SourceFiles.GameObjects.StationaryObjects.AnimatedWall;
 import SourceFiles.GameObjects.StationaryObjects.Wall;
 import SourceFiles.Room.Room;
 import java.awt.Image;
@@ -54,6 +55,9 @@ public class GameInstance {
             BossSkullLeft, BossCandles, BossCandlesLeft;;
     private Image[] TopDoorImgs, LeftDoorImgs, BottomDoorImgs, RightDoorImgs;
     private Door TopDoor, LeftDoor, BottomDoor, RightDoor;
+    
+    private Image[] BrazierImgs;
+    private AnimatedWall LeftBrazier, RightBrazier;
     
     private Image WizRightForwardAttack, WizRightForward, WizRightBackAttack,
             WizRightAttack, WizRight, WizLeftForwardAttack, WizLeftForward,
@@ -222,6 +226,12 @@ public class GameInstance {
             BossRoomSkull = ImageIO.read(new File("Resources" + File.separator + "BossRoomSkull.png"));
             BossRoomSkullLeft = ImageIO.read(new File("Resources" + File.separator + "BossRoomSkullLeft.png"));
             
+            BrazierImgs = new Image[4];
+            BrazierImgs[0] = ImageIO.read(new File("Resources" + File.separator + "Brazier1.png"));
+            BrazierImgs[1] = ImageIO.read(new File("Resources" + File.separator + "Brazier2.png"));
+            BrazierImgs[2] = ImageIO.read(new File("Resources" + File.separator + "Brazier3.png"));
+            BrazierImgs[3] = ImageIO.read(new File("Resources" + File.separator + "Brazier4.png"));
+            
             SmallGreenProjectileEnd = new Image[4];
             SmallGreenProjectileEnd[0] = ImageIO.read(new File("Resources" + File.separator + "SmallProjectileGreenEnd1.png"));
             SmallGreenProjectileEnd[1] = ImageIO.read(new File("Resources" + File.separator + "SmallProjectileGreenEnd2.png"));
@@ -327,9 +337,13 @@ public class GameInstance {
         BossSkull = new Wall(704, 45, BossRoomSkull.getWidth(null), 20, BossRoomSkull);
         BossSkullLeft = new Wall(45, 704, BossRoomSkullLeft.getWidth(null), 
                 BossRoomSkullLeft.getHeight(null), BossRoomSkullLeft);
-        
         BossCandles = new Wall(550, 45, BossRoomCandles.getWidth(null), 20, BossRoomCandles);
         BossCandlesLeft = new Wall(45, 550, 0, BossRoomCandlesLeft.getHeight(null), BossRoomCandlesLeft);
+        
+        
+        Animation brazierAnimation = new Animation(0, 0, 0, BrazierImgs, 5, true);
+        LeftBrazier = new AnimatedWall(550, 75, BrazierImgs[0].getWidth(null), 20, brazierAnimation);
+        RightBrazier = new AnimatedWall(690, 75, BrazierImgs[0].getWidth(null), 20, brazierAnimation);
     }
     
     public void newGameInit()
@@ -510,6 +524,9 @@ public class GameInstance {
                 this.DartGoblinRight, this.DartGoblinLeftAttack, 
                 this.DartGoblinRightAttack, GoblinShadow, this.SmallProjectileGreen, 
                 this.SmallProjectileShadow, this.SmallGreenProjectileEnd));
+        
+        Rooms[i][j].addAnimatedWall(LeftBrazier);
+        Rooms[i][j].addAnimatedWall(RightBrazier);
         
         if(Rooms[i + 1][j] != null)
         {
@@ -849,6 +866,11 @@ public class GameInstance {
             col.playerCollision(Player ,Rooms[RoomsI][RoomsJ].getWall(i));
         }
         
+        for(int i = 0; i < Rooms[RoomsI][RoomsJ].AnimatedWallSize(); i++)
+        {
+            col.playerCollision(Player ,Rooms[RoomsI][RoomsJ].getAnimatedWall(i));
+        }
+        
         for(int i = 0; i < Rooms[RoomsI][RoomsJ].BarrelSize(); i++)
         {
             col.playerCollision(Player ,Rooms[RoomsI][RoomsJ].getBarrel(i));
@@ -1074,6 +1096,13 @@ public class GameInstance {
                         Rooms[RoomsI][RoomsJ].getWall(j), Player.getCenterX(), 
                         Player.getCenterY());
             }
+            
+            for(int j = 0; j < Rooms[RoomsI][RoomsJ].AnimatedWallSize(); j++)
+            {
+                col.EnemyCollision(Rooms[RoomsI][RoomsJ].getEnemy(i), 
+                        Rooms[RoomsI][RoomsJ].getAnimatedWall(j), Player.getCenterX(), 
+                        Player.getCenterY());
+            }
 
             for(int j = 0; j < Rooms[RoomsI][RoomsJ].BarrelSize(); j++)
             {
@@ -1275,6 +1304,23 @@ public class GameInstance {
             }
             if(!generalCol)
             {
+                for(int j = 0; j < Rooms[RoomsI][RoomsJ].AnimatedWallSize(); j++)
+                {
+                    if(col.normalCollision(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i), Rooms[RoomsI][RoomsJ].getAnimatedWall(j)))
+                    {
+                        if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getEndAnimation() != null)
+                        {
+                            Rooms[RoomsI][RoomsJ].addAnimation(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getEndAnimation());
+                        }
+                        Rooms[RoomsI][RoomsJ].removePlayerProjectile(i);
+                        i--;
+                        generalCol = true;
+                        break;
+                    }
+                }
+            }
+            if(!generalCol)
+            {
                 for(int j = 0; j < Rooms[RoomsI][RoomsJ].BarrelSize(); j++)
                 {
                     if(col.normalCollision(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i), Rooms[RoomsI][RoomsJ].getBarrel(j)))
@@ -1362,6 +1408,23 @@ public class GameInstance {
                 for(int j = 0; j < Rooms[RoomsI][RoomsJ].WallSize(); j++)
                 {
                     if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i), Rooms[RoomsI][RoomsJ].getWall(j)))
+                    {
+                        if(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation() != null)
+                        {
+                            Rooms[RoomsI][RoomsJ].addAnimation(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation());
+                        }
+                        Rooms[RoomsI][RoomsJ].removeEnemyProjectile(i);
+                        i--;
+                        generalCol = true;
+                        break;
+                    }
+                }
+            }
+            if(!generalCol)
+            {
+                for(int j = 0; j < Rooms[RoomsI][RoomsJ].AnimatedWallSize(); j++)
+                {
+                    if(col.normalCollision(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i), Rooms[RoomsI][RoomsJ].getAnimatedWall(j)))
                     {
                         if(Rooms[RoomsI][RoomsJ].getEnemyProjectile(i).getEndAnimation() != null)
                         {

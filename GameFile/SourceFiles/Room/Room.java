@@ -17,6 +17,7 @@ import SourceFiles.GameObjects.StationaryObjects.GearObjects.Boots;
 import SourceFiles.GameObjects.StationaryObjects.GearObjects.Ring;
 import SourceFiles.GameObjects.StationaryObjects.GearObjects.Neck;
 import SourceFiles.GameObjects.StationaryObjects.GearObjects.Tome;
+import SourceFiles.GameObjects.StationaryObjects.AnimatedWall;
 import SourceFiles.GameObjects.Animations.Animation;
 import java.util.ArrayList;
 
@@ -37,6 +38,7 @@ public class Room {
     private ArrayList<Projectile> EnemyProjectiles;
     private ArrayList<SpikeTrap> SpikeTraps;
     private ArrayList<Wall> Walls;
+    private ArrayList<AnimatedWall> AnimatedWalls;
     private ArrayList<StationaryObject> Barrels;
     private ArrayList<Door> Doors;
     private ArrayList<Animation> Animations;
@@ -69,6 +71,7 @@ public class Room {
         this.EnemyProjectiles = new ArrayList<Projectile>();
         this.SpikeTraps = new ArrayList<SpikeTrap>();
         this.Walls = new ArrayList<Wall>();
+        this.AnimatedWalls = new ArrayList<AnimatedWall>();
         this.Barrels = new ArrayList<StationaryObject>();
         this.Doors = new ArrayList<Door>();
         this.Animations = new ArrayList<Animation>();
@@ -174,6 +177,11 @@ public class Room {
     public void addWall(Wall wall)
     {
         this.Walls.add(wall);
+    }
+    
+    public void addAnimatedWall(AnimatedWall wall)
+    {
+        this.AnimatedWalls.add(wall);
     }
     
     public void addBarrel(StationaryObject barrel)
@@ -346,6 +354,11 @@ public class Room {
         return this.Walls.get(i);
     }
     
+    public AnimatedWall getAnimatedWall(int i)
+    {
+        return this.AnimatedWalls.get(i);
+    }
+    
     public StationaryObject getBarrel(int i)
     {
         return this.Barrels.get(i);
@@ -431,6 +444,11 @@ public class Room {
         return this.Walls.size();
     }
     
+    public int AnimatedWallSize()
+    {
+        return this.AnimatedWalls.size();
+    }
+    
     public int BarrelSize()
     {
         return this.Barrels.size();
@@ -488,6 +506,7 @@ public class Room {
         updateEnemyAoe();
         updateTraps();
         updateAnimations();
+        updateAnimatedWalls();
     }
     
     private void updatePlayerAoe()
@@ -540,6 +559,14 @@ public class Room {
                 removeAnimation(i);
                 i--;
             }
+        }
+    }
+    
+    private void updateAnimatedWalls()
+    {
+        for(int i = 0; i < AnimatedWallSize(); i++)
+        {
+            getAnimatedWall(i).update();
         }
     }
     

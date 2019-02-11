@@ -466,6 +466,13 @@ public class PlayGame extends JPanel implements KeyListener{
                    Game.getRoom().getWall(i).getY(), this);
         }
         
+        for(int i = 0; i < Game.getRoom().AnimatedWallSize(); i++)
+        {
+           g2d.drawImage(Game.getRoom().getAnimatedWall(i).getSprite(), 
+                   Game.getRoom().getAnimatedWall(i).getX(), 
+                   Game.getRoom().getAnimatedWall(i).getY(), this);
+        }
+        
         for(int i = 0; i < Game.getRoom().CoinSize(); i++)
         {
            g2d.drawImage(Game.getRoom().getCoin(i).getSprite(), 
