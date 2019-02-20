@@ -3,6 +3,7 @@ package SourceFiles;
 import SourceFiles.GameLogic.GameEvents;
 import SourceFiles.GameObjects.StationaryObjects.GearObjects.Gear;
 import SourceFiles.GameLogic.KeyControl;
+import SourceFiles.GameObjects.MovingObjects.Player.Spell;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -21,13 +22,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.MouseInfo;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
+import javafx.embed.swing.SwingFXUtils;
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 
@@ -57,8 +58,8 @@ public class PlayGame extends JPanel implements KeyListener{
     
     private JButton NeckBtn, RingBtn, TomeBtn, BootsBtn, Spell1Btn,
             Spell2Btn, Spell3Btn, Spell4Btn;
-    private JTextPane GearText, StatText, SpellText;
-    private JLabel HoverLabel;
+    private JTextPane GearText, StatText, SpellText, FloorText;
+    private JLabel HoverLabel, MapLabel;
     
     private float OpaqueValue;
     private boolean OpaqueLower, OpaqueRaise;
@@ -165,6 +166,7 @@ public class PlayGame extends JPanel implements KeyListener{
         int xOffSet = (ScreenWidth - PauseMenuImg.getWidth(null)) / 2;
         int yOffSet = (ScreenHeight - PauseMenuImg.getHeight(null)) / 2;
         
+        /*
         JButton testbut = new JButton(new ImageIcon(NullSpellIcon));
         //testbut.setIcon(new ImageIcon(tempchar));
         //testbut.setRolloverIcon(null);
@@ -174,6 +176,7 @@ public class PlayGame extends JPanel implements KeyListener{
         testbut.setBorder(BorderFactory.createEmptyBorder());
         testbut.setContentAreaFilled(false);
         testbut.setBounds(100,100, this.NullSpellIcon.getWidth(null), NullSpellIcon.getHeight(null));
+        PauseMenu.add(testbut);
         
         testbut.setFocusable(false);
         
@@ -182,15 +185,38 @@ public class PlayGame extends JPanel implements KeyListener{
             //testtext.setText("pushed the button");
         }
         });
+        */
+        FloorText = new JTextPane();
+        FloorText = new JTextPane();
+        FloorText.setBounds(69 + xOffSet, 35 + yOffSet, 374, 64);
+        FloorText.setFont(new Font("Palatino Linotype", Font.PLAIN, 20));
+        FloorText.setFocusable(false);
+        FloorText.setOpaque(false);
+        FloorText.setText("");
+        Style style = FloorText.addStyle("Title", null);
+        StyleConstants.setForeground(style, Color.BLACK);
+        SimpleAttributeSet center = new SimpleAttributeSet();
+        StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+        FloorText.getStyledDocument().setParagraphAttributes(0, FloorText.getStyledDocument().getLength(), center, false);
+        PauseMenu.add(FloorText);
         
         GearText = new JTextPane();
-        GearText.setBounds(803 + xOffSet, 488 + yOffSet, 146, 184);
-        GearText.setFont(new Font("Serif", Font.ITALIC, 16));
+        GearText.setBounds(803 + xOffSet, 483 + yOffSet, 146, 184);
+        GearText.setFont(new Font("Palatino Linotype", Font.PLAIN, 16));
         GearText.setFocusable(false);
         GearText.setOpaque(false);
         GearText.setText("");
         GearText.addStyle("Style", null);
         PauseMenu.add(GearText);
+        
+        SpellText = new JTextPane();
+        SpellText.setBounds(75 + xOffSet, 368 + yOffSet, 361, 96);
+        SpellText.setFont(new Font("Palatino Linotype", Font.PLAIN, 16));
+        SpellText.setFocusable(false);
+        SpellText.setOpaque(false);
+        SpellText.setText("");
+        SpellText.addStyle("Style", null);
+        PauseMenu.add(SpellText);
         
         JLabel pauseLabel = new JLabel(new ImageIcon(this.PauseMenuImg));
         pauseLabel.setBounds(xOffSet, yOffSet, PauseMenuImg.getWidth(null), PauseMenuImg.getHeight(null));
@@ -201,7 +227,13 @@ public class PlayGame extends JPanel implements KeyListener{
         HoverLabel = new JLabel(new ImageIcon(this.CurrentSpellIcon));
         HoverLabel.setVisible(false);
         PauseMenu.add(HoverLabel);
-        PauseMenu.setComponentZOrder(HoverLabel, 2);
+        
+        MapLabel = new JLabel();
+        MapLabel.setVisible(true);
+        MapLabel.setBounds(85 + xOffSet, 91 + yOffSet, 341, 241);
+        MapLabel.setOpaque(true);
+        PauseMenu.add(MapLabel);
+        PauseMenu.setComponentZOrder(MapLabel, 2);
         
         GameWindow.add(PauseMenu);
     }
@@ -213,6 +245,15 @@ public class PlayGame extends JPanel implements KeyListener{
         int xOffSet = (ScreenWidth - PauseMenuImg.getWidth(null)) / 2;
         int yOffSet = (ScreenHeight - PauseMenuImg.getHeight(null)) / 2;
         
+        createMap();
+        
+        Style style = FloorText.getStyle("Title");
+        
+        FloorText.setText("");
+        try {
+            FloorText.getStyledDocument().insertString(
+                    FloorText.getStyledDocument().getLength(), "Floor " + Game.getFloorLevel(), style);
+        }catch(BadLocationException e){}
         
         if(Game.getPlayer().getNeck() != null)
         {
@@ -231,8 +272,126 @@ public class PlayGame extends JPanel implements KeyListener{
             createGearButton(TomeBtn, Game.getPlayer().getTome(), xOffSet + 688, yOffSet + 503);
         }
         
+        if(Game.getPlayer().getSpell(0) != null)
+        {
+            createSpellButton(Spell1Btn, Game.getPlayer().getSpell(0), xOffSet + 90, yOffSet + 527);
+        }
+        if(Game.getPlayer().getSpell(1) != null)
+        {
+            createSpellButton(Spell1Btn, Game.getPlayer().getSpell(1), xOffSet + 178, yOffSet + 527);
+        }
+        if(Game.getPlayer().getSpell(2) != null)
+        {
+            createSpellButton(Spell1Btn, Game.getPlayer().getSpell(2), xOffSet + 266, yOffSet + 527);
+        }
+        if(Game.getPlayer().getSpell(3) != null)
+        {
+            createSpellButton(Spell1Btn, Game.getPlayer().getSpell(3), xOffSet + 352, yOffSet + 527);
+        }
+            
         this.PauseMenu.setVisible(true);
         this.PauseMenu.setFocusable(true);
+    }
+    
+    private void unPauseGame()
+    {
+        this.Paused = false;
+        this.PauseMenu.setVisible(false);
+        this.PauseMenu.setFocusable(false);
+    }
+    
+    private void createMap()
+    {
+        BufferedImage mapBufImg =(BufferedImage)createImage(341, 241);
+        Graphics2D gtemp = mapBufImg.createGraphics();
+        
+        Color brownInk = new Color(124, 82, 34);
+        Color crimson = new Color(150, 0, 0);
+        Color gold = new Color(255, 150, 0);
+        
+        gtemp.setBackground(new Color(221, 162, 93));
+        gtemp.clearRect(0, 0, 341, 241);
+        
+        for(int i = 0; i < 5; i++)
+        {
+            for(int j = 0; j < 5; j++)
+            {
+                if(Game.getRoom(i, j) != null)
+                {
+                    if(Game.getRoom(i, j).isBossRoom())
+                    {
+                        gtemp.setColor(crimson);
+                    }
+                    else if(Game.getRoom(i, j).isShop() && Game.getRoom(i, j).wasVisited())
+                    {
+                        gtemp.setColor(gold);
+                    }
+                    else
+                    {
+                        gtemp.setColor(brownInk);
+                    }
+                    
+                    if(Game.getRoom(i, j).wasVisited())
+                    {
+                        gtemp.fillRect(j * 70, i * 50, 60, 40);
+                    }
+                    else
+                    {
+                        if(i > 0 )
+                        {
+                            if(Game.getRoom(i - 1, j) != null)
+                            {
+                                if(Game.getRoom(i - 1, j).wasVisited())
+                                {
+                                    gtemp.drawRect(j * 70, i * 50, 60, 40);
+                                    gtemp.drawRect(j * 70 + 1, i * 50 + 1, 58, 38);
+                                }
+                            }
+                        }
+                        
+                        if(i < 4 )
+                        {
+                            if(Game.getRoom(i + 1, j) != null)
+                            {
+                                if(Game.getRoom(i + 1, j).wasVisited())
+                                {
+                                    gtemp.drawRect(j * 70, i * 50, 60, 40);
+                                    gtemp.drawRect(j * 70 + 1, i * 50 + 1, 58, 38);
+                                }
+                            }
+                        }
+                        
+                        if(j > 0 )
+                        {
+                            if(Game.getRoom(i, j - 1) != null)
+                            {
+                                if(Game.getRoom(i, j - 1).wasVisited())
+                                {
+                                    gtemp.drawRect(j * 70, i * 50, 60, 40);
+                                    gtemp.drawRect(j * 70 + 1, i * 50 + 1, 58, 38);
+                                }
+                            }
+                        }
+                        
+                        if(j < 4 )
+                        {
+                            if(Game.getRoom(i, j + 1) != null)
+                            {
+                                if(Game.getRoom(i, j + 1).wasVisited())
+                                {
+                                    gtemp.drawRect(j * 70, i * 50, 60, 40);
+                                    gtemp.drawRect(j * 70 + 1, i * 50 + 1, 58, 38);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        MapLabel.setIcon(new ImageIcon(mapBufImg));
+        
+        gtemp.dispose();
     }
     
     private void createGearButton(JButton btn, Gear gear, int x, int y)
@@ -246,6 +405,7 @@ public class PlayGame extends JPanel implements KeyListener{
         public void mouseEntered(MouseEvent evt) {
                 HoverLabel.setBounds(x - 2, y - 2, 73, 73);
                 HoverLabel.setVisible(true);
+                PauseMenu.setComponentZOrder(HoverLabel, 2);
                 printPauseGearText(gear);
             }
 
@@ -258,11 +418,83 @@ public class PlayGame extends JPanel implements KeyListener{
         PauseMenu.setComponentZOrder(btn, 1);
     }
     
-    private void unPauseGame()
+    private void createSpellButton(JButton btn, Spell spell, int x, int y)
     {
-        this.Paused = false;
-        this.PauseMenu.setVisible(false);
-        this.PauseMenu.setFocusable(false);
+        btn = new JButton(new ImageIcon(spell.getIcon()));
+        btn.setBorder(BorderFactory.createEmptyBorder());
+        btn.setContentAreaFilled(false);
+        btn.setBounds(x, y, 68, 68);
+        btn.setFocusable(false);
+        btn.addMouseListener(new MouseAdapter() {
+        public void mouseEntered(MouseEvent evt) {
+                HoverLabel.setBounds(x - 2, y - 2, 73, 73);
+                HoverLabel.setVisible(true);
+                PauseMenu.setComponentZOrder(HoverLabel, 2);
+                printPauseSpellText(spell);
+            }
+
+            public void mouseExited(MouseEvent evt) {
+                SpellText.setText("");
+                HoverLabel.setVisible(false);
+            }
+        });
+        PauseMenu.add(btn);
+        PauseMenu.setComponentZOrder(btn, 1);
+    }
+    
+    private void printPauseSpellText(Spell spell)
+    {
+        Color purple = new Color(100, 0, 150);
+        Color blue = new Color(0, 0, 250);
+        Color orange = new Color(230, 80, 0);
+        
+        Style style = GearText.getStyle("Style");
+        
+        if(spell.getRarity() == 2)
+        {
+            StyleConstants.setForeground(style, blue);
+        }
+        else if(spell.getRarity() == 3)
+        {
+            StyleConstants.setForeground(style, purple);
+        }
+        else if(spell.getRarity() == 4)
+        {
+            StyleConstants.setForeground(style, orange);
+        }
+        
+        String spellInfo = spell.getSpellName() + "\n";
+        
+        try {
+            SpellText.getStyledDocument().insertString(
+                    SpellText.getStyledDocument().getLength(), spellInfo, style);
+        }catch(BadLocationException e){}
+        
+        StyleConstants.setForeground(style, Color.BLACK);
+        
+        spellInfo = "Cooldown: ";
+        if(spell.getResetTime() < 60)
+        {
+            spellInfo += "Instant\n";
+        }
+        else
+        {
+            spellInfo += Integer.toString(1 + spell.getResetTime()/60) + " seconds\n";
+        }
+        
+        try {
+            SpellText.getStyledDocument().insertString(
+                    SpellText.getStyledDocument().getLength(), spellInfo, style);
+        }catch(BadLocationException e){}
+        
+        spellInfo += Integer.toString(spell.getResetTime()/60) + " seconds\n";
+        
+        spellInfo = spell.getDescription() + "\n";
+        
+        try {
+            SpellText.getStyledDocument().insertString(
+                    SpellText.getStyledDocument().getLength(), spellInfo, style);
+        }catch(BadLocationException e){}
     }
     
     private void printPauseGearText(Gear gear)
@@ -270,25 +502,24 @@ public class PlayGame extends JPanel implements KeyListener{
         Color purple = new Color(100, 0, 150);
         Color blue = new Color(0, 0, 250);
         Color orange = new Color(230, 80, 0);
-        Color trash = new Color(200, 200, 255);
         
         Style style = GearText.getStyle("Style");
         
-        if( gear.getRarity() == 2)
+        if(gear.getRarity() == 2)
         {
             StyleConstants.setForeground(style, blue);
         }
-        else if( gear.getRarity() == 3)
+        else if(gear.getRarity() == 3)
         {
             StyleConstants.setForeground(style, purple);
         }
-        else if( gear.getRarity() == 4)
+        else if(gear.getRarity() == 4)
         {
             StyleConstants.setForeground(style, orange);
         }
         else
         {
-            StyleConstants.setForeground(style, trash);
+            StyleConstants.setForeground(style, Color.WHITE);
         }
         
         String gearInfo = gear.getItemName() + "\n";
@@ -368,7 +599,7 @@ public class PlayGame extends JPanel implements KeyListener{
     {
         int key = e.getKeyCode();
         
-        if(key == KeyEvent.VK_P || key == KeyEvent.VK_ESCAPE)
+        if(key == KeyEvent.VK_P || key == KeyEvent.VK_ESCAPE || key == KeyEvent.VK_M)
         {
             if(!Paused && InGame)
             {
@@ -797,8 +1028,8 @@ public class PlayGame extends JPanel implements KeyListener{
         }
         
         g2d.setColor(Color.WHITE);
-        Font spellNameFont = (new Font("Arial Black", Font.PLAIN, 16));
-        Font spellCoolDownFont = (new Font("Arial Black", Font.PLAIN, 32));
+        Font spellNameFont = (new Font("Arial Bold", Font.BOLD, 18));
+        Font spellCoolDownFont = (new Font("Arial Bold", Font.BOLD, 32));
         FontMetrics metrics = g2d.getFontMetrics(spellNameFont);
         
         for(int i = 0; i < 4; i ++)
@@ -825,7 +1056,7 @@ public class PlayGame extends JPanel implements KeyListener{
         
         if(PauseTutorial && Game.getPlayer().getSkillPoints() > 0)
         {
-            Font pauseTutorialFont = (new Font("Arial Black", Font.PLAIN, 10));
+            Font pauseTutorialFont = (new Font("Palatino Linotype", Font.BOLD, 10));
             g2d.setColor(Color.black);
             metrics = g2d.getFontMetrics(pauseTutorialFont);
             String pauseString = "Press [Esc], [P], or [M] to spend skill points.";
@@ -918,7 +1149,7 @@ public class PlayGame extends JPanel implements KeyListener{
     private void paintStrings()
     {
         //Text for items
-        Font itemNameFont = (new Font("Arial Black", Font.PLAIN, 14));
+        Font itemNameFont = (new Font("Palatino Linotype", Font.BOLD, 14));
         g2d.setFont(itemNameFont);
         FontMetrics metrics = g2d.getFontMetrics(itemNameFont);
         
@@ -943,7 +1174,6 @@ public class PlayGame extends JPanel implements KeyListener{
         Color green =  new Color(0, 255, 50);
         Color red = new Color(200, 0, 0);
         Color orange = new Color(230, 80, 0);
-        Color trash = new Color(200, 200, 255);
                 
         for(int i = 0; i < this.Game.getRoom().RingSize(); i++)
         {
@@ -971,11 +1201,6 @@ public class PlayGame extends JPanel implements KeyListener{
         Color purple = new Color(100, 0, 150);
         Color blue = new Color(0, 0, 250);
         Color orange = new Color(230, 80, 0);
-        Color trash = new Color(200, 200, 255);
-        
-        Font itemNameFont = (new Font("Arial Black", Font.PLAIN, 12));
-        g2d.setFont(itemNameFont);
-        FontMetrics metrics = g2d.getFontMetrics(itemNameFont);
 
         int rarityDisplacement = 10;
         String statValue;
@@ -1004,33 +1229,33 @@ public class PlayGame extends JPanel implements KeyListener{
         if(speedVal != 0)
         {
             this.printStatInfo(speedVal, rarityDisplacement, "Move Speed", gear);
-            rarityDisplacement += 15;
+            rarityDisplacement += 18;
         }
 
         if(darkVal != 0)
         {
             this.printStatInfo(darkVal, rarityDisplacement, "Void", gear);
-            rarityDisplacement += 15;
+            rarityDisplacement += 18;
         }
         if(frostVal != 0)
         {
             this.printStatInfo(frostVal, rarityDisplacement, "Frost", gear);
-            rarityDisplacement += 15;
+            rarityDisplacement += 18;
         }
         if(flameVal != 0)
         {
             this.printStatInfo(flameVal, rarityDisplacement, "Flame", gear);
-            rarityDisplacement += 15;
+            rarityDisplacement += 18;
         }
         if(vitVal != 0)
         {
             this.printStatInfo(vitVal, rarityDisplacement, "Vitality", gear);
-            rarityDisplacement += 15;
+            rarityDisplacement += 18;
         }
         if(intVal != 0)
         {
             this.printStatInfo(intVal, rarityDisplacement, "Intellect", gear);
-            rarityDisplacement += 15;
+            rarityDisplacement += 18;
         }
 
         if( gear.getRarity() == 2)
@@ -1047,12 +1272,12 @@ public class PlayGame extends JPanel implements KeyListener{
         }
         else
         {
-            g2d.setColor(trash);
+            g2d.setColor(Color.WHITE);
         }
 
-        itemNameFont = (new Font("Arial Black", Font.PLAIN, 14));
+        Font itemNameFont = (new Font("Palatino Linotype", Font.BOLD, 18));
         g2d.setFont(itemNameFont);
-        metrics = g2d.getFontMetrics(itemNameFont);
+        FontMetrics metrics = g2d.getFontMetrics(itemNameFont);
 
         g2d.drawString( gear.getItemName(), gear.getCenterX() - 
                 metrics.stringWidth( gear.getItemName())/2, 
@@ -1065,7 +1290,7 @@ public class PlayGame extends JPanel implements KeyListener{
         Color green =  new Color(0, 255, 50);
         Color red = new Color(200, 0, 0);
         
-        Font itemNameFont = (new Font("Arial Black", Font.PLAIN, 12));
+        Font itemNameFont = (new Font("Arial Bold", Font.BOLD, 14));
         g2d.setFont(itemNameFont);
         FontMetrics metrics = g2d.getFontMetrics(itemNameFont);
         

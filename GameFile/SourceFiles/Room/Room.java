@@ -47,7 +47,7 @@ public class Room {
     private ArrayList<Boots> Boots;
     private ArrayList<Tome> Tomes;
     
-    private boolean Shop, RuneRoom, BossRoom;
+    private boolean Shop, RuneRoom, BossRoom, Visited;
     
     
     //need up down left right doors
@@ -83,6 +83,7 @@ public class Room {
         this.Shop = false;
         this.RuneRoom = false;
         this.BossRoom = false;
+        this.Visited = false;
     }
     
     public void setShopRoom()
@@ -98,6 +99,16 @@ public class Room {
     public void setRuneRoom()
     {
         this.RuneRoom = true;
+    }
+    
+    public void setVisited()
+    {
+        this.Visited = true;
+    }
+    
+    public boolean wasVisited()
+    {
+        return this.Visited;
     }
     
     public void addDoor(Door door)

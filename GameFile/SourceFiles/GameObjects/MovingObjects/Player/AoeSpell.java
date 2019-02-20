@@ -13,9 +13,10 @@ public class AoeSpell extends Spell{
     private int Duration;
     
     public AoeSpell(String spellName, int damage, int duration, int cooldown, 
-            boolean fire, boolean ice, boolean Void, int elementChance, Image[] imgs, Image ico)
+            boolean fire, boolean ice, boolean Void, int elementChance, 
+            String description, int rarity, Image[] imgs, Image ico)
     {
-        super(spellName, cooldown, fire, ice, Void, elementChance, ico);
+        super(spellName, cooldown, fire, ice, Void, elementChance, description, rarity, ico);
         this.Damage = damage;
         this.Duration = duration;
         this.Sprites = imgs;

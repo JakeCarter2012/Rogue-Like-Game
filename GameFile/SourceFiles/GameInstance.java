@@ -308,9 +308,15 @@ public class GameInstance {
         }
         
         //Now constant spells/objects that never change are created
-        IceShards = new ProjectileSpell("Ice Shards", 5,10, 30, false, true, false, 30, IceShardsImg, IceShardsIcon, IceShardsShadow, IceShardsBreak);
-        FireBall = new ProjectileSpell("Fire Ball", 5,10, 30, true, false, false, 30, FireBallImg, FireBallIcon, FireBallShadow, FireBallEnd);
-        VoidWave = new ProjectileSpell("Void Wave", 1,10, 119, false, false, true, 0, VoidWaveImg, VoidWaveIcon, VoidWaveShadow, VoidWaveEnd);
+        String iceShardString = "Fires a volley of ice shards. Has a chance to chill enemies.";
+        String fireBallString = "Hurls a ball of fire. Has a chance to burn enemies.";
+        String voidWaveString = "Launches a wave of void energy that cuts through enemies.";
+        IceShards = new ProjectileSpell("Ice Shards", 5,10, 30, false, true, false, 30, 
+                iceShardString, 2, IceShardsImg, IceShardsIcon, IceShardsShadow, IceShardsBreak);
+        FireBall = new ProjectileSpell("Fire Ball", 5,10, 30, true, false, false, 30, 
+                fireBallString, 2, FireBallImg, FireBallIcon, FireBallShadow, FireBallEnd);
+        VoidWave = new ProjectileSpell("Void Wave", 1,10, 119, false, false, true, 0, 
+                voidWaveString, 2, VoidWaveImg, VoidWaveIcon, VoidWaveShadow, VoidWaveEnd);
         
         Burning = new Animation(0, 0, 0, BurningImgs, 3, true);
         
@@ -688,10 +694,16 @@ public class GameInstance {
     
     private void startingRoom()
     {
+        Rooms[RoomsI][RoomsJ].setVisited();
         addRandomGear(250, 400);
         addRandomGear(400, 250);
         addRandomGear(800, 250);
         addRandomGear(950, 400);
+    }
+    
+    public int getFloorLevel()
+    {
+        return this.FloorLevel;
     }
    
     public WizardPlayer getPlayer()
@@ -712,6 +724,11 @@ public class GameInstance {
     public Room getRoom()
     {
         return this.Rooms[RoomsI][RoomsJ];
+    }
+    
+    public Room getRoom(int i, int j)
+    {
+        return this.Rooms[i][j];
     }
     
     public Wall[] getWalls()
@@ -786,6 +803,8 @@ public class GameInstance {
         
         this.RoomChangeI = 0;
         this.RoomChangeJ = 0;
+        
+        Rooms[RoomsI][RoomsJ].setVisited();
         
         if(Rooms[RoomsI][RoomsJ].EnemySize() > 0)
         {

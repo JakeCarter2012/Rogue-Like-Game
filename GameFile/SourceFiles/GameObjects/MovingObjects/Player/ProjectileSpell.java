@@ -15,9 +15,9 @@ public class ProjectileSpell extends Spell{
     
     public ProjectileSpell(String spellName, int dmg, int speed, int cooldown, 
             boolean fire, boolean ice, boolean Void, int elementChance, 
-            Image img, Image ico, Image shadow, Image[] endAnimation)
+            String description, int rarity,Image img, Image ico, Image shadow, Image[] endAnimation)
     {
-        super(spellName, cooldown, fire, ice, Void, elementChance, ico);
+        super(spellName, cooldown, fire, ice, Void, elementChance, description, rarity, ico);
         this.Damage = dmg;
         this.Speed = speed;
         this.Sprite = img;
