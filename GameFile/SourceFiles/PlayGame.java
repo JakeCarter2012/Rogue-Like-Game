@@ -27,6 +27,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
 
 public class PlayGame extends JPanel implements KeyListener{
     /*
@@ -38,9 +41,9 @@ public class PlayGame extends JPanel implements KeyListener{
     private BufferedImage bufImg;
     private Graphics2D g2d;
     private Image  TempleFloor,  NullSpellIcon, CurrentSpellIcon, ChilledImg, 
-            FrozenImg, HealthBar, HealthBarBackground;
+            FrozenImg, HealthBar, HealthBarBackground, PauseMenuImg, HoverIcon;
     
-    //private final int ScreenWidth = 1024, ScreenHeight = 960;
+    //private final int ScreenWidth = 1024, ScreenHeight = 768;
     //private final int ScreenWidth = 540, ScreenHeight = 720;
     private final int ScreenWidth = 1280, ScreenHeight = 960;
     private final int FPS = 60;
@@ -51,6 +54,11 @@ public class PlayGame extends JPanel implements KeyListener{
     private GameEvents PlayerKeyEvent;
     private GameInstance Game;
     private boolean PauseTutorial;
+    
+    private JButton NeckBtn, RingBtn, TomeBtn, BootsBtn, Spell1Btn,
+            Spell2Btn, Spell3Btn, Spell4Btn;
+    private JTextPane GearText, StatText, SpellText;
+    private JLabel HoverLabel;
     
     private float OpaqueValue;
     private boolean OpaqueLower, OpaqueRaise;
@@ -76,7 +84,6 @@ public class PlayGame extends JPanel implements KeyListener{
         this.Paused = false;
         this.InGame = false;
         PauseTutorial = true;
-        
         //GameWindow.setExtendedState(JFrame.MAXIMIZED_BOTH);
         //GameWindow.setUndecorated(true);
         
@@ -92,6 +99,8 @@ public class PlayGame extends JPanel implements KeyListener{
             this.FrozenImg = ImageIO.read(new File("Resources" + File.separator + "frozen.png"));
             this.HealthBar = ImageIO.read(new File("Resources" + File.separator + "HealthBar.png"));
             this.HealthBarBackground = ImageIO.read(new File("Resources" + File.separator + "HealthBarBackground.png"));
+            this.PauseMenuImg = ImageIO.read(new File("Resources" + File.separator + "PauseMenu.png"));
+            this.HoverIcon = ImageIO.read(new File("Resources" + File.separator + "HoverIcon.png"));
         }catch (Exception e) {
             System.out.print(e.getStackTrace() + " Error loading resources in PlayGsme \n");
         }
@@ -153,6 +162,9 @@ public class PlayGame extends JPanel implements KeyListener{
         PauseMenu.setVisible(false);
         PauseMenu.setLayout(null);
         
+        int xOffSet = (ScreenWidth - PauseMenuImg.getWidth(null)) / 2;
+        int yOffSet = (ScreenHeight - PauseMenuImg.getHeight(null)) / 2;
+        
         JButton testbut = new JButton(new ImageIcon(NullSpellIcon));
         //testbut.setIcon(new ImageIcon(tempchar));
         //testbut.setRolloverIcon(null);
@@ -162,59 +174,186 @@ public class PlayGame extends JPanel implements KeyListener{
         testbut.setBorder(BorderFactory.createEmptyBorder());
         testbut.setContentAreaFilled(false);
         testbut.setBounds(100,100, this.NullSpellIcon.getWidth(null), NullSpellIcon.getHeight(null));
-        testbut.setToolTipText("test");
-        PauseMenu.add(testbut);
         
-        JTextArea testtext = new JTextArea();
-        testtext.setBounds(300, 100, 200, 600);
-        testtext.setText("imma test! a really realy really really really really long test");
-        testtext.setLineWrap(true);
-        testtext.setFont(new Font("Serif", Font.ITALIC, 16));
-        testtext.setBorder(BorderFactory.createEmptyBorder());
-        testtext.setFocusable(false);
-        testtext.setOpaque(false);
-        PauseMenu.add(testtext);
-        
-        testbut.addMouseListener(new MouseAdapter() {
-        public void mouseEntered(MouseEvent evt) {
-                testtext.setText("we in");
-            }
-
-            public void mouseExited(MouseEvent evt) {
-                testtext.setText("we out");
-            }
-        });
+        testbut.setFocusable(false);
         
         testbut.addActionListener(new ActionListener(){
         public void actionPerformed(ActionEvent e){  
-            System.out.println("pushed the button");
+            //testtext.setText("pushed the button");
         }
         });
         
+        GearText = new JTextPane();
+        GearText.setBounds(803 + xOffSet, 488 + yOffSet, 146, 184);
+        GearText.setFont(new Font("Serif", Font.ITALIC, 16));
+        GearText.setFocusable(false);
+        GearText.setOpaque(false);
+        GearText.setText("");
+        GearText.addStyle("Style", null);
+        PauseMenu.add(GearText);
         
-        JLabel testlab = new JLabel(new ImageIcon(this.TempleFloor));
-        testlab.setBounds(0, 0, TempleFloor.getWidth(null), TempleFloor.getHeight(null));
-        testlab.setVisible(true);
-        PauseMenu.add(testlab);
+        JLabel pauseLabel = new JLabel(new ImageIcon(this.PauseMenuImg));
+        pauseLabel.setBounds(xOffSet, yOffSet, PauseMenuImg.getWidth(null), PauseMenuImg.getHeight(null));
+        pauseLabel.setVisible(true);
+        PauseMenu.add(pauseLabel);
+        PauseMenu.setOpaque(false);
         
-        PauseMenu.setBounds(200, 200, 200, 200);
+        HoverLabel = new JLabel(new ImageIcon(this.CurrentSpellIcon));
+        HoverLabel.setVisible(false);
+        PauseMenu.add(HoverLabel);
+        PauseMenu.setComponentZOrder(HoverLabel, 2);
         
         GameWindow.add(PauseMenu);
-        GameWindow.setVisible(true);
     }
     
     private void pauseGame()
     {
         this.Paused = true;
-        this.setVisible(false);
+        
+        int xOffSet = (ScreenWidth - PauseMenuImg.getWidth(null)) / 2;
+        int yOffSet = (ScreenHeight - PauseMenuImg.getHeight(null)) / 2;
+        
+        
+        if(Game.getPlayer().getNeck() != null)
+        {
+            createGearButton(NeckBtn, Game.getPlayer().getNeck(), xOffSet + 602, yOffSet + 503);
+        }
+        if(Game.getPlayer().getRing() != null)
+        {
+            createGearButton(RingBtn, Game.getPlayer().getRing(), xOffSet + 602, yOffSet + 588);
+        }
+        if(Game.getPlayer().getBoots() != null)
+        {
+            createGearButton(BootsBtn, Game.getPlayer().getBoots(), xOffSet + 688, yOffSet + 588);
+        }
+        if(Game.getPlayer().getTome() != null)
+        {
+            createGearButton(TomeBtn, Game.getPlayer().getTome(), xOffSet + 688, yOffSet + 503);
+        }
+        
         this.PauseMenu.setVisible(true);
+        this.PauseMenu.setFocusable(true);
+    }
+    
+    private void createGearButton(JButton btn, Gear gear, int x, int y)
+    {
+        btn = new JButton(new ImageIcon(gear.getSprite()));
+        btn.setBorder(BorderFactory.createEmptyBorder());
+        btn.setContentAreaFilled(false);
+        btn.setBounds(x, y, 67, 67);
+        btn.setFocusable(false);
+        btn.addMouseListener(new MouseAdapter() {
+        public void mouseEntered(MouseEvent evt) {
+                HoverLabel.setBounds(x - 2, y - 2, 73, 73);
+                HoverLabel.setVisible(true);
+                printPauseGearText(gear);
+            }
+
+            public void mouseExited(MouseEvent evt) {
+                GearText.setText("");
+                HoverLabel.setVisible(false);
+            }
+        });
+        PauseMenu.add(btn);
+        PauseMenu.setComponentZOrder(btn, 1);
     }
     
     private void unPauseGame()
     {
         this.Paused = false;
         this.PauseMenu.setVisible(false);
-        this.setVisible(true);
+        this.PauseMenu.setFocusable(false);
+    }
+    
+    private void printPauseGearText(Gear gear)
+    {
+        Color purple = new Color(100, 0, 150);
+        Color blue = new Color(0, 0, 250);
+        Color orange = new Color(230, 80, 0);
+        Color trash = new Color(200, 200, 255);
+        
+        Style style = GearText.getStyle("Style");
+        
+        if( gear.getRarity() == 2)
+        {
+            StyleConstants.setForeground(style, blue);
+        }
+        else if( gear.getRarity() == 3)
+        {
+            StyleConstants.setForeground(style, purple);
+        }
+        else if( gear.getRarity() == 4)
+        {
+            StyleConstants.setForeground(style, orange);
+        }
+        else
+        {
+            StyleConstants.setForeground(style, trash);
+        }
+        
+        String gearInfo = gear.getItemName() + "\n";
+        
+        try {
+            GearText.getStyledDocument().insertString(
+                    GearText.getStyledDocument().getLength(), gearInfo, style);
+        }catch(BadLocationException e){}
+        
+        StyleConstants.setForeground(style, Color.BLACK);
+        
+        gearInfo = "Level " + Integer.toString(gear.getLevel()) + "\n";
+            try {
+            GearText.getStyledDocument().insertString(
+                    GearText.getStyledDocument().getLength(), gearInfo, style);
+        }catch(BadLocationException e){}
+        
+        if(gear.getIntellect() > 0)
+        {
+            gearInfo = "+" + Integer.toString(gear.getIntellect()) + " Intellect\n";
+                try {
+                GearText.getStyledDocument().insertString(
+                        GearText.getStyledDocument().getLength(), gearInfo, style);
+            }catch(BadLocationException e){}
+        }
+        if(gear.getVitality() > 0)
+        {
+            gearInfo = "+" + Integer.toString(gear.getVitality()) + " Vitality\n";
+                try {
+                GearText.getStyledDocument().insertString(
+                        GearText.getStyledDocument().getLength(), gearInfo, style);
+            }catch(BadLocationException e){}
+        }
+        if(gear.getFlame() > 0)
+        {
+            gearInfo = "+" + Integer.toString(gear.getFlame()) + " Flame\n";
+                try {
+                GearText.getStyledDocument().insertString(
+                        GearText.getStyledDocument().getLength(), gearInfo, style);
+            }catch(BadLocationException e){}
+        }
+        if(gear.getFrost() > 0)
+        {
+            gearInfo = "+" + Integer.toString(gear.getFrost()) + " Frost\n";
+                try {
+                GearText.getStyledDocument().insertString(
+                        GearText.getStyledDocument().getLength(), gearInfo, style);
+            }catch(BadLocationException e){}
+        }
+        if(gear.getDark() > 0)
+        {
+            gearInfo = "+" + Integer.toString(gear.getDark()) + " Void\n";
+                try {
+                GearText.getStyledDocument().insertString(
+                        GearText.getStyledDocument().getLength(), gearInfo, style);
+            }catch(BadLocationException e){}
+        }
+        if(gear.getMoveSpeed() > 0)
+        {
+            gearInfo = "+" + Integer.toString(gear.getMoveSpeed()) + " Move Speed\n";
+                try {
+                GearText.getStyledDocument().insertString(
+                        GearText.getStyledDocument().getLength(), gearInfo, style);
+            }catch(BadLocationException e){}
+        }
     }
     
     //ovverides used for pause game key
@@ -337,7 +476,8 @@ public class PlayGame extends JPanel implements KeyListener{
         window. Since they are painted ontop of previous objects, they are printed
         in a specific order to achieve the correct layering.
         */
-        if(!InGame)
+        
+        if(!InGame || Paused)
             return;
         
         if (bufImg == null) {
@@ -541,6 +681,7 @@ public class PlayGame extends JPanel implements KeyListener{
            g2d.drawImage(Game.getRoom().getEnemy(i).getSprite(), 
                    Game.getRoom().getEnemy(i).getX(), 
                    Game.getRoom().getEnemy(i).getY(), this);
+
            if(Game.getRoom().getEnemy(i).isChilled())
            {
                g2d.drawImage(this.ChilledImg, 
@@ -986,6 +1127,7 @@ public class PlayGame extends JPanel implements KeyListener{
         game.pauseMenuInit();
         game.mainMenuInit();
         game.newGameInit();
+        game.GameWindow.setVisible(true);
         //game.musicThreadLoop();
         //game.mainMenu();
         game.timerLoop();
