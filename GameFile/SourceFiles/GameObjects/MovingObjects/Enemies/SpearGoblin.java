@@ -13,7 +13,7 @@ public class SpearGoblin extends MovingEnemy{
     public SpearGoblin(int x, int y, int floor, Image[] moveLeft, Image[] moveRight, Image shadow)
     {
         super(x, y, floor, moveLeft[0].getWidth(null), moveLeft[0].getHeight(null), 
-                100 + 50 * floor, 5, 50 + 25 * floor, 0, 0, shadow);
+                100 + 50 * floor, 5, 50 + 25 * floor, false, false, shadow);
         this.MoveLeftImages = moveLeft;
         this.MoveRightImages = moveRight;
         this.ImageTimer = 0;

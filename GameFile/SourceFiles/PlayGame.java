@@ -590,9 +590,9 @@ public class PlayGame extends JPanel implements KeyListener{
         statInfo += "Skill points: " + Game.getPlayer().getSkillPoints() + "\n";
         statInfo += "Gold: " + Game.getGold() + "\n\n";
         statInfo += "Vitality: " + Game.getPlayer().getVitality() + "\n";
-        statInfo += "+_ Bonus Health" + "\n\n";
+        statInfo += "+" + Game.getPlayer().getBonusHealth() + " Health" + "\n\n";
         statInfo += "Intellect: " + Game.getPlayer().getIntellect() + "\n";
-        statInfo += "+_% Spell Damage\n\n";
+        statInfo += "+" + Game.getPlayer().getBonusSpellDamage() + "% Spell Damage\n\n";
         statInfo += "MoveSpeed: " + Game.getPlayer().getMoveSpeed();
         try {
             LeftStatText.getStyledDocument().insertString(
@@ -604,14 +604,14 @@ public class PlayGame extends JPanel implements KeyListener{
         
         statInfo =  "";
         statInfo += "Flame: " + Game.getPlayer().getFlame()  + "\n";
-        statInfo += "+_% Fire Damage" + "\n";
-        statInfo += "_% Burn Chance" + "\n";
-        statInfo += "_ Burn Damage" + "\n\n";
+        statInfo += "+" + Game.getPlayer().getBonusFlameDamage() + "% Fire Damage" + "\n";
+        statInfo += Game.getPlayer().getBurnChance() + "% Burn Chance" + "\n";
+        statInfo += Game.getPlayer().getBurnDamage() + " Burn Damage" + "\n\n";
         statInfo += "Frost: " + Game.getPlayer().getFrost()  + "\n";
-        statInfo += "+_% Ice Damage" + "\n";
-        statInfo += "_% Chill Chance" + "\n\n";
+        statInfo += "+" + Game.getPlayer().getBonusFrostDamage() + "% Ice Damage" + "\n";
+        statInfo += Game.getPlayer().getChillChance() + "% Chill Chance" + "\n\n";
         statInfo += "Void: " + Game.getPlayer().getVoid()  + "\n";
-        statInfo += "+_% Void Damage" + "\n";
+        statInfo += "+" + Game.getPlayer().getBonusVoidDamage() + "% Void Damage" + "\n";
         
         try {
             RightStatText.getStyledDocument().insertString(

@@ -30,8 +30,7 @@ public class WizardPlayer extends MovingObject implements Observer{
     private int MaxHealth, Currenthealth;
     private int Level, SkillPoints, CurrentExperience, NextLevelExperience;
     private int Vitality, Intellect, Flame, Frost, Dark;
-    private int BurnTime, BurnDamage, FreezeTime, BonusBurnChance, BonusFreezeChance,
-            BonusFireDamage, BonusFrostDamage, BonusVoidDamage;
+    private int BurnTime, FreezeTime, BurnChance, ChillChance;
     private double AimAngle;
     private int MouseX, MouseY;
     private int FireX, FireY;
@@ -117,14 +116,10 @@ public class WizardPlayer extends MovingObject implements Observer{
         this.Flame = 0;  
         this.Frost = 0;  
         this.Dark = 0;
-        this.BurnTime = 120;  
-        this.BurnDamage = 1;  
-        this.FreezeTime = 120;  
-        this.BonusBurnChance = 0;  
-        this.BonusFreezeChance = 0;  
-        this.BonusFireDamage = 0;  
-        this.BonusFrostDamage = 0;  
-        this.BonusVoidDamage = 0;
+        this.BurnTime = 121;  
+        this.FreezeTime = 121;  
+        this.BurnChance = 30;  
+        this.ChillChance = 30;
         this.Level = 1;
         this.CurrentExperience = 0;
         this.NextLevelExperience = 50;
@@ -327,7 +322,74 @@ public class WizardPlayer extends MovingObject implements Observer{
     
     public int getBurnDamage()
     {
-        return this.BurnDamage + this.Flame;
+        return this.Flame;
+    }
+    
+    public int getBonusFlameDamage()
+    {
+        return this.Flame;
+    }
+    
+    public int getBonusFrostDamage()
+    {
+        return this.Frost;
+    }
+    
+    public int getBonusVoidDamage()
+    {
+        return this.Dark;
+    }
+    
+    public int getBonusSpellDamage()
+    {
+        return this.Intellect;
+    }
+    
+    public int getBonusHealth()
+    {
+        return this.Vitality * 10;
+    }
+    
+    public int getBurnChance()
+    {
+        return this.BurnChance;
+    }
+    
+    public int getChillChance()
+    {
+        return this.ChillChance;
+    }
+    
+    public int getSpellDamage(int spellNumber)
+    {
+        double spellDamage = ((DamagingSpell)this.SpellBook.get(CurrentSpellPage)).getDamage();
+        
+        double spellDamageBonus = this.getBonusSpellDamage();
+        double flameDamageBonus = this.getBonusFlameDamage();
+        double frostDamageBonus = this.getBonusFrostDamage();
+        double voidDamageBonus = this.getBonusVoidDamage();
+        
+        spellDamageBonus = 1 + spellDamageBonus/100;
+        flameDamageBonus = 1 + flameDamageBonus/100;
+        frostDamageBonus = 1 + frostDamageBonus/100;
+        voidDamageBonus = 1 + voidDamageBonus/100;
+        
+        spellDamage = spellDamage *  spellDamageBonus;
+        
+        if(this.SpellBook.get(CurrentSpellPage).isFire())
+        {
+            spellDamage = spellDamage * flameDamageBonus;
+        }
+        if(this.SpellBook.get(CurrentSpellPage).isIce())
+        {
+            spellDamage = spellDamage * frostDamageBonus;
+        }
+        if(this.SpellBook.get(CurrentSpellPage).isVoid())
+        {
+            spellDamage = spellDamage * voidDamageBonus;
+        }
+        
+        return (int)spellDamage;
     }
     
     public int getCurrentHealth()
@@ -403,6 +465,11 @@ public class WizardPlayer extends MovingObject implements Observer{
     public boolean getVerticalCollision()
     {
         return this.VerticalCollision;
+    }
+    
+    public void clearedRoom()
+    {
+        //Add hp if legendary neck, xp if survival talent
     }
     
     public void addExperience(int exp)
@@ -499,30 +566,13 @@ public class WizardPlayer extends MovingObject implements Observer{
             //and immediately firing it
             this.InternalCoolDownTimer = 30;
             
-            int spellDamage = 0, eleChance = 0;
-            if(this.SpellBook.get(CurrentSpellPage).isFire())
-            {
-                spellDamage = spellDamage + this.BonusFireDamage + this.Flame;
-                eleChance = eleChance + this.BonusBurnChance;
-            }
-            if(this.SpellBook.get(CurrentSpellPage).isIce())
-            {
-                spellDamage = spellDamage + this.BonusFrostDamage + this.Frost;
-                eleChance = eleChance + this.BonusFreezeChance + this.Frost;
-            }
-            if(this.SpellBook.get(CurrentSpellPage).isVoid())
-            {
-                spellDamage = spellDamage + this.BonusVoidDamage + this.Dark;
-            }
-            
             this.SpellBook.get(CurrentSpellPage).resetCoolDown();
             return(new PlayerProjectile(this.FireX, this.FireY, 
-                    ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getSpeed(), this.AimAngle, 
-                    ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getDamage() + spellDamage + this.Intellect, 
+                    ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getSpeed(), 
+                    this.AimAngle, this.getSpellDamage(this.CurrentSpellPage),
                     this.SpellBook.get(CurrentSpellPage).isFire(),
                     this.SpellBook.get(CurrentSpellPage).isIce(),
                     this.SpellBook.get(CurrentSpellPage).isVoid(),
-                    ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getElementChance() + eleChance,
                     ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getSprite(),
                     ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getShadow(),
                     ((ProjectileSpell)this.SpellBook.get(CurrentSpellPage)).getEndAnimation()));
@@ -549,7 +599,6 @@ public class WizardPlayer extends MovingObject implements Observer{
                     ((AoeSpell)this.SpellBook.get(CurrentSpellPage)).isFire(),
                     ((AoeSpell)this.SpellBook.get(CurrentSpellPage)).isIce(),
                     ((AoeSpell)this.SpellBook.get(CurrentSpellPage)).isVoid(),
-                    ((AoeSpell)this.SpellBook.get(CurrentSpellPage)).getElementChance(),
                     ((AoeSpell)this.SpellBook.get(CurrentSpellPage)).getSprites()));
         }
         else

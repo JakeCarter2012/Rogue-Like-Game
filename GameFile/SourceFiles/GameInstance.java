@@ -311,11 +311,11 @@ public class GameInstance {
         String iceShardString = "Fires a volley of ice shards. Has a chance to chill enemies.";
         String fireBallString = "Hurls a ball of fire. Has a chance to burn enemies.";
         String voidWaveString = "Launches a wave of void energy that cuts through enemies.";
-        IceShards = new ProjectileSpell("Ice Shards", 5,10, 30, false, true, false, 30, 
+        IceShards = new ProjectileSpell("Ice Shards", 20, 10, 30, false, true, false,
                 iceShardString, 2, IceShardsImg, IceShardsIcon, IceShardsShadow, IceShardsBreak);
-        FireBall = new ProjectileSpell("Fire Ball", 5,10, 30, true, false, false, 30, 
+        FireBall = new ProjectileSpell("Fire Ball", 20, 10, 30, true, false, false,
                 fireBallString, 2, FireBallImg, FireBallIcon, FireBallShadow, FireBallEnd);
-        VoidWave = new ProjectileSpell("Void Wave", 1,10, 119, false, false, true, 0, 
+        VoidWave = new ProjectileSpell("Void Wave", 5, 10, 119, false, false, true,
                 voidWaveString, 2, VoidWaveImg, VoidWaveIcon, VoidWaveShadow, VoidWaveEnd);
         
         Burning = new Animation(0, 0, 0, BurningImgs, 3, true);
@@ -1161,13 +1161,13 @@ public class GameInstance {
                 {
                     Rooms[RoomsI][RoomsJ].getEnemy(i).takeDamage(Rooms[RoomsI][RoomsJ].getPlayerAoe(j).getDamage());
                     if(Rooms[RoomsI][RoomsJ].getPlayerAoe(j).isFire() && Rooms[RoomsI][RoomsJ].getPlayerAoe(j).isIce())
-                        Rooms[RoomsI][RoomsJ].getEnemy(i).frostBurn(Rooms[RoomsI][RoomsJ].getPlayerAoe(j).getElementChance(),
+                        Rooms[RoomsI][RoomsJ].getEnemy(i).frostBurn((Player.getBurnChance() + Player.getChillChance())/2,
                                 Player.getBurnDamage(), Player.getBurnTime(), Player.getFreezeTime());
                     else if(Rooms[RoomsI][RoomsJ].getPlayerAoe(j).isFire())
-                        Rooms[RoomsI][RoomsJ].getEnemy(i).ignite(Rooms[RoomsI][RoomsJ].getPlayerAoe(j).getElementChance(),
+                        Rooms[RoomsI][RoomsJ].getEnemy(i).ignite(Player.getBurnChance(),
                                 Player.getBurnDamage(), Player.getBurnTime());
                     else if(Rooms[RoomsI][RoomsJ].getPlayerAoe(j).isIce())
-                        Rooms[RoomsI][RoomsJ].getEnemy(i).freeze(Rooms[RoomsI][RoomsJ].getPlayerAoe(j).getElementChance(),
+                        Rooms[RoomsI][RoomsJ].getEnemy(i).freeze(Player.getChillChance(),
                                 Player.getFreezeTime());
                 }
             }
@@ -1248,17 +1248,17 @@ public class GameInstance {
                     if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).isFire() && 
                             Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).isIce())
                     {
-                        Rooms[RoomsI][RoomsJ].getEnemy(i).frostBurn(Rooms[RoomsI][RoomsJ].getPlayerProjectile(j).getElementChance(),
+                        Rooms[RoomsI][RoomsJ].getEnemy(i).frostBurn((Player.getBurnChance() + Player.getChillChance())/2,
                                 Player.getBurnDamage(), Player.getBurnTime(), Player.getFreezeTime());
                     }
                     else if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).isFire())
                     {
-                        Rooms[RoomsI][RoomsJ].getEnemy(j).ignite(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getElementChance(),
+                        Rooms[RoomsI][RoomsJ].getEnemy(j).ignite(Player.getBurnChance(),
                                 Player.getBurnDamage(), Player.getBurnTime());
                     }
                     else if(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).isIce())
                     {
-                        Rooms[RoomsI][RoomsJ].getEnemy(j).freeze(Rooms[RoomsI][RoomsJ].getPlayerProjectile(i).getElementChance(),
+                        Rooms[RoomsI][RoomsJ].getEnemy(j).freeze(Player.getChillChance(),
                                 Player.getFreezeTime());
                     }
                     

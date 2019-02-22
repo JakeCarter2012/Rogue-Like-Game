@@ -14,10 +14,10 @@ abstract public class MovingEnemy extends MovingObject{
     protected int EnemyLevel;
     private int BumpDamage;
     protected int CurrentSpeed, NormalSpeed;
-    private int BurnResist, FreezeResist;
+    private boolean BurnImmune, FreezeImmune;
     private int BurnDamage;
     protected boolean Frozen, Chilled, Burning;
-    private int StatusTimer;
+    private int StatusRemainingTime, StatusDamageTimer;
     protected int ShadowX, ShadowY;
     protected Image Shadow;
     boolean GeneralCollision, CollisionUp, CollisionDown, CollisionRight,
@@ -25,7 +25,7 @@ abstract public class MovingEnemy extends MovingObject{
             RequestMoveDown, PlayerCollision;
     
     public MovingEnemy(int x, int y, int enemyLevel, int width, int height, int health, int speed, 
-            int bumpDmg, int burnRes, int iceRes, Image shadow)
+            int bumpDmg, boolean burnRes, boolean iceRes, Image shadow)
     {
         super(x, y, width, height, speed, 0);
         this.Health = health;
@@ -34,15 +34,16 @@ abstract public class MovingEnemy extends MovingObject{
         this.BumpDamage = bumpDmg;
         this.Frozen = false;
         this.Burning = false;
-        this.BurnResist = burnRes;
-        this.FreezeResist = iceRes;
+        this.BurnImmune = burnRes;
+        this.FreezeImmune = iceRes;
         this.Chilled = false;
-        this.StatusTimer = 0;
+        this.StatusRemainingTime = 0;
         this.BumpDamage = bumpDmg;
         this.NormalSpeed = this.CurrentSpeed = speed;
         this.GeneralCollision = CollisionDown = CollisionRight = CollisionUp = 
                 CollisionLeft = RequestMoveRight = RequestMoveLeft = RequestMoveUp =
                 RequestMoveDown = false;
+        this.StatusDamageTimer = 60;
     }
     
     public Image getShadow()
@@ -93,12 +94,11 @@ abstract public class MovingEnemy extends MovingObject{
             return false;
     }
     
-    public void ignite(int eleChance, int burnDmg, int burnTime)
+    public void ignite(int burnChance, int burnDmg, int burnTime)
     {
         //If BurnResist is at/above 100, enemy is immune to burning
-        if (this.BurnResist >= 100)
+        if (BurnImmune)
             return;
-        int burnChance = eleChance - this.BurnResist;
         if (burnChance <= 0)
             return;
         Random rnd = new Random();
@@ -106,7 +106,7 @@ abstract public class MovingEnemy extends MovingObject{
         //Generate random number; if it's within the burnChance, enemy is burned
         if(burnChance > rnd.nextInt(100))
         {
-            this.StatusTimer = burnTime;
+            this.StatusRemainingTime = burnTime;
             this.Frozen = false;
             this.Chilled = false;
             this.CurrentSpeed = this.NormalSpeed;
@@ -115,12 +115,11 @@ abstract public class MovingEnemy extends MovingObject{
         }
     }
     
-    public void freeze(int eleChance, int freezeTime)
+    public void freeze(int freezeChance, int freezeTime)
     {
         //If BurnResist is at/above 100, enemy is immune to freezing
-        if (this.FreezeResist == 100 || this.Frozen)
+        if (FreezeImmune || this.Frozen)
             return;
-        int freezeChance = eleChance - this.FreezeResist;
         if (freezeChance <= 0)
             return;
         Random rnd = new Random();
@@ -128,9 +127,9 @@ abstract public class MovingEnemy extends MovingObject{
         //Generate random number; if it's within the freezeChance, enemy is chilled
         if(freezeChance > rnd.nextInt(100))
         {
-            this.StatusTimer = freezeTime;
+            this.StatusRemainingTime = freezeTime;
             this.Burning = false;
-            //Roll the dice again for a chance to freeze enemy solid
+            //Roll the dice again for a eleChance to freeze enemy solid
             if(freezeChance > rnd.nextInt(100))
             {
                 this.Frozen = true;
@@ -149,20 +148,27 @@ abstract public class MovingEnemy extends MovingObject{
     public void frostBurn(int eleChance, int burnDmg, int burnTime, int freezeTime)
     {
         //If enemy is immune to freeze/burns, return
-        if (this.BurnResist >= 100 || this.FreezeResist >= 100)
+        if (BurnImmune)
+        {
+            this.freeze(eleChance, freezeTime);
             return;
-        int chance = eleChance - this.BurnResist - this.FreezeResist;
-        if (chance <= 0)
+        }
+        if(FreezeImmune)
+        {
+            this.ignite(eleChance, burnDmg, burnTime);
+        }
+        
+        if (eleChance <= 0)
             return;
         Random rnd = new Random();
         
        //Random number to determine if element takes effect
-        if(chance > rnd.nextInt(100))
+        if(eleChance > rnd.nextInt(100))
         {
             if(burnTime > freezeTime)
-                this.StatusTimer = freezeTime;
+                this.StatusRemainingTime = freezeTime;
             else
-                this.StatusTimer = burnTime;
+                this.StatusRemainingTime = burnTime;
 
             this.Frozen = false;
             this.Burning = true;
@@ -175,17 +181,25 @@ abstract public class MovingEnemy extends MovingObject{
     {
         if(this.Burning || this.Chilled || this.Frozen)
         {
-            this.StatusTimer--;
-            if(this.StatusTimer == 0)
+            this.StatusRemainingTime--;
+            if(this.StatusRemainingTime == 0)
             {
                 this.Burning = false;
                 this.Chilled = false;
                 this.Frozen = false;
+                this.StatusDamageTimer = 60;
                 this.CurrentSpeed = this.NormalSpeed;
                 return;
             }
             if(this.Burning)
-                this.Health = this.Health - this.BurnDamage;
+            {
+                this.StatusDamageTimer--;
+                if(this.StatusDamageTimer == 0)
+                {
+                    this.Health = this.Health - this.BurnDamage;
+                    this.StatusDamageTimer = 60;
+                }
+            }
         }
     }
     

@@ -18,7 +18,7 @@ public class DartGoblin extends MovingEnemy{
             Image[] endProjectile)
     {
         super(x, y, floor, moveLeft[0].getWidth(null), moveLeft[0].getHeight(null), 
-                100 + 50 * floor, 4, 50 + 25 * floor, 0, 0, shadow);
+                100 + 50 * floor, 4, 50 + 25 * floor, false, false, shadow);
         this.MoveLeftImages = moveLeft;
         this.MoveRightImages = moveRight;
         this.AttackLeft = attackLeft;

@@ -10,12 +10,11 @@ public abstract class Spell {
     private boolean Fire, Ice, Void;
     private Image Icon;
     private String SpellName;
-    private int ElementChance;
     private int Rarity;
     private String Description;
     
     public Spell(String spellName, int cooldown, boolean fire, boolean ice,
-            boolean Void, int elementChance, String description, int rarity, Image ico)
+            boolean Void, String description, int rarity, Image ico)
     {
         this.CoolDownTime = cooldown;
         this.Icon = ico;
@@ -25,7 +24,6 @@ public abstract class Spell {
         this.Fire = fire;
         this.Ice = ice;
         this.Void = Void;
-        this.ElementChance = elementChance;
         
         this.Rarity = rarity;
         this.Description = description;
@@ -64,11 +62,6 @@ public abstract class Spell {
     public boolean isVoid()
     {
         return this.Void;
-    }
-    
-    public int getElementChance()
-    {
-        return this.ElementChance;
     }
     
     public int getResetTime()
