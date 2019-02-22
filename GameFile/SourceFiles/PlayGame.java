@@ -58,7 +58,8 @@ public class PlayGame extends JPanel implements KeyListener{
     
     private JButton NeckBtn, RingBtn, TomeBtn, BootsBtn, Spell1Btn,
             Spell2Btn, Spell3Btn, Spell4Btn;
-    private JTextPane GearText, StatText, SpellText, FloorText;
+    private JTextPane GearText, LeftStatText, RightStatText,
+            SpellText, FloorText;
     private JLabel HoverLabel, MapLabel;
     
     private float OpaqueValue;
@@ -115,6 +116,15 @@ public class PlayGame extends JPanel implements KeyListener{
         this.OpaqueValue = 0f;
         this.OpaqueRaise = true;
         this.OpaqueLower = false;
+        
+        NeckBtn = null;
+        RingBtn = null;
+        TomeBtn = null;
+        BootsBtn = null;
+        Spell1Btn = null;
+        Spell2Btn = null;
+        Spell3Btn = null;
+        Spell4Btn = null;
         
         Game = new GameInstance(ScreenWidth, ScreenHeight);
         
@@ -187,7 +197,6 @@ public class PlayGame extends JPanel implements KeyListener{
         });
         */
         FloorText = new JTextPane();
-        FloorText = new JTextPane();
         FloorText.setBounds(69 + xOffSet, 35 + yOffSet, 374, 64);
         FloorText.setFont(new Font("Palatino Linotype", Font.PLAIN, 20));
         FloorText.setFocusable(false);
@@ -200,8 +209,54 @@ public class PlayGame extends JPanel implements KeyListener{
         FloorText.getStyledDocument().setParagraphAttributes(0, FloorText.getStyledDocument().getLength(), center, false);
         PauseMenu.add(FloorText);
         
+        LeftStatText = new JTextPane();
+        LeftStatText.setBounds(589 + xOffSet, 46 + yOffSet, 174, 320);
+        LeftStatText.setFont(new Font("Palatino Linotype", Font.PLAIN, 17));
+        LeftStatText.setFocusable(false);
+        LeftStatText.setOpaque(false);
+        LeftStatText.setText("");
+        LeftStatText.addStyle("Style", null);
+        StyleConstants.setForeground(style, Color.BLACK);
+        PauseMenu.add(LeftStatText);
+        
+        RightStatText = new JTextPane();
+        RightStatText.setBounds(773 + xOffSet, 46 + yOffSet, 169, 320);
+        RightStatText.setFont(new Font("Palatino Linotype", Font.PLAIN, 17));
+        RightStatText.setFocusable(false);
+        RightStatText.setOpaque(false);
+        RightStatText.setText("");
+        RightStatText.addStyle("Style", null);
+        StyleConstants.setForeground(style, Color.BLACK);
+        PauseMenu.add(RightStatText);
+        
+        JTextPane runeText = new JTextPane();
+        runeText.setBounds(69 + xOffSet, 625 + yOffSet, 374, 64);
+        runeText.setFont(new Font("Palatino Linotype", Font.PLAIN, 20));
+        runeText.setFocusable(false);
+        runeText.setOpaque(false);
+        runeText.addStyle("Title", null);
+        runeText.getStyledDocument().setParagraphAttributes(0, runeText.getStyledDocument().getLength(), center, false);
+        try {
+           runeText.getStyledDocument().insertString(
+                    runeText.getStyledDocument().getLength(), "Runes", style);
+        }catch(BadLocationException e){}
+        PauseMenu.add(runeText);
+        
+        JTextPane gearTitle = new JTextPane();
+        gearTitle.setBounds(587 + xOffSet, 394 + yOffSet, 186, 64);
+        gearTitle.setFont(new Font("Palatino Linotype", Font.PLAIN, 20));
+        gearTitle.setFocusable(false);
+        gearTitle.setOpaque(false);
+        gearTitle.addStyle("Title", null);
+        gearTitle.getStyledDocument().setParagraphAttributes(0, gearTitle.getStyledDocument().getLength(), center, false);
+        try {
+           gearTitle.getStyledDocument().insertString(
+                    gearTitle.getStyledDocument().getLength(), "Equipment", style);
+        }catch(BadLocationException e){}
+        PauseMenu.add(gearTitle);
+        
         GearText = new JTextPane();
-        GearText.setBounds(803 + xOffSet, 483 + yOffSet, 146, 184);
+        GearText.setBounds(803 + xOffSet, 393 + yOffSet, 146, 275);
         GearText.setFont(new Font("Palatino Linotype", Font.PLAIN, 16));
         GearText.setFocusable(false);
         GearText.setOpaque(false);
@@ -209,8 +264,21 @@ public class PlayGame extends JPanel implements KeyListener{
         GearText.addStyle("Style", null);
         PauseMenu.add(GearText);
         
+        JTextPane spellTitle = new JTextPane();
+        spellTitle.setBounds(69 + xOffSet, 494 + yOffSet, 374, 64);
+        spellTitle.setFont(new Font("Palatino Linotype", Font.PLAIN, 20));
+        spellTitle.setFocusable(false);
+        spellTitle.setOpaque(false);
+        spellTitle.addStyle("Title", null);
+        spellTitle.getStyledDocument().setParagraphAttributes(0, spellTitle.getStyledDocument().getLength(), center, false);
+        try {
+           spellTitle.getStyledDocument().insertString(
+                    spellTitle.getStyledDocument().getLength(), "Spells", style);
+        }catch(BadLocationException e){}
+        PauseMenu.add(spellTitle);
+        
         SpellText = new JTextPane();
-        SpellText.setBounds(75 + xOffSet, 368 + yOffSet, 361, 96);
+        SpellText.setBounds(75 + xOffSet, 368 + yOffSet, 361, 124);
         SpellText.setFont(new Font("Palatino Linotype", Font.PLAIN, 16));
         SpellText.setFocusable(false);
         SpellText.setOpaque(false);
@@ -249,6 +317,8 @@ public class PlayGame extends JPanel implements KeyListener{
         
         Style style = FloorText.getStyle("Title");
         
+        printPausePlayerStats();
+        
         FloorText.setText("");
         try {
             FloorText.getStyledDocument().insertString(
@@ -257,38 +327,98 @@ public class PlayGame extends JPanel implements KeyListener{
         
         if(Game.getPlayer().getNeck() != null)
         {
-            createGearButton(NeckBtn, Game.getPlayer().getNeck(), xOffSet + 602, yOffSet + 503);
+            if(NeckBtn != null)
+            {
+                PauseMenu.remove(NeckBtn);
+            }
+            NeckBtn = createGearButton(Game.getPlayer().getNeck(), xOffSet + 587, yOffSet + 443);
+            PauseMenu.add(NeckBtn);
+            PauseMenu.setComponentZOrder(NeckBtn, 1);
         }
         if(Game.getPlayer().getRing() != null)
         {
-            createGearButton(RingBtn, Game.getPlayer().getRing(), xOffSet + 602, yOffSet + 588);
+            if(RingBtn != null)
+            {
+                PauseMenu.remove(RingBtn);
+            }
+            RingBtn = createGearButton(Game.getPlayer().getRing(), xOffSet + 587, yOffSet + 558);
+            PauseMenu.add(RingBtn);
+            PauseMenu.setComponentZOrder(RingBtn, 1);
         }
         if(Game.getPlayer().getBoots() != null)
         {
-            createGearButton(BootsBtn, Game.getPlayer().getBoots(), xOffSet + 688, yOffSet + 588);
+            if(BootsBtn != null)
+            {
+                PauseMenu.remove(BootsBtn);
+            }
+            BootsBtn = createGearButton(Game.getPlayer().getBoots(), xOffSet + 703, yOffSet + 558);
+            PauseMenu.add(BootsBtn);
+            PauseMenu.setComponentZOrder(BootsBtn, 1);
         }
         if(Game.getPlayer().getTome() != null)
         {
-            createGearButton(TomeBtn, Game.getPlayer().getTome(), xOffSet + 688, yOffSet + 503);
+            if(TomeBtn != null)
+            {
+                PauseMenu.remove(TomeBtn);
+            }
+            TomeBtn = createGearButton(Game.getPlayer().getTome(), xOffSet + 703, yOffSet + 443);
+            PauseMenu.add(TomeBtn);
+            PauseMenu.setComponentZOrder(TomeBtn, 1);
         }
         
         if(Game.getPlayer().getSpell(0) != null)
         {
-            createSpellButton(Spell1Btn, Game.getPlayer().getSpell(0), xOffSet + 90, yOffSet + 527);
+            if(Spell1Btn == null)
+            {
+                Spell1Btn = createSpellButton(0, xOffSet + 90, yOffSet + 537);
+                PauseMenu.add(Spell1Btn);
+                PauseMenu.setComponentZOrder(Spell1Btn, 1);
+            }
+            else
+            {
+                Spell1Btn.setIcon(new ImageIcon(Game.getPlayer().getSpell(0).getIcon()));
+            }
         }
         if(Game.getPlayer().getSpell(1) != null)
         {
-            createSpellButton(Spell1Btn, Game.getPlayer().getSpell(1), xOffSet + 178, yOffSet + 527);
+            if(Spell2Btn == null)
+            {
+                Spell2Btn = createSpellButton(1, xOffSet + 178, yOffSet + 537);
+                PauseMenu.add(Spell2Btn);
+                PauseMenu.setComponentZOrder(Spell2Btn, 1);
+            }
+            else
+            {
+                Spell2Btn.setIcon(new ImageIcon(Game.getPlayer().getSpell(1).getIcon()));
+            }
         }
         if(Game.getPlayer().getSpell(2) != null)
         {
-            createSpellButton(Spell1Btn, Game.getPlayer().getSpell(2), xOffSet + 266, yOffSet + 527);
+            if(Spell3Btn == null)
+            {
+                Spell3Btn = createSpellButton(2, xOffSet + 266, yOffSet + 537);
+                PauseMenu.add(Spell3Btn);
+                PauseMenu.setComponentZOrder(Spell3Btn, 1);
+            }
+            else
+            {
+                Spell3Btn.setIcon(new ImageIcon(Game.getPlayer().getSpell(2).getIcon()));
+            }
         }
         if(Game.getPlayer().getSpell(3) != null)
         {
-            createSpellButton(Spell1Btn, Game.getPlayer().getSpell(3), xOffSet + 352, yOffSet + 527);
+            if(Spell4Btn == null)
+            {
+                Spell4Btn = createSpellButton(3, xOffSet + 352, yOffSet + 537);
+                PauseMenu.add(Spell4Btn);
+                PauseMenu.setComponentZOrder(Spell4Btn, 1);
+            }
+            else
+            {
+                Spell4Btn.setIcon(new ImageIcon(Game.getPlayer().getSpell(3).getIcon()));
+            }
         }
-            
+        
         this.PauseMenu.setVisible(true);
         this.PauseMenu.setFocusable(true);
     }
@@ -394,9 +524,9 @@ public class PlayGame extends JPanel implements KeyListener{
         gtemp.dispose();
     }
     
-    private void createGearButton(JButton btn, Gear gear, int x, int y)
+    private JButton createGearButton(Gear gear, int x, int y)
     {
-        btn = new JButton(new ImageIcon(gear.getSprite()));
+        JButton btn = new JButton(new ImageIcon(gear.getSprite()));
         btn.setBorder(BorderFactory.createEmptyBorder());
         btn.setContentAreaFilled(false);
         btn.setBounds(x, y, 67, 67);
@@ -414,13 +544,12 @@ public class PlayGame extends JPanel implements KeyListener{
                 HoverLabel.setVisible(false);
             }
         });
-        PauseMenu.add(btn);
-        PauseMenu.setComponentZOrder(btn, 1);
+        return btn;
     }
     
-    private void createSpellButton(JButton btn, Spell spell, int x, int y)
+    private JButton createSpellButton(int spellNumber, int x, int y)
     {
-        btn = new JButton(new ImageIcon(spell.getIcon()));
+        JButton btn = new JButton(new ImageIcon(Game.getPlayer().getSpell(spellNumber).getIcon()));
         btn.setBorder(BorderFactory.createEmptyBorder());
         btn.setContentAreaFilled(false);
         btn.setBounds(x, y, 68, 68);
@@ -430,7 +559,7 @@ public class PlayGame extends JPanel implements KeyListener{
                 HoverLabel.setBounds(x - 2, y - 2, 73, 73);
                 HoverLabel.setVisible(true);
                 PauseMenu.setComponentZOrder(HoverLabel, 2);
-                printPauseSpellText(spell);
+                printPauseSpellText(Game.getPlayer().getSpell(spellNumber));
             }
 
             public void mouseExited(MouseEvent evt) {
@@ -438,8 +567,56 @@ public class PlayGame extends JPanel implements KeyListener{
                 HoverLabel.setVisible(false);
             }
         });
-        PauseMenu.add(btn);
-        PauseMenu.setComponentZOrder(btn, 1);
+
+        return btn;
+    }
+    
+    private void printPausePlayerStats()
+    {
+        int xOffSet = (ScreenWidth - PauseMenuImg.getWidth(null)) / 2;
+        int yOffSet = (ScreenHeight - PauseMenuImg.getHeight(null)) / 2;
+        
+        LeftStatText.setText("");
+        RightStatText.setText("");
+        
+        Style style = LeftStatText.getStyle("Style");
+        StyleConstants.setForeground(style, Color.BLACK);
+        
+        String statInfo =  "";
+        
+        statInfo += "Level " + Game.getPlayer().getLevel() + "\n";
+        statInfo += "Health: " + Game.getPlayer().getCurrentHealth() + "/" + Game.getPlayer().getMaxHealth() + "\n";
+        statInfo += "Experience: " + Game.getPlayer().getExperience() + "/" + Game.getPlayer().getNextLevel() + "\n";
+        statInfo += "Skill points: " + Game.getPlayer().getSkillPoints() + "\n";
+        statInfo += "Gold: " + Game.getGold() + "\n\n";
+        statInfo += "Vitality: " + Game.getPlayer().getVitality() + "\n";
+        statInfo += "+_ Bonus Health" + "\n\n";
+        statInfo += "Intellect: " + Game.getPlayer().getIntellect() + "\n";
+        statInfo += "+_% Spell Damage\n\n";
+        statInfo += "MoveSpeed: " + Game.getPlayer().getMoveSpeed();
+        try {
+            LeftStatText.getStyledDocument().insertString(
+                    LeftStatText.getStyledDocument().getLength(), statInfo, style);
+        }catch(BadLocationException e){}
+        
+        style = RightStatText.getStyle("Style");
+        StyleConstants.setForeground(style, Color.BLACK);
+        
+        statInfo =  "";
+        statInfo += "Flame: " + Game.getPlayer().getFlame()  + "\n";
+        statInfo += "+_% Fire Damage" + "\n";
+        statInfo += "_% Burn Chance" + "\n";
+        statInfo += "_ Burn Damage" + "\n\n";
+        statInfo += "Frost: " + Game.getPlayer().getFrost()  + "\n";
+        statInfo += "+_% Ice Damage" + "\n";
+        statInfo += "_% Chill Chance" + "\n\n";
+        statInfo += "Void: " + Game.getPlayer().getVoid()  + "\n";
+        statInfo += "+_% Void Damage" + "\n";
+        
+        try {
+            RightStatText.getStyledDocument().insertString(
+                    RightStatText.getStyledDocument().getLength(), statInfo, style);
+        }catch(BadLocationException e){}
     }
     
     private void printPauseSpellText(Spell spell)

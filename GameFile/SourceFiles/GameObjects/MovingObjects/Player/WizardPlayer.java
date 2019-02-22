@@ -285,6 +285,36 @@ public class WizardPlayer extends MovingObject implements Observer{
             return false;
     }
     
+    public int getVitality()
+    {
+        return this.Vitality;
+    }
+    
+    public int getIntellect()
+    {
+        return this.Intellect;
+    }
+    
+    public int getFlame()
+    {
+        return this.Flame;
+    }
+    
+    public int getFrost()
+    {
+        return this.Frost;
+    }
+    
+    public int getVoid()
+    {
+        return this.Dark;
+    }
+    
+    public int getMoveSpeed()
+    {
+        return this.BaseSpeed;
+    }
+    
     public int getBurnTime()
     {
         return this.BurnTime;

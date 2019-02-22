@@ -711,6 +711,11 @@ public class GameInstance {
         return this.Player;
     }
     
+    public int getGold()
+    {
+        return this.Money;
+    }
+    
     public int getGameWith()
     {
         return this.GameWidth;
