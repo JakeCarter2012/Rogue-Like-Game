@@ -5,6 +5,7 @@ import SourceFiles.GameObjects.StationaryObjects.GearObjects.Gear;
 import SourceFiles.GameLogic.KeyControl;
 import SourceFiles.GameObjects.MovingObjects.Player.Spell;
 import java.awt.AlphaComposite;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -22,6 +23,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.MouseInfo;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
@@ -39,10 +42,12 @@ public class PlayGame extends JPanel implements KeyListener{
     main game loop.
     */
     
-    private BufferedImage bufImg;
+    private BufferedImage GameImg, bufImg;
     private Graphics2D g2d;
     private Image  TempleFloor,  NullSpellIcon, CurrentSpellIcon, ChilledImg, 
-            FrozenImg, HealthBar, HealthBarBackground, PauseMenuImg, HoverIcon;
+            FrozenImg, HealthBar, HealthBarBackground, PauseMenuImg, TalentMenuImg,
+            SettingsMenuImg, HoverIcon, CloseTabImg, PlayerTabImg, TalentTabImg, 
+            SettingsTabImg, HoverTabImg;
     
     //private final int ScreenWidth = 1024, ScreenHeight = 768;
     //private final int ScreenWidth = 540, ScreenHeight = 720;
@@ -51,7 +56,9 @@ public class PlayGame extends JPanel implements KeyListener{
     
     private boolean Paused, InGame;
     private JFrame GameWindow;
-    private JPanel PauseMenu, MainMenu;
+    private JPanel PauseMenu, MainMenu, TalentMenu, SettingsMenu;
+    private JPanel MenuCards;
+    private CardLayout MenuLayout;
     private GameEvents PlayerKeyEvent;
     private GameInstance Game;
     private boolean PauseTutorial;
@@ -60,12 +67,12 @@ public class PlayGame extends JPanel implements KeyListener{
             Spell2Btn, Spell3Btn, Spell4Btn;
     private JTextPane GearText, LeftStatText, RightStatText,
             SpellText, FloorText;
-    private JLabel HoverLabel, MapLabel;
+    private JLabel HoverLabel, MapLabel, PlayerTabHoverLabel, TalentTabHoverLabel,
+            SettingsTabHoverLabel, PlayerBackGroundLabel, TalentBackGroundLabel, 
+            SettingsBackGroundLabel;
     
     private float OpaqueValue;
     private boolean OpaqueLower, OpaqueRaise;
-    
-    private JButton testButton;
     
     private void startGame()
     {
@@ -86,9 +93,13 @@ public class PlayGame extends JPanel implements KeyListener{
         this.Paused = false;
         this.InGame = false;
         PauseTutorial = true;
+        
+        MenuLayout = new CardLayout();
+        MenuCards = new JPanel(MenuLayout);
+        GameWindow.add(MenuCards);
+        this.MenuCards.setVisible(false);
         //GameWindow.setExtendedState(JFrame.MAXIMIZED_BOTH);
         //GameWindow.setUndecorated(true);
-        
     }
     
     private void resourcesInit()
@@ -103,6 +114,14 @@ public class PlayGame extends JPanel implements KeyListener{
             this.HealthBarBackground = ImageIO.read(new File("Resources" + File.separator + "HealthBarBackground.png"));
             this.PauseMenuImg = ImageIO.read(new File("Resources" + File.separator + "PauseMenu.png"));
             this.HoverIcon = ImageIO.read(new File("Resources" + File.separator + "HoverIcon.png"));
+            
+            this.TalentMenuImg = ImageIO.read(new File("Resources" + File.separator + "TalentTree.png"));
+            this.SettingsMenuImg = ImageIO.read(new File("Resources" + File.separator + "PauseBookEmpty.png"));
+            this.CloseTabImg = ImageIO.read(new File("Resources" + File.separator + "CloseTab.png"));
+            this.PlayerTabImg = ImageIO.read(new File("Resources" + File.separator + "CharacterTab.png"));
+            this.TalentTabImg = ImageIO.read(new File("Resources" + File.separator + "TalentTab.png"));
+            this.SettingsTabImg = ImageIO.read(new File("Resources" + File.separator + "SettingsTab.png"));
+            this.HoverTabImg = ImageIO.read(new File("Resources" + File.separator + "TabHover.png"));
         }catch (Exception e) {
             System.out.print(e.getStackTrace() + " Error loading resources in PlayGsme \n");
         }
@@ -158,9 +177,102 @@ public class PlayGame extends JPanel implements KeyListener{
         });
     }
     
+    private void initializeMenus()
+    {
+        pauseMenuInit();
+        talentMenuInit();
+        settingsMenuInit();
+        mainMenuInit();
+    }
+    
     private void mainMenuInit()
     {
         
+    }
+    
+    
+    private JButton createCloseTab(JLabel tabHoverLabel)
+    {
+        int xOffSet = (ScreenWidth - PauseMenuImg.getWidth(null)) / 2;
+        int yOffSet = (ScreenHeight - PauseMenuImg.getHeight(null)) / 2;
+        
+        JButton closeTab = tabButtonInit(xOffSet + 992, yOffSet + 50, CloseTabImg, tabHoverLabel);
+        
+        closeTab.addActionListener(new ActionListener(){
+        public void actionPerformed(ActionEvent e){  
+            unPauseGame();
+        }
+        });
+        
+        return closeTab;
+    }
+    
+    private JButton createPlayerTab(JLabel tabHoverLabel)
+    {
+        int xOffSet = (ScreenWidth - PauseMenuImg.getWidth(null)) / 2;
+        int yOffSet = (ScreenHeight - PauseMenuImg.getHeight(null)) / 2;
+        
+        JButton playerTab = tabButtonInit(xOffSet + 992, yOffSet + 130, PlayerTabImg, tabHoverLabel);
+        
+        playerTab.addActionListener(new ActionListener(){
+        public void actionPerformed(ActionEvent e){  
+            MenuLayout.show(MenuCards, "PauseMenu");
+        }
+        });
+        
+        return playerTab;
+    }
+    
+    private JButton createSettingsTab(JLabel tabHoverLabel)
+    {
+        int xOffSet = (ScreenWidth - PauseMenuImg.getWidth(null)) / 2;
+        int yOffSet = (ScreenHeight - PauseMenuImg.getHeight(null)) / 2;
+        JButton settingsTab = tabButtonInit(xOffSet + 992, yOffSet + 230, SettingsTabImg, tabHoverLabel);
+        
+        settingsTab.addActionListener(new ActionListener(){
+        public void actionPerformed(ActionEvent e){  
+            MenuLayout.show(MenuCards, "SettingsMenu");
+        }
+        });
+        
+        return settingsTab;
+    }
+    
+    private JButton createTalentTab(JLabel tabHoverLabel)
+    {
+        int xOffSet = (ScreenWidth - PauseMenuImg.getWidth(null)) / 2;
+        int yOffSet = (ScreenHeight - PauseMenuImg.getHeight(null)) / 2;
+        
+        JButton talentTab = tabButtonInit(xOffSet + 992, yOffSet + 180, TalentTabImg, tabHoverLabel);
+        
+        talentTab.addActionListener(new ActionListener(){
+        public void actionPerformed(ActionEvent e){  
+            MenuLayout.show(MenuCards, "TalentMenu");
+        }
+        });
+        
+        return talentTab;
+    }
+    
+    private JButton tabButtonInit(int x, int y, Image btnImg, JLabel tabHoverLabel)
+    {
+        JButton btn = new JButton(new ImageIcon(btnImg));
+        btn.setBorder(BorderFactory.createEmptyBorder());
+        btn.setContentAreaFilled(false);
+        btn.setBounds(x, y, btnImg.getWidth(null), btnImg.getHeight(null));
+        btn.setFocusable(true);
+        btn.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent evt) {
+                tabHoverLabel.setBounds(x, y - 2, HoverTabImg.getWidth(null), HoverTabImg.getHeight(null));
+                tabHoverLabel.setVisible(true);
+                tabHoverLabel.getParent().setComponentZOrder(tabHoverLabel, 2);
+            }
+
+            public void mouseExited(MouseEvent evt) {
+                tabHoverLabel.setVisible(false);
+            }
+        });
+        return btn;
     }
     
     private void pauseMenuInit()
@@ -170,32 +282,12 @@ public class PlayGame extends JPanel implements KeyListener{
         being worked on, will display a map, equipped gear, and talent tree
         */
         PauseMenu = new JPanel();
-        PauseMenu.setVisible(false);
+        PauseMenu.setVisible(true);
         PauseMenu.setLayout(null);
         
         int xOffSet = (ScreenWidth - PauseMenuImg.getWidth(null)) / 2;
         int yOffSet = (ScreenHeight - PauseMenuImg.getHeight(null)) / 2;
         
-        /*
-        JButton testbut = new JButton(new ImageIcon(NullSpellIcon));
-        //testbut.setIcon(new ImageIcon(tempchar));
-        //testbut.setRolloverIcon(null);
-        //testbut.setDisabledIcon(null);
-        //testbut.setPressedIcon(icon);
-        //testbut.setRolloverSelectedIcon(icon);
-        testbut.setBorder(BorderFactory.createEmptyBorder());
-        testbut.setContentAreaFilled(false);
-        testbut.setBounds(100,100, this.NullSpellIcon.getWidth(null), NullSpellIcon.getHeight(null));
-        PauseMenu.add(testbut);
-        
-        testbut.setFocusable(false);
-        
-        testbut.addActionListener(new ActionListener(){
-        public void actionPerformed(ActionEvent e){  
-            //testtext.setText("pushed the button");
-        }
-        });
-        */
         FloorText = new JTextPane();
         FloorText.setBounds(69 + xOffSet, 35 + yOffSet, 374, 64);
         FloorText.setFont(new Font("Palatino Linotype", Font.PLAIN, 20));
@@ -303,7 +395,127 @@ public class PlayGame extends JPanel implements KeyListener{
         PauseMenu.add(MapLabel);
         PauseMenu.setComponentZOrder(MapLabel, 2);
         
-        GameWindow.add(PauseMenu);
+        this.PlayerBackGroundLabel = new JLabel();
+        this.PlayerBackGroundLabel.setBounds(0, 0, ScreenWidth, ScreenHeight);
+        
+        this.PlayerTabHoverLabel = new JLabel(new ImageIcon(HoverTabImg));
+        
+        JButton closeTab = createCloseTab(PlayerTabHoverLabel);
+        JButton playerTab = createPlayerTab(PlayerTabHoverLabel);
+        JButton talentTab = createTalentTab(PlayerTabHoverLabel);
+        JButton settingsTab = createSettingsTab(PlayerTabHoverLabel);
+        
+        PauseMenu.add(closeTab);
+        PauseMenu.setComponentZOrder(closeTab, 2);
+        
+        PauseMenu.add(playerTab);
+        PauseMenu.setComponentZOrder(playerTab, 2);
+        
+        PauseMenu.add(talentTab);
+        PauseMenu.setComponentZOrder(talentTab, 2);
+        
+        PauseMenu.add(settingsTab);
+        PauseMenu.setComponentZOrder(settingsTab, 2);
+        
+        PauseMenu.add(PlayerTabHoverLabel);
+        PauseMenu.setComponentZOrder(PlayerTabHoverLabel, 2);
+        
+        PauseMenu.add(PlayerBackGroundLabel);
+        PauseMenu.setComponentZOrder(PlayerBackGroundLabel, PauseMenu.getComponentCount() - 1);
+        
+        MenuCards.add(PauseMenu, "PauseMenu");
+    }
+    
+    private void talentMenuInit()
+    {
+        TalentMenu = new JPanel();
+        TalentMenu.setVisible(true);
+        TalentMenu.setLayout(null);
+        
+        int xOffSet = (ScreenWidth - TalentMenuImg.getWidth(null)) / 2;
+        int yOffSet = (ScreenHeight - TalentMenuImg.getHeight(null)) / 2;
+        
+        JLabel talentLabel = new JLabel(new ImageIcon(this.TalentMenuImg));
+        talentLabel.setBounds(xOffSet, yOffSet, TalentMenuImg.getWidth(null), TalentMenuImg.getHeight(null));
+        talentLabel.setVisible(true);
+        TalentMenu.add(talentLabel);
+        TalentMenu.setOpaque(false);
+        
+        this.TalentBackGroundLabel = new JLabel();
+        this.TalentBackGroundLabel.setBounds(0, 0, ScreenWidth, ScreenHeight);
+        
+        this.TalentTabHoverLabel = new JLabel(new ImageIcon(HoverTabImg));
+        
+        JButton closeTab = createCloseTab(TalentTabHoverLabel);
+        JButton playerTab = createPlayerTab(TalentTabHoverLabel);
+        JButton talentTab = createTalentTab(TalentTabHoverLabel);
+        JButton settingsTab = createSettingsTab(TalentTabHoverLabel);
+        
+        TalentMenu.add(closeTab);
+        TalentMenu.setComponentZOrder(closeTab, 0);
+        
+        TalentMenu.add(playerTab);
+        TalentMenu.setComponentZOrder(playerTab, 0);
+        
+        TalentMenu.add(talentTab);
+        TalentMenu.setComponentZOrder(talentTab, 0);
+        
+        TalentMenu.add(settingsTab);
+        TalentMenu.setComponentZOrder(settingsTab, 0);
+        
+        TalentMenu.add(TalentTabHoverLabel);
+        TalentMenu.setComponentZOrder(TalentTabHoverLabel, 0);
+        
+        TalentMenu.add(TalentBackGroundLabel);
+        TalentMenu.setComponentZOrder(TalentBackGroundLabel, TalentMenu.getComponentCount() - 1);
+        
+        this.MenuCards.add(TalentMenu, "TalentMenu");
+    }
+    
+    private void settingsMenuInit()
+    {
+        SettingsMenu = new JPanel();
+        SettingsMenu.setVisible(true);
+        SettingsMenu.setLayout(null);
+        
+        int xOffSet = (ScreenWidth - SettingsMenuImg.getWidth(null)) / 2;
+        int yOffSet = (ScreenHeight - SettingsMenuImg.getHeight(null)) / 2;
+        
+        JLabel settingsLabel = new JLabel(new ImageIcon(this.SettingsMenuImg));
+        settingsLabel.setBounds(xOffSet, yOffSet, SettingsMenuImg.getWidth(null), SettingsMenuImg.getHeight(null));
+        settingsLabel.setVisible(true);
+        SettingsMenu.add(settingsLabel);
+        SettingsMenu.setOpaque(false);
+        
+        this.SettingsBackGroundLabel = new JLabel();
+        this.SettingsBackGroundLabel.setBounds(0, 0, ScreenWidth, ScreenHeight);
+        
+        this.SettingsTabHoverLabel = new JLabel(new ImageIcon(HoverTabImg));
+        
+        JButton closeTab = createCloseTab(SettingsTabHoverLabel);
+        JButton playerTab = createPlayerTab(SettingsTabHoverLabel);
+        JButton talentTab = createTalentTab(SettingsTabHoverLabel);
+        JButton settingsTab = createSettingsTab(SettingsTabHoverLabel);
+        
+        SettingsMenu.add(closeTab);
+        SettingsMenu.setComponentZOrder(closeTab, 0);
+        
+        SettingsMenu.add(playerTab);
+        SettingsMenu.setComponentZOrder(playerTab, 0);
+        
+        SettingsMenu.add(talentTab);
+        SettingsMenu.setComponentZOrder(talentTab, 0);
+        
+        SettingsMenu.add(settingsTab);
+        SettingsMenu.setComponentZOrder(settingsTab, 0);
+        
+        SettingsMenu.add(SettingsTabHoverLabel);
+        SettingsMenu.setComponentZOrder(SettingsTabHoverLabel, 0);
+        
+        SettingsMenu.add(SettingsBackGroundLabel);
+        SettingsMenu.setComponentZOrder(SettingsBackGroundLabel, SettingsMenu.getComponentCount() - 1);
+        
+        MenuCards.add(SettingsMenu, "SettingsMenu");
     }
     
     private void pauseGame()
@@ -314,6 +526,10 @@ public class PlayGame extends JPanel implements KeyListener{
         int yOffSet = (ScreenHeight - PauseMenuImg.getHeight(null)) / 2;
         
         createMap();
+        
+        PlayerBackGroundLabel.setIcon(new ImageIcon(GameImg));
+        TalentBackGroundLabel.setIcon(new ImageIcon(GameImg));
+        SettingsBackGroundLabel.setIcon(new ImageIcon(GameImg));
         
         Style style = FloorText.getStyle("Title");
         
@@ -419,15 +635,27 @@ public class PlayGame extends JPanel implements KeyListener{
             }
         }
         
-        this.PauseMenu.setVisible(true);
-        this.PauseMenu.setFocusable(true);
+        if(Game.getPlayer().getSkillPoints() > 0)
+        {
+            this.MenuLayout.show(MenuCards, "TalentMenu");
+        }
+        else
+        {
+            this.MenuLayout.show(MenuCards, "PauseMenu");
+        }
+        this.MenuLayout.show(MenuCards, "PauseMenu");
+        this.MenuCards.setVisible(true);
+        this.setVisible(false);
     }
     
     private void unPauseGame()
     {
         this.Paused = false;
-        this.PauseMenu.setVisible(false);
-        this.PauseMenu.setFocusable(false);
+        this.setVisible(true);
+        this.PlayerTabHoverLabel.setVisible(false);
+        this.SettingsTabHoverLabel.setVisible(false);
+        this.TalentTabHoverLabel.setVisible(false);        
+        this.MenuCards.setVisible(false);
     }
     
     private void createMap()
@@ -868,15 +1096,6 @@ public class PlayGame extends JPanel implements KeyListener{
         Game.updateGame((int)mouseX, (int)mouseY);
     }
     
-
-    private void mainMenu()
-    {
-        /*
-        Initializes the main game menu. Still needs implementation
-        */
-    }
-    
-
     @Override
     public void paintComponent(Graphics g) {
         /*
@@ -1185,7 +1404,6 @@ public class PlayGame extends JPanel implements KeyListener{
             }
         }
         
-        
         paintStrings();
         
         for(int i = 0; i < 4; i ++)
@@ -1296,9 +1514,9 @@ public class PlayGame extends JPanel implements KeyListener{
         
         g2d.drawImage(this.HealthBar, 40 + xShift, 40 + yShift, this);
         
-        BufferedImage shiftImg = bufImg.getSubimage(xShift, yShift, (int)scaledWidth, (int)scaledHeight);
+        GameImg = bufImg.getSubimage(xShift, yShift, (int)scaledWidth, (int)scaledHeight);
         gtemp.scale(scale, scale);
-        gtemp.drawImage(shiftImg, 0, 0, this);
+        gtemp.drawImage(GameImg, 0, 0, this);
         
         gtemp.dispose();
     }
@@ -1520,18 +1738,14 @@ public class PlayGame extends JPanel implements KeyListener{
     }
     
     
-    
     public static void main(String[] args) {
         PlayGame game = new PlayGame();
-        //game.startGame();
         game.resourcesInit();
         game.startGame();
-        game.pauseMenuInit();
-        game.mainMenuInit();
+        game.initializeMenus();
         game.newGameInit();
         game.GameWindow.setVisible(true);
         //game.musicThreadLoop();
-        //game.mainMenu();
         game.timerLoop();
     }
 }
