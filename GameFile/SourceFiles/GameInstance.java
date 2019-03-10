@@ -308,15 +308,19 @@ public class GameInstance {
         }
         
         //Now constant spells/objects that never change are created
-        String iceShardString = "Fires a volley of ice shards. Has a chance to chill enemies.";
-        String fireBallString = "Hurls a ball of fire. Has a chance to burn enemies.";
-        String voidWaveString = "Launches a wave of void energy that cuts through enemies.";
+        String iceShardString1 = "Fires a volley of ice shards, dealing ";
+        String iceShardString2 = " ice damage. Has a chance to chill enemies.";
+        String fireBallString1 = "Hurls a ball of fire, dealing ";
+        String fireBallString2 = " fire damage. Has a chance to burn enemies.";
+        String voidWaveString1 = "Launches a wave of void energy, dealing ";
+        String voidWaveString2 = " damage while traveling through enemies. Deals "
+                + "more damage the longer it stays in contact with enemies.";
         IceShards = new ProjectileSpell("Ice Shards", 20, 10, 30, false, true, false,
-                iceShardString, 2, IceShardsImg, IceShardsIcon, IceShardsShadow, IceShardsBreak);
+                iceShardString1, iceShardString2, 2, IceShardsImg, IceShardsIcon, IceShardsShadow, IceShardsBreak);
         FireBall = new ProjectileSpell("Fire Ball", 20, 10, 30, true, false, false,
-                fireBallString, 2, FireBallImg, FireBallIcon, FireBallShadow, FireBallEnd);
+                fireBallString1, fireBallString2, 2, FireBallImg, FireBallIcon, FireBallShadow, FireBallEnd);
         VoidWave = new ProjectileSpell("Void Wave", 5, 10, 119, false, false, true,
-                voidWaveString, 2, VoidWaveImg, VoidWaveIcon, VoidWaveShadow, VoidWaveEnd);
+                voidWaveString1, voidWaveString2, 2, VoidWaveImg, VoidWaveIcon, VoidWaveShadow, VoidWaveEnd);
         
         Burning = new Animation(0, 0, 0, BurningImgs, 3, true);
         
@@ -734,6 +738,16 @@ public class GameInstance {
     public Room getRoom(int i, int j)
     {
         return this.Rooms[i][j];
+    }
+    
+    public int getRoomsI()
+    {
+        return RoomsI;
+    }
+    
+    public int getRoomsJ()
+    {
+        return RoomsJ;
     }
     
     public Wall[] getWalls()

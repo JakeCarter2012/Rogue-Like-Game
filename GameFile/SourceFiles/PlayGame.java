@@ -47,7 +47,7 @@ public class PlayGame extends JPanel implements KeyListener{
     private Image  TempleFloor,  NullSpellIcon, CurrentSpellIcon, ChilledImg, 
             FrozenImg, HealthBar, HealthBarBackground, PauseMenuImg, TalentMenuImg,
             SettingsMenuImg, HoverIcon, CloseTabImg, PlayerTabImg, TalentTabImg, 
-            SettingsTabImg, HoverTabImg;
+            SettingsTabImg, HoverTabImg, PlayerHead;
     
     //private final int ScreenWidth = 1024, ScreenHeight = 768;
     //private final int ScreenWidth = 540, ScreenHeight = 720;
@@ -113,9 +113,9 @@ public class PlayGame extends JPanel implements KeyListener{
             this.FrozenImg = ImageIO.read(new File("Resources" + File.separator + "frozen.png"));
             this.HealthBar = ImageIO.read(new File("Resources" + File.separator + "HealthBar.png"));
             this.HealthBarBackground = ImageIO.read(new File("Resources" + File.separator + "HealthBarBackground.png"));
+            
             this.PauseMenuImg = ImageIO.read(new File("Resources" + File.separator + "PauseMenu.png"));
             this.HoverIcon = ImageIO.read(new File("Resources" + File.separator + "HoverIcon.png"));
-            
             this.TalentMenuImg = ImageIO.read(new File("Resources" + File.separator + "TalentTree.png"));
             this.SettingsMenuImg = ImageIO.read(new File("Resources" + File.separator + "PauseBookEmpty.png"));
             this.CloseTabImg = ImageIO.read(new File("Resources" + File.separator + "CloseTab.png"));
@@ -123,6 +123,7 @@ public class PlayGame extends JPanel implements KeyListener{
             this.TalentTabImg = ImageIO.read(new File("Resources" + File.separator + "TalentTab.png"));
             this.SettingsTabImg = ImageIO.read(new File("Resources" + File.separator + "SettingsTab.png"));
             this.HoverTabImg = ImageIO.read(new File("Resources" + File.separator + "TabHover.png"));
+            this.PlayerHead = ImageIO.read(new File("Resources" + File.separator + "PlayerHead.png"));
         }catch (Exception e) {
             System.out.print(e.getStackTrace() + " Error loading resources in PlayGsme \n");
         }
@@ -694,6 +695,11 @@ public class PlayGame extends JPanel implements KeyListener{
                     if(Game.getRoom(i, j).wasVisited())
                     {
                         gtemp.fillRect(j * 70, i * 50, 60, 40);
+                        if(Game.getRoomsI() == i && Game.getRoomsJ() == j)
+                        {
+                            gtemp.drawImage(PlayerHead, j * 70 + 30 - (PlayerHead.getWidth(null)/2), 
+                                    i * 50 + 20 - (PlayerHead.getHeight(null)/2), null);
+                        }
                     }
                     else
                     {
@@ -789,7 +795,7 @@ public class PlayGame extends JPanel implements KeyListener{
                 HoverLabel.setBounds(x - 2, y - 2, 73, 73);
                 HoverLabel.setVisible(true);
                 PauseMenu.setComponentZOrder(HoverLabel, 2);
-                printPauseSpellText(Game.getPlayer().getSpell(spellNumber));
+                printPauseSpellText(spellNumber);
             }
 
             public void mouseExited(MouseEvent evt) {
@@ -849,13 +855,15 @@ public class PlayGame extends JPanel implements KeyListener{
         }catch(BadLocationException e){}
     }
     
-    private void printPauseSpellText(Spell spell)
+    private void printPauseSpellText(int spellNumber)
     {
         Color purple = new Color(100, 0, 150);
         Color blue = new Color(0, 0, 250);
         Color orange = new Color(230, 80, 0);
         
         Style style = GearText.getStyle("Style");
+        
+        Spell spell = Game.getPlayer().getSpell(spellNumber);
         
         if(spell.getRarity() == 2)
         {
@@ -896,7 +904,7 @@ public class PlayGame extends JPanel implements KeyListener{
         
         spellInfo += Integer.toString(spell.getResetTime()/60) + " seconds\n";
         
-        spellInfo = spell.getDescription() + "\n";
+        spellInfo = Game.getPlayer().getSpellDescription(spellNumber) + "\n";
         
         try {
             SpellText.getStyledDocument().insertString(

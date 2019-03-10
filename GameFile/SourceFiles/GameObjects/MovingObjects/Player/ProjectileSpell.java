@@ -13,10 +13,10 @@ public class ProjectileSpell extends DamagingSpell{
     private Image[] EndAnimationImage;
     
     public ProjectileSpell(String spellName, int dmg, int speed, int cooldown, 
-            boolean fire, boolean ice, boolean Void, String description, 
+            boolean fire, boolean ice, boolean Void, String description, String description2,
             int rarity,Image img, Image ico, Image shadow, Image[] endAnimation)
     {
-        super(spellName, dmg, cooldown, fire, ice, Void, description, rarity, ico);
+        super(spellName, dmg, cooldown, fire, ice, Void, description, description2, rarity, ico);
         this.Speed = speed;
         this.Sprite = img;
         this.Shadow = shadow;

@@ -13,9 +13,9 @@ public class AoeSpell extends DamagingSpell{
     
     public AoeSpell(String spellName, int damage, int duration, int cooldown, 
             boolean fire, boolean ice, boolean Void, String description, 
-            int rarity, Image[] imgs, Image ico)
+            String description2, int rarity, Image[] imgs, Image ico)
     {
-        super(spellName, damage, cooldown, fire, ice, Void, description, rarity, ico);
+        super(spellName, damage, cooldown, fire, ice, Void, description, description2, rarity, ico);
         this.Duration = duration;
         this.Sprites = imgs;
     }

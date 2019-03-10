@@ -362,7 +362,7 @@ public class WizardPlayer extends MovingObject implements Observer{
     
     public int getSpellDamage(int spellNumber)
     {
-        double spellDamage = ((DamagingSpell)this.SpellBook.get(CurrentSpellPage)).getDamage();
+        double spellDamage = ((DamagingSpell)this.SpellBook.get(spellNumber)).getDamage();
         
         double spellDamageBonus = this.getBonusSpellDamage();
         double flameDamageBonus = this.getBonusFlameDamage();
@@ -376,15 +376,15 @@ public class WizardPlayer extends MovingObject implements Observer{
         
         spellDamage = spellDamage *  spellDamageBonus;
         
-        if(this.SpellBook.get(CurrentSpellPage).isFire())
+        if(this.SpellBook.get(spellNumber).isFire())
         {
             spellDamage = spellDamage * flameDamageBonus;
         }
-        if(this.SpellBook.get(CurrentSpellPage).isIce())
+        if(this.SpellBook.get(spellNumber).isIce())
         {
             spellDamage = spellDamage * frostDamageBonus;
         }
-        if(this.SpellBook.get(CurrentSpellPage).isVoid())
+        if(this.SpellBook.get(spellNumber).isVoid())
         {
             spellDamage = spellDamage * voidDamageBonus;
         }
@@ -465,6 +465,28 @@ public class WizardPlayer extends MovingObject implements Observer{
     public boolean getVerticalCollision()
     {
         return this.VerticalCollision;
+    }
+    
+    public String getSpellDescription(int i)
+    {
+        if(i < this.SpellBook.size())
+        {
+            if(SpellBook.get(i) instanceof DamagingSpell)
+            {
+                String description = SpellBook.get(i).getDescription();
+                description += getSpellDamage(i);
+                description += ((DamagingSpell)SpellBook.get(i)).getSecondDescription();
+                return description;
+            }
+            else
+            {
+                return SpellBook.get(i).getDescription();
+            }
+        }
+        else
+        {
+            return "";
+        }
     }
     
     public void clearedRoom()
