@@ -71,6 +71,7 @@ public class PlayGame extends JPanel implements KeyListener{
             SettingsTabHoverLabel, PlayerBackGroundLabel, TalentBackGroundLabel, 
             SettingsBackGroundLabel;
     
+    private int MissingHealth;
     private float OpaqueValue;
     private boolean OpaqueLower, OpaqueRaise;
     
@@ -132,6 +133,7 @@ public class PlayGame extends JPanel implements KeyListener{
         this.Paused = false;
         this.InGame = true;
         
+        this.MissingHealth = 0;
         this.OpaqueValue = 0f;
         this.OpaqueRaise = true;
         this.OpaqueLower = false;
@@ -1476,6 +1478,19 @@ public class PlayGame extends JPanel implements KeyListener{
         g2d.fillRect(112 + xShift, 72 + yShift, hpWidth, 1);
         g2d.setColor(new Color(90, 0, 135));
         g2d.fillRect(115 + xShift, 80 + yShift, xpWidth, 5);
+        
+        if(MissingHealth > Game.getPlayer().getCurrentHealth())
+        {
+            int missingWidth = 211 * (MissingHealth - Game.getPlayer().getCurrentHealth()) 
+                    / Game.getPlayer().getMaxHealth();
+            g2d.setColor(new Color(200, 0, 0));
+            g2d.fillRect(112 + xShift + hpWidth + 1, 60 + yShift, missingWidth, 12);
+            MissingHealth -= 2;
+        }
+        else
+        {
+            MissingHealth = Game.getPlayer().getCurrentHealth();
+        }
         
         Color frostColor = new Color(0, 100, 225);
         Color flameColor = new Color(250, 0, 0);
