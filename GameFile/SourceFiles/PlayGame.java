@@ -192,6 +192,18 @@ public class PlayGame extends JPanel implements KeyListener{
         });
     }
     
+    private void resizeScreen(String screenSize)
+    {
+        //rewrite save file
+        
+        parseScreenSize(screenSize);
+    }
+    
+    private void parseScreenSize(String screenSize)
+    {
+        
+    }
+    
     private void initializeMenus()
     {
         BackgroundLabel = new JLabel();
@@ -208,7 +220,6 @@ public class PlayGame extends JPanel implements KeyListener{
         
     }
     
-    
     private JButton createCloseTab(JLabel tabHoverLabel)
     {
         int xOffSet = (ScreenWidth - PauseMenuImg.getWidth(null)) / 2;
@@ -217,9 +228,9 @@ public class PlayGame extends JPanel implements KeyListener{
         JButton closeTab = tabButtonInit(xOffSet + 992, yOffSet + 50, CloseTabImg, tabHoverLabel);
         
         closeTab.addActionListener(new ActionListener(){
-        public void actionPerformed(ActionEvent e){  
-            unPauseGame();
-        }
+            public void actionPerformed(ActionEvent e){  
+                unPauseGame();
+            }
         });
         
         return closeTab;
@@ -233,11 +244,11 @@ public class PlayGame extends JPanel implements KeyListener{
         JButton playerTab = tabButtonInit(xOffSet + 992, yOffSet + 130, PlayerTabImg, tabHoverLabel);
         
         playerTab.addActionListener(new ActionListener(){
-        public void actionPerformed(ActionEvent e){
-            PauseMenu.add(BackgroundLabel);
-            PauseMenu.setComponentZOrder(BackgroundLabel, PauseMenu.getComponentCount() - 1);
-            MenuLayout.show(MenuCards, "PauseMenu");
-        }
+            public void actionPerformed(ActionEvent e){
+                PauseMenu.add(BackgroundLabel);
+                PauseMenu.setComponentZOrder(BackgroundLabel, PauseMenu.getComponentCount() - 1);
+                MenuLayout.show(MenuCards, "PauseMenu");
+            }
         });
         
         return playerTab;
@@ -250,11 +261,11 @@ public class PlayGame extends JPanel implements KeyListener{
         JButton settingsTab = tabButtonInit(xOffSet + 992, yOffSet + 230, SettingsTabImg, tabHoverLabel);
         
         settingsTab.addActionListener(new ActionListener(){
-        public void actionPerformed(ActionEvent e){  
-            SettingsMenu.add(BackgroundLabel);
-            SettingsMenu.setComponentZOrder(BackgroundLabel, SettingsMenu.getComponentCount() - 1);
-            MenuLayout.show(MenuCards, "SettingsMenu");
-        }
+            public void actionPerformed(ActionEvent e){  
+                SettingsMenu.add(BackgroundLabel);
+                SettingsMenu.setComponentZOrder(BackgroundLabel, SettingsMenu.getComponentCount() - 1);
+                MenuLayout.show(MenuCards, "SettingsMenu");
+            }
         });
         
         return settingsTab;
@@ -268,11 +279,11 @@ public class PlayGame extends JPanel implements KeyListener{
         JButton talentTab = tabButtonInit(xOffSet + 992, yOffSet + 180, TalentTabImg, tabHoverLabel);
         
         talentTab.addActionListener(new ActionListener(){
-        public void actionPerformed(ActionEvent e){  
-            TalentMenu.add(BackgroundLabel);
-            TalentMenu.setComponentZOrder(BackgroundLabel, TalentMenu.getComponentCount() - 1);
-            MenuLayout.show(MenuCards, "TalentMenu");
-        }
+            public void actionPerformed(ActionEvent e){  
+                TalentMenu.add(BackgroundLabel);
+                TalentMenu.setComponentZOrder(BackgroundLabel, TalentMenu.getComponentCount() - 1);
+                MenuLayout.show(MenuCards, "TalentMenu");
+            }
         });
         
         return talentTab;
@@ -284,7 +295,7 @@ public class PlayGame extends JPanel implements KeyListener{
         btn.setBorder(BorderFactory.createEmptyBorder());
         btn.setContentAreaFilled(false);
         btn.setBounds(x, y, btnImg.getWidth(null), btnImg.getHeight(null));
-        btn.setFocusable(true);
+        btn.setFocusable(false);
         btn.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent evt) {
                 tabHoverLabel.setBounds(x, y - 2, HoverTabImg.getWidth(null), HoverTabImg.getHeight(null));
@@ -566,6 +577,21 @@ public class PlayGame extends JPanel implements KeyListener{
         
         initializeScreenSizeSettings();
         
+        JButton exitButton = new JButton("Exit to Desktop");
+        exitButton.setBounds(78 + xOffSet, 114 + yOffSet, 125, 20);
+        exitButton.setBackground(new Color(176, 126, 64));
+        exitButton.setBorder(BorderFactory.createLineBorder(new Color(124, 82, 34)));
+        exitButton.setFont(new Font("Palatino Linotype", Font.PLAIN, 15));
+        exitButton.setForeground(Color.black);
+        exitButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                System.exit(0);
+            }
+        });
+        UIManager.put("Button.select", new Color(200, 143, 80));
+        SettingsMenu.add(exitButton);
+        SettingsMenu.setComponentZOrder(exitButton, 0);
+        
         JButton closeTab = createCloseTab(SettingsTabHoverLabel);
         JButton playerTab = createPlayerTab(SettingsTabHoverLabel);
         JButton talentTab = createTalentTab(SettingsTabHoverLabel);
@@ -595,7 +621,7 @@ public class PlayGame extends JPanel implements KeyListener{
         int yOffSet = (ScreenHeight - SettingsMenuImg.getHeight(null)) / 2;
         
         JComboBox screenSizes = new JComboBox();
-        screenSizes.setBounds(185 + xOffSet, 80 + yOffSet, 170, 20);
+        screenSizes.setBounds(224 + xOffSet, 80 + yOffSet, 170, 20);
         screenSizes.setUI(new BasicComboBoxUI(){
             @Override
             protected JButton createArrowButton() {
@@ -644,6 +670,13 @@ public class PlayGame extends JPanel implements KeyListener{
                 return sizeOption;
             }
         });
+        
+        screenSizes.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                resizeScreen((String)screenSizes.getSelectedItem());
+            }
+        });
+        
         SettingsMenu.add(screenSizes);
         SettingsMenu.setComponentZOrder(screenSizes, 0);
     }
@@ -776,7 +809,6 @@ public class PlayGame extends JPanel implements KeyListener{
             this.MenuLayout.show(MenuCards, "PauseMenu");
         }
         
-        this.MenuLayout.show(MenuCards, "PauseMenu");
         this.MenuCards.setVisible(true);
     }
     
