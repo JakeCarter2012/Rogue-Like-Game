@@ -322,7 +322,7 @@ public class WizardPlayer extends MovingObject implements Observer{
     
     public int getBurnDamage()
     {
-        return this.Flame;
+        return this.Flame + 5;
     }
     
     public int getBonusFlameDamage()

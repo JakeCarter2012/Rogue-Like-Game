@@ -7,6 +7,7 @@ import SourceFiles.GameObjects.MovingObjects.Player.Spell;
 import java.awt.AlphaComposite;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -28,8 +29,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import javafx.embed.swing.SwingFXUtils;
 import javax.swing.*;
+import javax.swing.JComboBox;
+import javax.swing.border.Border;
+import javax.swing.plaf.ComboBoxUI;
+import javax.swing.plaf.ComponentUI;
+import javax.swing.plaf.basic.BasicArrowButton;
+import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
@@ -42,7 +50,7 @@ public class PlayGame extends JPanel implements KeyListener{
     main game loop.
     */
     
-    private BufferedImage GameImg, bufImg;
+    private BufferedImage bufImg, GameImg;
     private Graphics2D g2d;
     private Image  TempleFloor,  NullSpellIcon, CurrentSpellIcon, ChilledImg, 
             FrozenImg, HealthBar, HealthBarBackground, PauseMenuImg, TalentMenuImg,
@@ -50,7 +58,8 @@ public class PlayGame extends JPanel implements KeyListener{
             SettingsTabImg, HoverTabImg, PlayerHead;
     
     //private final int ScreenWidth = 1024, ScreenHeight = 768;
-    //private final int ScreenWidth = 540, ScreenHeight = 720;
+    //private final int ScreenWidth = screenSize;
+    //private final int ScreenWidth = 1920, ScreenHeight = 1080;
     private final int ScreenWidth = 1280, ScreenHeight = 960;
     private final int FPS = 60;
     
@@ -68,8 +77,7 @@ public class PlayGame extends JPanel implements KeyListener{
     private JTextPane GearText, LeftStatText, RightStatText,
             SpellText, FloorText;
     private JLabel HoverLabel, MapLabel, PlayerTabHoverLabel, TalentTabHoverLabel,
-            SettingsTabHoverLabel, PlayerBackGroundLabel, TalentBackGroundLabel, 
-            SettingsBackGroundLabel;
+            SettingsTabHoverLabel, BackgroundLabel;
     
     private int MissingHealth;
     private float OpaqueValue;
@@ -99,6 +107,10 @@ public class PlayGame extends JPanel implements KeyListener{
         MenuCards = new JPanel(MenuLayout);
         GameWindow.add(MenuCards);
         this.MenuCards.setVisible(false);
+        MenuCards.setOpaque(true);
+        
+        
+        //MenuCards.setBackground(Color.yellow);
         //GameWindow.setExtendedState(JFrame.MAXIMIZED_BOTH);
         //GameWindow.setUndecorated(true);
     }
@@ -182,6 +194,9 @@ public class PlayGame extends JPanel implements KeyListener{
     
     private void initializeMenus()
     {
+        BackgroundLabel = new JLabel();
+        BackgroundLabel.setBounds(0, 0, ScreenWidth, ScreenHeight);
+        
         pauseMenuInit();
         talentMenuInit();
         settingsMenuInit();
@@ -218,7 +233,9 @@ public class PlayGame extends JPanel implements KeyListener{
         JButton playerTab = tabButtonInit(xOffSet + 992, yOffSet + 130, PlayerTabImg, tabHoverLabel);
         
         playerTab.addActionListener(new ActionListener(){
-        public void actionPerformed(ActionEvent e){  
+        public void actionPerformed(ActionEvent e){
+            PauseMenu.add(BackgroundLabel);
+            PauseMenu.setComponentZOrder(BackgroundLabel, PauseMenu.getComponentCount() - 1);
             MenuLayout.show(MenuCards, "PauseMenu");
         }
         });
@@ -234,6 +251,8 @@ public class PlayGame extends JPanel implements KeyListener{
         
         settingsTab.addActionListener(new ActionListener(){
         public void actionPerformed(ActionEvent e){  
+            SettingsMenu.add(BackgroundLabel);
+            SettingsMenu.setComponentZOrder(BackgroundLabel, SettingsMenu.getComponentCount() - 1);
             MenuLayout.show(MenuCards, "SettingsMenu");
         }
         });
@@ -250,6 +269,8 @@ public class PlayGame extends JPanel implements KeyListener{
         
         talentTab.addActionListener(new ActionListener(){
         public void actionPerformed(ActionEvent e){  
+            TalentMenu.add(BackgroundLabel);
+            TalentMenu.setComponentZOrder(BackgroundLabel, TalentMenu.getComponentCount() - 1);
             MenuLayout.show(MenuCards, "TalentMenu");
         }
         });
@@ -287,6 +308,7 @@ public class PlayGame extends JPanel implements KeyListener{
         PauseMenu = new JPanel();
         PauseMenu.setVisible(true);
         PauseMenu.setLayout(null);
+        PauseMenu.setOpaque(true);
         
         int xOffSet = (ScreenWidth - PauseMenuImg.getWidth(null)) / 2;
         int yOffSet = (ScreenHeight - PauseMenuImg.getHeight(null)) / 2;
@@ -398,9 +420,6 @@ public class PlayGame extends JPanel implements KeyListener{
         PauseMenu.add(MapLabel);
         PauseMenu.setComponentZOrder(MapLabel, 2);
         
-        this.PlayerBackGroundLabel = new JLabel();
-        this.PlayerBackGroundLabel.setBounds(0, 0, ScreenWidth, ScreenHeight);
-        
         this.PlayerTabHoverLabel = new JLabel(new ImageIcon(HoverTabImg));
         
         JButton closeTab = createCloseTab(PlayerTabHoverLabel);
@@ -423,9 +442,6 @@ public class PlayGame extends JPanel implements KeyListener{
         PauseMenu.add(PlayerTabHoverLabel);
         PauseMenu.setComponentZOrder(PlayerTabHoverLabel, 2);
         
-        PauseMenu.add(PlayerBackGroundLabel);
-        PauseMenu.setComponentZOrder(PlayerBackGroundLabel, PauseMenu.getComponentCount() - 1);
-        
         MenuCards.add(PauseMenu, "PauseMenu");
     }
     
@@ -442,10 +458,7 @@ public class PlayGame extends JPanel implements KeyListener{
         talentLabel.setBounds(xOffSet, yOffSet, TalentMenuImg.getWidth(null), TalentMenuImg.getHeight(null));
         talentLabel.setVisible(true);
         TalentMenu.add(talentLabel);
-        TalentMenu.setOpaque(false);
-        
-        this.TalentBackGroundLabel = new JLabel();
-        this.TalentBackGroundLabel.setBounds(0, 0, ScreenWidth, ScreenHeight);
+        TalentMenu.setOpaque(true);
         
         this.TalentTabHoverLabel = new JLabel(new ImageIcon(HoverTabImg));
         
@@ -469,9 +482,6 @@ public class PlayGame extends JPanel implements KeyListener{
         TalentMenu.add(TalentTabHoverLabel);
         TalentMenu.setComponentZOrder(TalentTabHoverLabel, 0);
         
-        TalentMenu.add(TalentBackGroundLabel);
-        TalentMenu.setComponentZOrder(TalentBackGroundLabel, TalentMenu.getComponentCount() - 1);
-        
         this.MenuCards.add(TalentMenu, "TalentMenu");
     }
     
@@ -488,12 +498,73 @@ public class PlayGame extends JPanel implements KeyListener{
         settingsLabel.setBounds(xOffSet, yOffSet, SettingsMenuImg.getWidth(null), SettingsMenuImg.getHeight(null));
         settingsLabel.setVisible(true);
         SettingsMenu.add(settingsLabel);
-        SettingsMenu.setOpaque(false);
+        SettingsMenu.setOpaque(true);
         
-        this.SettingsBackGroundLabel = new JLabel();
-        this.SettingsBackGroundLabel.setBounds(0, 0, ScreenWidth, ScreenHeight);
+        JTextPane controlsText = new JTextPane();
+        controlsText.setBounds(589 + xOffSet, 46 + yOffSet, 361, 620);
+        controlsText.setFont(new Font("Palatino Linotype", Font.PLAIN, 20));
+        controlsText.setFocusable(false);
+        controlsText.setOpaque(false);
+        controlsText.setText("");
+        Style style = controlsText.addStyle("Style", null);
+        StyleConstants.setForeground(style, Color.BLACK);
+        SimpleAttributeSet align = new SimpleAttributeSet();
+        StyleConstants.setAlignment(align, StyleConstants.ALIGN_LEFT);
+        controlsText.getStyledDocument().setParagraphAttributes(0, controlsText.getStyledDocument().getLength(), align, false);
+        SettingsMenu.add(controlsText);
+        SettingsMenu.setComponentZOrder(controlsText, 0);
+        try {
+            controlsText.getStyledDocument().insertString(
+                    controlsText.getStyledDocument().getLength(), "Controls\n", style);
+        }catch(BadLocationException e){}
+        
+        controlsText.setFont(new Font("Palatino Linotype", Font.PLAIN, 17));
+        StyleConstants.setAlignment(align, StyleConstants.ALIGN_CENTER);
+        controlsText.getStyledDocument().setParagraphAttributes(0, controlsText.getStyledDocument().getLength(), align, false);
+        String controlsString = "";
+        
+        controlsString += "Spell One:\t[1]\n";
+        controlsString += "Spell Two:\t[2]\n";
+        controlsString += "Spell Three:\t[3]\n";
+        controlsString += "Spell Four:\t[4]\n";
+        controlsString += "Previous Spell:\tMouse Wheel Up\n";
+        controlsString += "Next Spell:\tMouse Wheel Down\n";
+        controlsString += "Move Up:\t[W] / Up Arrow Key\n";
+        controlsString += "Move Left:\t[A] / Left Arrow Key\n";
+        controlsString += "Move Down:\t[S] / Down Arrow Key\n";
+        controlsString += "Move Right:\t[D] / Right Arrow Key\n";
+        controlsString += "Pause Game:\t[P] / [M] / [Esc]\n";
+        try {
+            controlsText.getStyledDocument().insertString(
+                    controlsText.getStyledDocument().getLength(), controlsString, style);
+        }catch(BadLocationException e){}
         
         this.SettingsTabHoverLabel = new JLabel(new ImageIcon(HoverTabImg));
+        
+        JTextPane settingsText = new JTextPane();
+        settingsText.setBounds(75 + xOffSet, 46 + yOffSet, 361,  620);
+        settingsText.setFont(new Font("Palatino Linotype", Font.PLAIN, 17));
+        settingsText.setFocusable(false);
+        settingsText.setOpaque(false);
+        settingsText.setText("");
+        style = settingsText.addStyle("Style", null);
+        StyleConstants.setForeground(style, Color.BLACK);
+        StyleConstants.setAlignment(align, StyleConstants.ALIGN_LEFT);
+        settingsText.getStyledDocument().setParagraphAttributes(0, settingsText.getStyledDocument().getLength(), align, false);
+        SettingsMenu.add(settingsText);
+        SettingsMenu.setComponentZOrder(settingsText, 0);
+        try {
+            settingsText.getStyledDocument().insertString(
+                    settingsText.getStyledDocument().getLength(), "Settings\n", style);
+        }catch(BadLocationException e){}
+        StyleConstants.setAlignment(align, StyleConstants.ALIGN_CENTER);
+        settingsText.getStyledDocument().setParagraphAttributes(0, settingsText.getStyledDocument().getLength(), align, false);
+        try {
+            settingsText.getStyledDocument().insertString(
+                    settingsText.getStyledDocument().getLength(), "Screen Size:\n", style);
+        }catch(BadLocationException e){}
+        
+        initializeScreenSizeSettings();
         
         JButton closeTab = createCloseTab(SettingsTabHoverLabel);
         JButton playerTab = createPlayerTab(SettingsTabHoverLabel);
@@ -515,10 +586,66 @@ public class PlayGame extends JPanel implements KeyListener{
         SettingsMenu.add(SettingsTabHoverLabel);
         SettingsMenu.setComponentZOrder(SettingsTabHoverLabel, 0);
         
-        SettingsMenu.add(SettingsBackGroundLabel);
-        SettingsMenu.setComponentZOrder(SettingsBackGroundLabel, SettingsMenu.getComponentCount() - 1);
-        
         MenuCards.add(SettingsMenu, "SettingsMenu");
+    }
+    
+    private void initializeScreenSizeSettings()
+    {
+        int xOffSet = (ScreenWidth - SettingsMenuImg.getWidth(null)) / 2;
+        int yOffSet = (ScreenHeight - SettingsMenuImg.getHeight(null)) / 2;
+        
+        JComboBox screenSizes = new JComboBox();
+        screenSizes.setBounds(185 + xOffSet, 80 + yOffSet, 170, 20);
+        screenSizes.setUI(new BasicComboBoxUI(){
+            @Override
+            protected JButton createArrowButton() {
+                JButton arrowBut = new BasicArrowButton(BasicArrowButton.SOUTH, 
+                        new Color(176, 126, 64), new Color(200, 143, 80), 
+                        new Color(124, 82, 34), new Color(200, 143, 80));
+                arrowBut.setBorder(BorderFactory.createLineBorder(new Color(176, 126, 64)));
+                arrowBut.setForeground(Color.black);
+                return arrowBut;
+            }
+        });
+        UIManager.put("ComboBox.background", new Color(200, 143, 80));
+        UIManager.put("Button.shadow", new Color(200, 143, 80));
+        screenSizes.setBackground(new Color(176, 126, 64));
+        screenSizes.setForeground(Color.BLACK);
+        screenSizes.setBorder(BorderFactory.createLineBorder(new Color(124, 82, 34)));
+        screenSizes.setFocusable(false);
+        screenSizes.setFont(new Font("Palatino Linotype", Font.PLAIN, 15));
+        screenSizes.addItem("Fullscreen Borderless");
+        screenSizes.addItem("1024 x 768");
+        screenSizes.addItem("1280 x 800");
+        screenSizes.addItem("1280 x 1024");
+        screenSizes.addItem("1366 x 768");
+        screenSizes.addItem("1440 x 900");
+        screenSizes.addItem("1536 x 864");
+        screenSizes.addItem("1920 x 1080");
+        screenSizes.getEditor().getEditorComponent().setBackground(Color.yellow);
+        screenSizes.setRenderer(new DefaultListCellRenderer(){
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value,
+                    int index, boolean isSelected, boolean cellHasFocus) 
+            {
+                JLabel sizeOption = (JLabel)super.getListCellRendererComponent(list, value, 
+                        index, isSelected, cellHasFocus);
+                
+                if (isSelected) 
+                {
+                    sizeOption.setBackground(new Color(200, 143, 80));
+                    sizeOption.setForeground(Color.black);
+                }
+                else
+                {
+                    sizeOption.setBackground(new Color(176, 126, 64));
+                    sizeOption.setForeground(Color.black);
+                }
+                return sizeOption;
+            }
+        });
+        SettingsMenu.add(screenSizes);
+        SettingsMenu.setComponentZOrder(screenSizes, 0);
     }
     
     private void pauseGame()
@@ -529,10 +656,6 @@ public class PlayGame extends JPanel implements KeyListener{
         int yOffSet = (ScreenHeight - PauseMenuImg.getHeight(null)) / 2;
         
         createMap();
-        
-        PlayerBackGroundLabel.setIcon(new ImageIcon(GameImg));
-        TalentBackGroundLabel.setIcon(new ImageIcon(GameImg));
-        SettingsBackGroundLabel.setIcon(new ImageIcon(GameImg));
         
         Style style = FloorText.getStyle("Title");
         
@@ -638,23 +761,28 @@ public class PlayGame extends JPanel implements KeyListener{
             }
         }
         
+        BackgroundLabel.setIcon(new ImageIcon(GameImg));
+        
         if(Game.getPlayer().getSkillPoints() > 0)
         {
+            TalentMenu.add(BackgroundLabel);
+            TalentMenu.setComponentZOrder(BackgroundLabel, TalentMenu.getComponentCount() - 1);
             this.MenuLayout.show(MenuCards, "TalentMenu");
         }
         else
         {
+            PauseMenu.add(BackgroundLabel);
+            PauseMenu.setComponentZOrder(BackgroundLabel, PauseMenu.getComponentCount() - 1);
             this.MenuLayout.show(MenuCards, "PauseMenu");
         }
+        
         this.MenuLayout.show(MenuCards, "PauseMenu");
         this.MenuCards.setVisible(true);
-        this.setVisible(false);
     }
     
     private void unPauseGame()
     {
         this.Paused = false;
-        this.setVisible(true);
         this.PlayerTabHoverLabel.setVisible(false);
         this.SettingsTabHoverLabel.setVisible(false);
         this.TalentTabHoverLabel.setVisible(false);        
@@ -1120,6 +1248,9 @@ public class PlayGame extends JPanel implements KeyListener{
         if (bufImg == null) {
             bufImg = (BufferedImage) createImage(Game.getGameWith(), Game.getGameHeight());
         }
+        if (GameImg == null) {
+            GameImg = (BufferedImage) createImage(ScreenWidth, ScreenHeight);
+        }
         Graphics2D gtemp = (Graphics2D) g;
         gtemp.setBackground(Color.black);
         g2d = bufImg.createGraphics();
@@ -1489,6 +1620,11 @@ public class PlayGame extends JPanel implements KeyListener{
         
         if(MissingHealth > Game.getPlayer().getCurrentHealth())
         {
+            if(MissingHealth > Game.getPlayer().getMaxHealth())
+            {
+                MissingHealth = Game.getPlayer().getMaxHealth();
+            }
+            
             int missingWidth = 211 * (MissingHealth - Game.getPlayer().getCurrentHealth()) 
                     / Game.getPlayer().getMaxHealth();
             g2d.setColor(new Color(200, 0, 0));
@@ -1537,8 +1673,13 @@ public class PlayGame extends JPanel implements KeyListener{
         
         g2d.drawImage(this.HealthBar, 40 + xShift, 40 + yShift, this);
         
-        GameImg = bufImg.getSubimage(xShift, yShift, (int)scaledWidth, (int)scaledHeight);
-        gtemp.scale(scale, scale);
+        BufferedImage gameImg = bufImg.getSubimage(xShift, yShift, (int)scaledWidth, (int)scaledHeight);
+        
+        Graphics2D scaledGraphics = (Graphics2D) g;
+        scaledGraphics = GameImg.createGraphics();
+        scaledGraphics.scale(scale, scale);
+        scaledGraphics.drawImage(bufImg, -xShift, -yShift, null);
+        
         gtemp.drawImage(GameImg, 0, 0, this);
         
         gtemp.dispose();
