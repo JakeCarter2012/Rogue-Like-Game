@@ -1638,6 +1638,12 @@ public class GameInstance {
         Burning.updateAnimation();
     }
     
+    public void adjustScreenSize(int width, int height)
+    {
+        ScreenWidth = width;
+        ScreenHeight = height;
+    }
+    
     public int screenShiftY()
     {
         /*

@@ -29,13 +29,18 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import javafx.embed.swing.SwingFXUtils;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.JComboBox;
-import javax.swing.border.Border;
-import javax.swing.plaf.ComboBoxUI;
-import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.text.BadLocationException;
@@ -60,7 +65,8 @@ public class PlayGame extends JPanel implements KeyListener{
     //private final int ScreenWidth = 1024, ScreenHeight = 768;
     //private final int ScreenWidth = screenSize;
     //private final int ScreenWidth = 1920, ScreenHeight = 1080;
-    private final int ScreenWidth = 1280, ScreenHeight = 960;
+    private int ScreenWidth,ScreenHeight;
+    private String ScreenSize;
     private final int FPS = 60;
     
     private boolean Paused, InGame;
@@ -86,33 +92,50 @@ public class PlayGame extends JPanel implements KeyListener{
     private void startGame()
     {
         /*
-        startGame is called when game first opens, it creates the GameWindow used
+        startGame is called when game first opens
         */
-        GameWindow = new JFrame();
+        MenuLayout = new CardLayout();
+        MenuCards = new JPanel(MenuLayout);
+        MenuCards.setBackground(Color.black);
+        MenuCards.setVisible(false);
+        MenuCards.setOpaque(true);
+        
+        try{
+            BufferedReader settingsReader = new BufferedReader(new FileReader("SaveFiles" + File.separator + "Settings.txt"));
+            try{
+                ScreenSize = settingsReader.readLine();
+            }catch(IOException e){
+                System.out.println("Error reading Settings file: " + e);
+                badSettingsFile();
+                ScreenSize = "1280 x 800";
+            }
+            try{
+                settingsReader.close();
+            }catch(IOException e){
+                System.out.println("Error closing Settings file: " + e);
+            }
+        }catch(FileNotFoundException notFound){
+            System.out.println("Settings file not found: " + notFound);
+            //create new settings file;
+            ScreenSize = "1280 x 800";
+        }
+        
+        parseScreenSize();
+    }
+    
+    private void initGameWindow()
+    {
         GameWindow.addWindowListener(new WindowAdapter(){});
         GameWindow.add(this);
         GameWindow.setTitle("Rogue Game");
-        GameWindow.setSize(ScreenWidth + 6, ScreenHeight + 35);
         GameWindow.setResizable(false);
         GameWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        GameWindow.setVisible(true);
         GameWindow.getContentPane().setFocusable(true);
         GameWindow.getContentPane().addKeyListener(this);
         GameWindow.setBackground(Color.black);
-        this.Paused = false;
-        this.InGame = false;
-        PauseTutorial = true;
+        GameWindow.setVisible(true);
         
-        MenuLayout = new CardLayout();
-        MenuCards = new JPanel(MenuLayout);
         GameWindow.add(MenuCards);
-        this.MenuCards.setVisible(false);
-        MenuCards.setOpaque(true);
-        
-        
-        //MenuCards.setBackground(Color.yellow);
-        //GameWindow.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        //GameWindow.setUndecorated(true);
     }
     
     private void resourcesInit()
@@ -145,6 +168,7 @@ public class PlayGame extends JPanel implements KeyListener{
     {
         this.Paused = false;
         this.InGame = true;
+        PauseTutorial = true;
         
         this.MissingHealth = 0;
         this.OpaqueValue = 0f;
@@ -163,6 +187,13 @@ public class PlayGame extends JPanel implements KeyListener{
         Game = new GameInstance(ScreenWidth, ScreenHeight);
         
         PlayerKeyEvent = new GameEvents();
+        
+        GameWindowAddListeners();
+    }
+    
+    private void GameWindowAddListeners()
+    {
+        
         PlayerKeyEvent.addObserver(Game.getPlayer());
         KeyControl playerKeys = new KeyControl(PlayerKeyEvent);
         
@@ -194,25 +225,100 @@ public class PlayGame extends JPanel implements KeyListener{
     
     private void resizeScreen(String screenSize)
     {
-        //rewrite save file
-        
-        parseScreenSize(screenSize);
+        writeSettingsFile(screenSize);
+        ScreenSize = screenSize;
+        parseScreenSize();
+        Game.adjustScreenSize(ScreenWidth, ScreenHeight);
+        this.setSize(ScreenWidth, ScreenHeight);
+        initializeMenus();
+        updateMenuComponents();
+        GameWindowAddListeners();
     }
     
-    private void parseScreenSize(String screenSize)
+    private void parseScreenSize()
     {
+        if (GameWindow != null)
+        {
+            GameWindow.dispose();
+        }
+        GameWindow = new JFrame();
         
+        if(ScreenSize.equals("Fullscreen Borderless"))
+        {
+            GameWindow.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            GameWindow.setUndecorated(true);
+            initGameWindow();
+            ScreenWidth = (int) GameWindow.getSize().getWidth();
+            ScreenHeight = (int) GameWindow.getSize().getHeight();
+        }
+        else
+        {
+            String[] sizes = ScreenSize.split(" x ");
+            try{
+                try{
+                    ScreenWidth = Integer.parseInt(sizes[0]);
+                    ScreenHeight = Integer.parseInt(sizes[1]) - 35;
+                    GameWindow.setSize(ScreenWidth + 6, ScreenHeight + 35);
+                    initGameWindow();
+                }catch(NumberFormatException badNumbers){
+                    System.out.println("Improper screen size settings format: " + badNumbers);
+                    ScreenWidth = 1280;
+                    ScreenHeight = 800 - 35;
+                    GameWindow.setSize(ScreenWidth + 6, ScreenHeight + 35);
+                    initGameWindow();
+                    badSettingsFile();
+                }
+            }catch(ArrayIndexOutOfBoundsException outOfBounds){
+                System.out.println("Improper screen size settings format: " + outOfBounds);
+                ScreenWidth = 1280;
+                ScreenHeight = 800 - 35;
+                GameWindow.setSize(ScreenWidth + 6, ScreenHeight + 35);
+                initGameWindow();
+                badSettingsFile();
+            }
+        }
+    }
+    
+    private void writeSettingsFile(String settings)
+    {
+        List<String> settingsList = Arrays.asList(settings);
+        Path settingsFile = Paths.get("SaveFiles" + File.separator + "Settings.txt");
+        try{
+            Files.write(settingsFile, settingsList, Charset.forName("UTF-8"));
+        }catch(IOException e){
+            System.out.println("Error writing Settings file: " + e);
+        }
+    }
+    
+    private void badSettingsFile()
+    {
+        /*
+        badSettingsFile is used when the settings file is corrupt to 
+        reset it. Note that currently the screen size is currently the only
+        setting, this will be used for other settings as well in the future.
+        */
+        writeSettingsFile("1280 x 800");
     }
     
     private void initializeMenus()
     {
         BackgroundLabel = new JLabel();
         BackgroundLabel.setBounds(0, 0, ScreenWidth, ScreenHeight);
+        BackgroundLabel.setIcon(null);
+        BackgroundLabel.setBackground(Color.black);
+        
+        bufImg = (BufferedImage) createImage(1280, 1280);
+        GameImg = (BufferedImage) createImage(ScreenWidth, ScreenHeight);
         
         pauseMenuInit();
         talentMenuInit();
         settingsMenuInit();
+        Spell1Btn = Spell2Btn = Spell3Btn = Spell4Btn = null;
         mainMenuInit();
+        
+        SettingsMenu.add(BackgroundLabel);
+        
+        this.MenuLayout.show(MenuCards, "SettingsMenu");
     }
     
     private void mainMenuInit()
@@ -319,7 +425,7 @@ public class PlayGame extends JPanel implements KeyListener{
         PauseMenu = new JPanel();
         PauseMenu.setVisible(true);
         PauseMenu.setLayout(null);
-        PauseMenu.setOpaque(true);
+        PauseMenu.setBackground(Color.black);
         
         int xOffSet = (ScreenWidth - PauseMenuImg.getWidth(null)) / 2;
         int yOffSet = (ScreenHeight - PauseMenuImg.getHeight(null)) / 2;
@@ -461,6 +567,7 @@ public class PlayGame extends JPanel implements KeyListener{
         TalentMenu = new JPanel();
         TalentMenu.setVisible(true);
         TalentMenu.setLayout(null);
+        TalentMenu.setBackground(Color.black);
         
         int xOffSet = (ScreenWidth - TalentMenuImg.getWidth(null)) / 2;
         int yOffSet = (ScreenHeight - TalentMenuImg.getHeight(null)) / 2;
@@ -501,6 +608,7 @@ public class PlayGame extends JPanel implements KeyListener{
         SettingsMenu = new JPanel();
         SettingsMenu.setVisible(true);
         SettingsMenu.setLayout(null);
+        SettingsMenu.setBackground(Color.black);
         
         int xOffSet = (ScreenWidth - SettingsMenuImg.getWidth(null)) / 2;
         int yOffSet = (ScreenHeight - SettingsMenuImg.getHeight(null)) / 2;
@@ -577,12 +685,13 @@ public class PlayGame extends JPanel implements KeyListener{
         
         initializeScreenSizeSettings();
         
-        JButton exitButton = new JButton("Exit to Desktop");
+        JButton exitButton = new JButton("Quit to Desktop");
         exitButton.setBounds(78 + xOffSet, 114 + yOffSet, 125, 20);
         exitButton.setBackground(new Color(176, 126, 64));
         exitButton.setBorder(BorderFactory.createLineBorder(new Color(124, 82, 34)));
         exitButton.setFont(new Font("Palatino Linotype", Font.PLAIN, 15));
         exitButton.setForeground(Color.black);
+        exitButton.setFocusable(false);
         exitButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 System.exit(0);
@@ -648,6 +757,7 @@ public class PlayGame extends JPanel implements KeyListener{
         screenSizes.addItem("1440 x 900");
         screenSizes.addItem("1536 x 864");
         screenSizes.addItem("1920 x 1080");
+        screenSizes.setSelectedItem(this.ScreenSize);
         screenSizes.getEditor().getEditorComponent().setBackground(Color.yellow);
         screenSizes.setRenderer(new DefaultListCellRenderer(){
             @Override
@@ -673,7 +783,10 @@ public class PlayGame extends JPanel implements KeyListener{
         
         screenSizes.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                resizeScreen((String)screenSizes.getSelectedItem());
+                if(!((String)screenSizes.getSelectedItem()).equals(ScreenSize))
+                {
+                    resizeScreen((String)screenSizes.getSelectedItem());
+                }
             }
         });
         
@@ -681,10 +794,8 @@ public class PlayGame extends JPanel implements KeyListener{
         SettingsMenu.setComponentZOrder(screenSizes, 0);
     }
     
-    private void pauseGame()
+    private void updateMenuComponents()
     {
-        this.Paused = true;
-        
         int xOffSet = (ScreenWidth - PauseMenuImg.getWidth(null)) / 2;
         int yOffSet = (ScreenHeight - PauseMenuImg.getHeight(null)) / 2;
         
@@ -793,6 +904,13 @@ public class PlayGame extends JPanel implements KeyListener{
                 Spell4Btn.setIcon(new ImageIcon(Game.getPlayer().getSpell(3).getIcon()));
             }
         }
+    }
+    
+    private void pauseGame()
+    {
+        this.Paused = true;
+        
+        this.updateMenuComponents();
         
         BackgroundLabel.setIcon(new ImageIcon(GameImg));
         
@@ -1277,12 +1395,7 @@ public class PlayGame extends JPanel implements KeyListener{
         if(!InGame || Paused)
             return;
         
-        if (bufImg == null) {
-            bufImg = (BufferedImage) createImage(Game.getGameWith(), Game.getGameHeight());
-        }
-        if (GameImg == null) {
-            GameImg = (BufferedImage) createImage(ScreenWidth, ScreenHeight);
-        }
+        
         Graphics2D gtemp = (Graphics2D) g;
         gtemp.setBackground(Color.black);
         g2d = bufImg.createGraphics();
