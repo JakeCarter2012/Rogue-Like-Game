@@ -24,6 +24,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.MouseInfo;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -116,7 +117,6 @@ public class PlayGame extends JPanel implements KeyListener{
             }
         }catch(FileNotFoundException notFound){
             System.out.println("Settings file not found: " + notFound);
-            //create new settings file;
             ScreenSize = "1280 x 800";
         }
         
@@ -130,6 +130,7 @@ public class PlayGame extends JPanel implements KeyListener{
         GameWindow.setTitle("Rogue Game");
         GameWindow.setResizable(false);
         GameWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //GameWindow.setContentPane(this);
         GameWindow.getContentPane().setFocusable(true);
         GameWindow.getContentPane().addKeyListener(this);
         GameWindow.setBackground(Color.black);
@@ -245,6 +246,7 @@ public class PlayGame extends JPanel implements KeyListener{
         
         if(ScreenSize.equals("Fullscreen Borderless"))
         {
+            GameWindow.setSize(Toolkit.getDefaultToolkit().getScreenSize());
             GameWindow.setExtendedState(JFrame.MAXIMIZED_BOTH);
             GameWindow.setUndecorated(true);
             initGameWindow();
@@ -1331,6 +1333,7 @@ public class PlayGame extends JPanel implements KeyListener{
             {
                 updateGame();
             }
+            
             repaint();
             
             //While the game is paused, leave the game loop in loop that sleeps
@@ -1391,10 +1394,8 @@ public class PlayGame extends JPanel implements KeyListener{
         window. Since they are painted ontop of previous objects, they are printed
         in a specific order to achieve the correct layering.
         */
-        
         if(!InGame || Paused)
             return;
-        
         
         Graphics2D gtemp = (Graphics2D) g;
         gtemp.setBackground(Color.black);
